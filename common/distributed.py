@@ -33,7 +33,7 @@ present (i.e. every existing single-process invocation, with or without
 --gpu, is completely unaffected).
 
 Usage (one process per GPU, launched by torchrun, not by hand):
-    torchrun --standalone --nproc_per_node=2 v3_mnist_digit_soap_64.py
+    torchrun --standalone --nproc_per_node=2 v4_mnist_digit_soap_64.py
 Do NOT also pass --gpu under torchrun — LOCAL_RANK (set by the launcher)
 already picks each process's device; see setup_device()'s docstring.
 """

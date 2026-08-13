@@ -7,26 +7,26 @@ remapping. Raw inference only.
 
 Usage:
   Single model:
-    python ocr_pipeline_mnist.py --models v3_mnist_digit_soap_64/v3_mnist_digit_soap_64.onnx image.jpg
+    python ocr_pipeline_mnist.py --models v4_mnist_digit_soap_64/v4_mnist_digit_soap_64.onnx image.jpg
 
   Multiple models (ensemble vote):
-    python ocr_pipeline_mnist.py --models v3_mnist_digit_soap_64/v3_mnist_digit_soap_64.onnx v3_mnist_digit_adamw_64/v3_mnist_digit_adamw_64.onnx image.jpg
+    python ocr_pipeline_mnist.py --models v4_mnist_digit_soap_64/v4_mnist_digit_soap_64.onnx v4_mnist_digit_adamw_64/v4_mnist_digit_adamw_64.onnx image.jpg
 
   Scan a directory for all .onnx files (recursive):
     python ocr_pipeline_mnist.py --model-dir . digit.jpg
 
   Glob patterns for images:
-    python ocr_pipeline_mnist.py --models v3_mnist_digit_soap_64/*.onnx test*.jpg
+    python ocr_pipeline_mnist.py --models v4_mnist_digit_soap_64/*.onnx test*.jpg
 
   Multiple images:
-    python ocr_pipeline_mnist.py --models v3_mnist_digit_soap_64/v3_mnist_digit_soap_64.onnx a.jpg b.jpg c.jpg
+    python ocr_pipeline_mnist.py --models v4_mnist_digit_soap_64/v4_mnist_digit_soap_64.onnx a.jpg b.jpg c.jpg
 
-  With the router pre-filter (see v3_mnist_router_ranger_*.py) — each
+  With the router pre-filter (see v4_mnist_router_ranger_*.py) — each
   detected box is classified digit/UC/LC/[UNK] BEFORE the digit ensemble
   runs; only a "digit" verdict reaches the (expensive, 10-class) ensemble
   at all — UC/LC boxes are output directly as terminal labels, and
   [UNK] boxes are skipped entirely:
-    python ocr_pipeline_mnist.py --router-model v3_mnist_router_ranger_64/v3_mnist_router_ranger_64.onnx --models v3_mnist_digit_soap_64/v3_mnist_digit_soap_64.onnx image.jpg
+    python ocr_pipeline_mnist.py --router-model v4_mnist_router_ranger_64/v4_mnist_router_ranger_64.onnx --models v4_mnist_digit_soap_64/v4_mnist_digit_soap_64.onnx image.jpg
 
   --models and --model-dir are mutually exclusive — use one or the other.
   --router-model is independent of both — optional either way; omitting
@@ -59,7 +59,7 @@ Output markers:
                 lowercase letter (confidence at or above
                 --router-unsure-floor). Terminal labels — no letter-
                 identity or case-specific reading model exists yet (see
-                v3_mnist_router_ranger_*.py's own docstring). The digit
+                v4_mnist_router_ranger_*.py's own docstring). The digit
                 ensemble never runs on a UC/LC box.
   [UNK]         --router-model's own top-class confidence for this box
                 fell below --router-unsure-floor (default
@@ -177,7 +177,7 @@ SUPPORTED_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif", ".webp"}
 # real-world testing. Unrelated to the router — see ROUTER_UNSURE_FLOOR below.
 NON_DIGIT_CONF_FLOOR = 0.40
 
-# Router (see v3_mnist_router_ranger_*.py) confidence floor. The router's
+# Router (see v4_mnist_router_ranger_*.py) confidence floor. The router's
 # output head is 3-class (digit / UC / LC) — there is no trained "unknown"
 # class. If the router's own top-class softmax probability for a box falls
 # below this floor, the pipeline renders [UNK] instead of the top class,
@@ -188,13 +188,13 @@ NON_DIGIT_CONF_FLOOR = 0.40
 # tuned across runs against real test images without touching the script.
 ROUTER_UNSURE_FLOOR = 0.6
 
-# Must match v3_mnist_router_ranger_*.py's own LABEL_MAP order exactly —
+# Must match v4_mnist_router_ranger_*.py's own LABEL_MAP order exactly —
 # index 0 = digit, 1 = UC (uppercase), 2 = LC (lowercase). This is a
 # cross-file contract, not re-derived from the ONNX file itself (the
 # router's output is just 3 unlabeled logits on the wire).
 ROUTER_LABELS = ["digit", "UC", "LC"]
 
-# Letter-identity ensembles (see v3_mnist_letter_{uc,lc}_*.py) — used by
+# Letter-identity ensembles (see v4_mnist_letter_{uc,lc}_*.py) — used by
 # predict_char_topn()'s labels= param when a router-classified UC/LC box
 # is handed to the matching letter ensemble instead of staying a bare
 # terminal label. Index order must match each letter script's own
@@ -213,26 +213,26 @@ def get_model_input_size(session) -> int:
 def short_model_name(path: str) -> str:
     """Extract a readable short name from the ONNX filename.
 
-    v3_mnist_digit_soap_64.onnx      -> digit_soap_64
-    v3_mnist_router_ranger_64.onnx   -> router_ranger_64
-    v3_mnist_letter_uc_soap_64.onnx  -> letter_uc_soap_64
-    v3_mnist_letter_lc_adamw_28.onnx -> letter_lc_adamw_28
+    v4_mnist_digit_soap_64.onnx      -> digit_soap_64
+    v4_mnist_router_ranger_64.onnx   -> router_ranger_64
+    v4_mnist_letter_uc_soap_64.onnx  -> letter_uc_soap_64
+    v4_mnist_letter_lc_adamw_28.onnx -> letter_lc_adamw_28
     v1_lion_64_64.onnx             -> lion_64   (v2 naming, kept for
                                                   backward compatibility)
     adahessian_64.onnx             -> adahessian_64  (older v1/v2 naming)
     anything_else.onnx             -> filename stem (no extension)
     """
     stem = os.path.splitext(os.path.basename(path))[0]
-    # v3_mnist_digit_{optimizer}_{res} pattern
-    m = re.match(r"v3_mnist_digit_([a-z0-9]+)_(\d+)$", stem)
+    # v4_mnist_digit_{optimizer}_{res} pattern
+    m = re.match(r"v4_mnist_digit_([a-z0-9]+)_(\d+)$", stem)
     if m:
         return f"digit_{m.group(1)}_{m.group(2)}"
-    # v3_mnist_router_{optimizer}_{res} pattern
-    m = re.match(r"v3_mnist_router_([a-z0-9]+)_(\d+)$", stem)
+    # v4_mnist_router_{optimizer}_{res} pattern
+    m = re.match(r"v4_mnist_router_([a-z0-9]+)_(\d+)$", stem)
     if m:
         return f"router_{m.group(1)}_{m.group(2)}"
-    # v3_mnist_letter_{uc,lc}_{optimizer}_{res} pattern
-    m = re.match(r"v3_mnist_letter_(uc|lc)_([a-z0-9]+)_(\d+)$", stem)
+    # v4_mnist_letter_{uc,lc}_{optimizer}_{res} pattern
+    m = re.match(r"v4_mnist_letter_(uc|lc)_([a-z0-9]+)_(\d+)$", stem)
     if m:
         return f"letter_{m.group(1)}_{m.group(2)}_{m.group(3)}"
     # v1_{optimizer}_{res}_{res} pattern (v2 naming)
@@ -297,7 +297,7 @@ def predict_char_topn(session, char_gray, img_size: int, n: int = 3, labels=None
 
 def predict_router(session, char_gray, img_size: int, unsure_floor: float = ROUTER_UNSURE_FLOOR):
     """
-    Runs the router ONNX model (see v3_mnist_router_ranger_*.py) on one
+    Runs the router ONNX model (see v4_mnist_router_ranger_*.py) on one
     already-detected character box. Returns (verdict, top_label, prob):
       verdict   — "digit", "UC", "LC", or "unknown"
       top_label — the router's raw top class ("digit"/"UC"/"LC")
@@ -307,7 +307,7 @@ def predict_router(session, char_gray, img_size: int, unsure_floor: float = ROUT
 
     Same normalize_char() preprocessing as predict_char_topn() above — the
     router was trained on the same clean/centered image domain the digit
-    specialists were (see v3_mnist_router_ranger_*.py's get_transforms()),
+    specialists were (see v4_mnist_router_ranger_*.py's get_transforms()),
     so it needs the same real-scan-to-training-domain bridge
     normalize_char() already provides for them. No separate preprocessing
     path for the router — this is a deliberate v3 requirement, not an
@@ -396,7 +396,7 @@ def get_boxes(image_path):
     Letters (v3): this project's box detection was originally tuned only
     against digit test images (v1/v2). Before wiring in the router (which
     needs realistic letter boxes to reach it at all — see
-    v3_mnist_router_ranger_*.py), the size windows and aspect-ratio bounds
+    v4_mnist_router_ranger_*.py), the size windows and aspect-ratio bounds
     below were checked against realistic letter shapes rather than assumed
     fine:
       - Ascender/descender letters (b, d, h, k, l; g, j, p, q, y): their
@@ -1013,7 +1013,7 @@ def run_pipeline(image_path, sessions, img_sizes, model_names, ground_truth=None
     both sections are skipped entirely.
 
     router_session (optional): a loaded router ONNX session (see
-    v3_mnist_router_ranger_*.py / predict_router() above). If provided,
+    v4_mnist_router_ranger_*.py / predict_router() above). If provided,
     every detected box is classified digit/UC/LC before the digit
     ensemble runs. Only a "digit" verdict (confidence >= router_unsure_floor)
     proceeds to the full ensemble; a verdict below router_unsure_floor is
@@ -1026,7 +1026,7 @@ def run_pipeline(image_path, sessions, img_sizes, model_names, ground_truth=None
 
     uc_sessions/uc_img_sizes/uc_model_names, lc_sessions/lc_img_sizes/
     lc_model_names (all optional): loaded uppercase/lowercase letter-
-    identity ONNX sessions (see v3_mnist_letter_{uc,lc}_*.py), parallel
+    identity ONNX sessions (see v4_mnist_letter_{uc,lc}_*.py), parallel
     lists in the same shape as sessions/img_sizes/model_names above. A
     router-classified UC (or LC) box is handed to the matching ensemble
     here — single-model shortcut or vote_topn(), same as the digit
@@ -1093,7 +1093,7 @@ def run_pipeline(image_path, sessions, img_sizes, model_names, ground_truth=None
             elif router_verdict in ("UC", "LC"):
                 # Confident letter classification — hand off to the
                 # matching letter-identity ensemble (see
-                # v3_mnist_letter_{uc,lc}_*.py) if one was loaded via
+                # v4_mnist_letter_{uc,lc}_*.py) if one was loaded via
                 # --letter-uc-models/--letter-lc-models. raw_top1s/all_top3
                 # here MUST stay digit-ensemble-shaped (length n_models) —
                 # they feed the digit-indexed INDIVIDUAL MODEL PREDICTIONS/
@@ -1451,7 +1451,7 @@ def _is_router_or_letter_onnx(fname: str) -> bool:
     instead, same as --router-model already worked before this existed).
     """
     lower = fname.lower()
-    return lower.startswith("v3_mnist_router_") or lower.startswith("v3_mnist_letter_")
+    return lower.startswith("v4_mnist_router_") or lower.startswith("v4_mnist_letter_")
 
 
 def _load_onnx_model_list(model_paths, cuda_available, kind_label):
@@ -1548,13 +1548,13 @@ if __name__ == "__main__":
         epilog="""
 EXAMPLES:
   Single model:
-    python ocr_pipeline_mnist.py --models v3_mnist_digit_soap_64/v3_mnist_digit_soap_64.onnx digit.jpg
+    python ocr_pipeline_mnist.py --models v4_mnist_digit_soap_64/v4_mnist_digit_soap_64.onnx digit.jpg
 
   Two-model ensemble:
-    python ocr_pipeline_mnist.py --models v3_mnist_digit_soap_64/v3_mnist_digit_soap_64.onnx v3_mnist_digit_adamw_64/v3_mnist_digit_adamw_64.onnx digit.jpg
+    python ocr_pipeline_mnist.py --models v4_mnist_digit_soap_64/v4_mnist_digit_soap_64.onnx v4_mnist_digit_adamw_64/v4_mnist_digit_adamw_64.onnx digit.jpg
 
   Glob model paths:
-    python ocr_pipeline_mnist.py --models v3_mnist_digit_soap_64/*.onnx digit.jpg
+    python ocr_pipeline_mnist.py --models v4_mnist_digit_soap_64/*.onnx digit.jpg
 
   Scan a directory for all .onnx files (recursive):
     python ocr_pipeline_mnist.py --model-dir . digit.jpg
@@ -1562,11 +1562,11 @@ EXAMPLES:
   Scan directory, multiple test images:
     python ocr_pipeline_mnist.py --model-dir . test*.jpg
 
-  With the router pre-filter (see v3_mnist_router_ranger_*.py):
-    python ocr_pipeline_mnist.py --router-model v3_mnist_router_ranger_64/v3_mnist_router_ranger_64.onnx --model-dir . digit.jpg
+  With the router pre-filter (see v4_mnist_router_ranger_*.py):
+    python ocr_pipeline_mnist.py --router-model v4_mnist_router_ranger_64/v4_mnist_router_ranger_64.onnx --model-dir . digit.jpg
 
-  With the router AND letter-identity ensembles (see v3_mnist_letter_{uc,lc}_*.py):
-    python ocr_pipeline_mnist.py --router-model v3_mnist_router_ranger_64/v3_mnist_router_ranger_64.onnx \\
+  With the router AND letter-identity ensembles (see v4_mnist_letter_{uc,lc}_*.py):
+    python ocr_pipeline_mnist.py --router-model v4_mnist_router_ranger_64/v4_mnist_router_ranger_64.onnx \\
         --letter-uc-model-dir . --letter-lc-model-dir . --model-dir . page.jpg
         """
     )
@@ -1617,7 +1617,7 @@ EXAMPLES:
         metavar="ONNX_PATH",
         help=(
             "Optional path to a trained router ONNX model (see "
-            "v3_mnist_router_ranger_*.py). If provided, every detected box "
+            "v4_mnist_router_ranger_*.py). If provided, every detected box "
             "is classified digit/UC/LC by the router BEFORE the digit "
             "ensemble runs. Only a confident 'digit' verdict proceeds to "
             "the ensemble; UC/LC boxes are output directly as terminal "
@@ -1646,7 +1646,7 @@ EXAMPLES:
         default=None,
         help=(
             "One or more uppercase letter-identity ONNX model paths (see "
-            "v3_mnist_letter_uc_*.py). Only used for boxes the router "
+            "v4_mnist_letter_uc_*.py). Only used for boxes the router "
             "classifies as UC; omit to keep the original bare-'UC'-label "
             "behavior for those boxes. Only takes effect together with "
             "--router-model."
@@ -1656,7 +1656,7 @@ EXAMPLES:
         "--letter-uc-model-dir",
         default=None,
         metavar="DIR",
-        help="Directory to scan recursively for v3_mnist_letter_uc_*.onnx files."
+        help="Directory to scan recursively for v4_mnist_letter_uc_*.onnx files."
     )
     letter_lc_src = parser.add_mutually_exclusive_group()
     letter_lc_src.add_argument(
@@ -1669,7 +1669,7 @@ EXAMPLES:
         "--letter-lc-model-dir",
         default=None,
         metavar="DIR",
-        help="Directory to scan recursively for v3_mnist_letter_lc_*.onnx files."
+        help="Directory to scan recursively for v4_mnist_letter_lc_*.onnx files."
     )
     args = parser.parse_args()
 
@@ -1818,7 +1818,7 @@ EXAMPLES:
             dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
             dirs.sort()
             for fname in sorted(files):
-                if fname.lower().endswith(".onnx") and fname.lower().startswith("v3_mnist_letter_uc_"):
+                if fname.lower().endswith(".onnx") and fname.lower().startswith("v4_mnist_letter_uc_"):
                     uc_model_paths.append(os.path.join(root, fname))
     elif args.letter_uc_models:
         for m in args.letter_uc_models:
@@ -1848,7 +1848,7 @@ EXAMPLES:
             dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
             dirs.sort()
             for fname in sorted(files):
-                if fname.lower().endswith(".onnx") and fname.lower().startswith("v3_mnist_letter_lc_"):
+                if fname.lower().endswith(".onnx") and fname.lower().startswith("v4_mnist_letter_lc_"):
                     lc_model_paths.append(os.path.join(root, fname))
     elif args.letter_lc_models:
         for m in args.letter_lc_models:

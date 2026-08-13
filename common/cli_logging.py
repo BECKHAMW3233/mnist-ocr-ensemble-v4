@@ -94,6 +94,7 @@ HW_TELEMETRY_FIELDS = [
     "cuda_util_pct_min", "cuda_util_pct_avg", "cuda_util_pct_max",
     "cuda_mem_util_pct_min", "cuda_mem_util_pct_avg", "cuda_mem_util_pct_max",
     "gpu_temp_c_min", "gpu_temp_c_avg", "gpu_temp_c_max",
+    "gpu_temp_tlimit_c_min", "gpu_temp_tlimit_c_avg", "gpu_temp_tlimit_c_max",
     "gpu_power_w_min", "gpu_power_w_avg", "gpu_power_w_max",
     "gpu_clock_sm_mhz_avg", "gpu_clock_mem_mhz_avg",
     "gpu_fan_pct_avg", "gpu_throttled_any",
@@ -105,6 +106,12 @@ HW_TELEMETRY_FIELDS = [
     "vram_peak_alloc_gb", "vram_peak_reserved_gb",
     "nvsmi_vram_used_gb_min", "nvsmi_vram_used_gb_avg", "nvsmi_vram_used_gb_max",
     "nvsmi_vram_total_gb",
+    "vram_other_processes_gb_min", "vram_other_processes_gb_avg", "vram_other_processes_gb_max",
+    "pcie_tx_kb_s_min", "pcie_tx_kb_s_avg", "pcie_tx_kb_s_max",
+    "pcie_rx_kb_s_min", "pcie_rx_kb_s_avg", "pcie_rx_kb_s_max",
+    "pcie_link_gen_current_min", "pcie_link_gen_current_avg", "pcie_link_gen_current_max",
+    "pcie_link_width_current_min", "pcie_link_width_current_avg", "pcie_link_width_current_max",
+    "pcie_link_gen_max", "pcie_link_width_max",
     "data_wait_s", "compute_s",
 ]
 
@@ -116,10 +123,15 @@ HW_TELEMETRY_FIELDS = [
 # its range — is visible). Populated only on each epoch's non-summary rows
 # (see save_log() below); blank on the summary row.
 _POINT_FIELDS = [
-    "cuda_util_pct", "cuda_mem_util_pct", "gpu_temp_c", "gpu_power_w",
+    "cuda_util_pct", "cuda_mem_util_pct", "gpu_temp_c", "gpu_temp_tlimit_c",
+    "gpu_power_w",
     "gpu_clock_sm_mhz", "gpu_clock_mem_mhz", "gpu_fan_pct", "gpu_throttled",
-    "cpu_pct", "ram_used_gb", "swap_used_gb", "disk_read_mb_s", "disk_write_mb_s",
+    "cpu_pct", "cpu_pct_per_core",
+    "ram_used_gb", "swap_used_gb", "disk_read_mb_s", "disk_write_mb_s",
     "nvsmi_vram_used_gb",
+    "vram_other_processes_gb",
+    "pcie_tx_kb_s", "pcie_rx_kb_s",
+    "pcie_link_gen_current", "pcie_link_width_current",
 ]
 
 

@@ -136,7 +136,7 @@ def restore_optimizer_scheduler_state(resume_state: dict, current_batch_size: in
 
     Centralized (2026-08-08, per direct user follow-up) from the
     identical check duplicated across the router scripts
-    (v3_mnist_router_ranger_*.py) — originally added 2026-07-28 for the
+    (v4_mnist_router_ranger_*.py) — originally added 2026-07-28 for the
     router's own batch-size-dependent LR scaling (scaled_learning_rate())
     — now extended to every script now that reactive mid-run batch-size
     adjustment (common/batch_sizing.py's reduce_batch_size()) means

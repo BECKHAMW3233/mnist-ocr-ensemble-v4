@@ -42,6 +42,7 @@ import atexit
 import os
 import subprocess
 import time
+import xml.etree.ElementTree as ET
 
 import torch
 
@@ -125,7 +126,10 @@ _NVSMI_FIELDS = (
     "clocks_throttle_reasons.hw_thermal_slowdown,"
     "clocks_throttle_reasons.sw_thermal_slowdown,"
     "clocks_throttle_reasons.hw_power_brake_slowdown,"
-    "memory.used,memory.total"
+    "memory.used,memory.total,"
+    "temperature.gpu.tlimit,"
+    "pcie.link.gen.gpucurrent,pcie.link.width.current,"
+    "pcie.link.gen.max,pcie.link.width.max"
 )
 _NVSMI_FIELD_COUNT = len(_NVSMI_FIELDS.split(","))
 
@@ -148,6 +152,45 @@ def _parse_nvsmi_throttle(raw: str) -> int:
     if raw == "Not Active":
         return 0
     return -1
+
+
+def _query_pcie_throughput() -> tuple:
+    """
+    Returns (tx_kb_s, rx_kb_s) -- PCIe bus transmit/receive throughput,
+    GPU-centric (Tx = GPU-to-host, Rx = host-to-GPU). NOT the same as
+    GPU-internal VRAM bandwidth -- this is PCIe-bus traffic, not GDDR6X
+    read/write throughput, and can read idle while a training step is
+    fully memory-bandwidth-bound internally (PCIe is only busy moving a
+    batch onto the GPU, not during the compute that follows). Kept as a
+    labeled proxy since nothing exposes true VRAM bandwidth on this
+    hardware (checked 2026-08-13: confirmed absent from this machine's
+    own `nvidia-smi --help-query-gpu` field list, and DCGM's profiling
+    metrics -- the only place real GB/s bandwidth is exposed -- are not
+    confirmed reliably available on consumer GeForce/RTX cards).
+
+    Only available via `-q -x` (XML) output -- confirmed absent from
+    `--help-query-gpu`'s full field list, so unlike every other field in
+    this file, this needs a SECOND, separate nvidia-smi subprocess call.
+    Kept synchronous (unlike _poll_gpu_memory_windows()'s async pattern)
+    since this is a local NVML query via nvidia-smi, comparable latency
+    to the main CSV call below -- not the ~2.5s PowerShell/WMI
+    aggregation that pattern exists for.
+    """
+    try:
+        result = subprocess.run(
+            ["nvidia-smi", f"-i={_cuda_index()}", "-q", "-x"],
+            capture_output=True, text=True, timeout=5,
+        )
+        root = ET.fromstring(result.stdout)
+        pci = root.find(".//gpu/pci")
+        tx = (pci.findtext("tx_util", "") or "").replace("KB/s", "").strip()
+        rx = (pci.findtext("rx_util", "") or "").replace("KB/s", "").strip()
+        return (
+            float(tx) if tx and tx.upper() != "N/A" else -1,
+            float(rx) if rx and rx.upper() != "N/A" else -1,
+        )
+    except Exception:
+        return -1, -1
 
 
 # Windows-only: THIS PROCESS's OWN dedicated + shared GPU memory via the
@@ -321,22 +364,31 @@ class HardwareMonitor:
             "cuda_util_pct":     -1,
             "cuda_mem_util_pct": -1,
             "gpu_temp_c":        -1,
+            "gpu_temp_tlimit_c": -1,
             "gpu_power_w":       -1,
             "gpu_clock_sm_mhz":  -1,
             "gpu_clock_mem_mhz": -1,
             "gpu_fan_pct":       -1,
             "gpu_throttled":     -1,  # -1 unknown, 0 not throttled, 1 throttled
             "cpu_pct":           -1,
+            "cpu_pct_per_core":  "",
             "ram_used_gb":       -1,
             "ram_total_gb":      -1,
             "disk_read_mb_s":    -1,
             "disk_write_mb_s":   -1,
             "nvsmi_vram_used_gb":  -1,
             "nvsmi_vram_total_gb": -1,
+            "vram_other_processes_gb": -1,
             "gpu_mem_dedicated_gb": -1,
             "gpu_mem_shared_gb":    -1,
             "swap_used_gb":      -1,
             "swap_total_gb":     -1,
+            "pcie_tx_kb_s":      -1,
+            "pcie_rx_kb_s":      -1,
+            "pcie_link_gen_current":   -1,
+            "pcie_link_width_current": -1,
+            "pcie_link_gen_max":       -1,
+            "pcie_link_width_max":     -1,
         }
 
         try:
@@ -365,14 +417,42 @@ class HardwareMonitor:
                 _total_mb = _parse_nvsmi_float(parts[11])
                 stats["nvsmi_vram_used_gb"]  = round(_used_mb / 1024, 3)  if _used_mb  != -1 else -1
                 stats["nvsmi_vram_total_gb"] = round(_total_mb / 1024, 3) if _total_mb != -1 else -1
+                stats["gpu_temp_tlimit_c"] = int(_parse_nvsmi_float(parts[12]))
+                _gen_cur   = _parse_nvsmi_float(parts[13])
+                _width_cur = _parse_nvsmi_float(parts[14])
+                _gen_max   = _parse_nvsmi_float(parts[15])
+                _width_max = _parse_nvsmi_float(parts[16])
+                stats["pcie_link_gen_current"]   = int(_gen_cur)   if _gen_cur   != -1 else -1
+                stats["pcie_link_width_current"] = int(_width_cur) if _width_cur != -1 else -1
+                stats["pcie_link_gen_max"]       = int(_gen_max)   if _gen_max   != -1 else -1
+                stats["pcie_link_width_max"]     = int(_width_max) if _width_max != -1 else -1
         except Exception:
             pass
+
+        # Derived, not a new query -- system-wide usage (nvidia-smi's
+        # memory.used, confirmed system-wide: NVIDIA Developer Forums,
+        # "Understanding memory.used of nvidia-smi", and this project's
+        # own --help-query-gpu output, "Total memory allocated by active
+        # contexts") minus this process's own reserved VRAM (torch's
+        # max_memory_reserved(), genuinely per-process) = what everything
+        # ELSE on the GPU is using. Floored at 0: the two readings come
+        # from independent sources taken microseconds apart, so small
+        # skew could otherwise show a nonsensical negative.
+        if stats["nvsmi_vram_used_gb"] != -1 and stats["vram_reserved_gb"] != -1:
+            stats["vram_other_processes_gb"] = round(
+                max(0.0, stats["nvsmi_vram_used_gb"] - stats["vram_reserved_gb"]), 3
+            )
+
+        stats["pcie_tx_kb_s"], stats["pcie_rx_kb_s"] = _query_pcie_throughput()
 
         stats["gpu_mem_dedicated_gb"], stats["gpu_mem_shared_gb"] = _poll_gpu_memory_windows()
 
         if HAS_PSUTIL:
             try:
                 stats["cpu_pct"]      = psutil.cpu_percent(interval=None)
+                stats["cpu_pct_per_core"] = ";".join(
+                    f"{p:.1f}" for p in psutil.cpu_percent(interval=None, percpu=True)
+                )
                 vm = psutil.virtual_memory()
                 stats["ram_used_gb"]  = round(vm.used  / 1024**3, 2)
                 stats["ram_total_gb"] = round(vm.total / 1024**3, 2)
@@ -420,9 +500,13 @@ class HardwareMonitor:
 
         summary = {}
         for field in ("cuda_util_pct", "cuda_mem_util_pct", "gpu_temp_c",
+                      "gpu_temp_tlimit_c",
                       "gpu_power_w", "cpu_pct", "ram_used_gb", "swap_used_gb",
                       "disk_read_mb_s", "disk_write_mb_s", "nvsmi_vram_used_gb",
-                      "gpu_mem_dedicated_gb", "gpu_mem_shared_gb"):
+                      "vram_other_processes_gb",
+                      "gpu_mem_dedicated_gb", "gpu_mem_shared_gb",
+                      "pcie_tx_kb_s", "pcie_rx_kb_s",
+                      "pcie_link_gen_current", "pcie_link_width_current"):
             lo, avg, hi = _min_avg_max(field)
             summary[f"{field}_min"] = lo
             summary[f"{field}_avg"] = avg
@@ -445,6 +529,8 @@ class HardwareMonitor:
         summary["vram_peak_alloc_gb"]    = samples[-1].get("vram_alloc_gb", -1)
         summary["vram_peak_reserved_gb"] = samples[-1].get("vram_reserved_gb", -1)
         summary["nvsmi_vram_total_gb"]   = samples[-1].get("nvsmi_vram_total_gb", -1)
+        summary["pcie_link_gen_max"]     = samples[-1].get("pcie_link_gen_max", -1)
+        summary["pcie_link_width_max"]   = samples[-1].get("pcie_link_width_max", -1)
         return summary
 
 

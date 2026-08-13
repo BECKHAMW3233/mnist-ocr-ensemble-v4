@@ -1,4 +1,4 @@
-# mnist-ocr-ensemble-v3 — Python dependencies
+# mnist-ocr-ensemble-v4 — Python dependencies
 #
 # torch/torchvision need the CUDA-specific wheel index, not plain PyPI —
 # `pip install -r requirements.txt` alone will pull a CPU-only torch
@@ -20,15 +20,15 @@ numpy
 matplotlib
 Pillow                  # PIL — supplementary_data.py, router --infer
 psutil                   # hardware telemetry — common/telemetry.py, common/batch_sizing.py
-onnx                     # SOAP scripts' export validation only — v3_mnist_digit_soap_*.py
+onnx                     # SOAP scripts' export validation only — v4_mnist_digit_soap_*.py
 onnxruntime-gpu           # ocr_pipeline_mnist.py inference — NOT plain onnxruntime (CPU-only,
                           # CUDAExecutionProvider silently unavailable with the wrong package)
 opencv-python             # cv2 — ocr_pipeline_mnist.py only
-pytorch_optimizer         # SOAP optimizer — v3_mnist_digit_soap_*.py
-schedulefree               # Schedule-Free AdamW — v3_mnist_digit_adamw_*.py
+pytorch_optimizer         # SOAP optimizer — v4_mnist_digit_soap_*.py
+schedulefree               # Schedule-Free AdamW — v4_mnist_digit_adamw_*.py
 
 # Muon and Ranger need NO separate package — both are implemented inline
-# directly inside v3_mnist_digit_muon_*.py / v3_mnist_router_ranger_*.py
+# directly inside v4_mnist_digit_muon_*.py / v4_mnist_router_ranger_*.py
 # (see v3_CHANGELOG.md's modularization-scope note).
 
 # Optional

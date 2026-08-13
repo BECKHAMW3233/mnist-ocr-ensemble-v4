@@ -1,7 +1,7 @@
 """
 supplementary_data.py
 =====================
-Shared supplementary dataset loader — v3. Extends the v2 module of the
+Shared supplementary dataset loader — v4. Extends the v2 module of the
 same name; the loading pattern (per-source Dataset wrapper classes,
 graceful skip-on-missing, WeightedRandomSampler-friendly label
 extraction) is unchanged, not replaced. Four additions for v3:
@@ -41,7 +41,7 @@ extraction) is unchanged, not replaced. Four additions for v3:
      (all 62 classes, not previously used anywhere in this project — only
      "digits" and "balanced" were), added as the sole data source for the
      v3 uppercase/lowercase letter-identity models
-     (v3_mnist_letter_{uc,lc}_{optimizer}_{res}.py). Chosen over EMNIST
+     (v4_mnist_letter_{uc,lc}_{optimizer}_{res}.py). Chosen over EMNIST
      Balanced specifically because Balanced only has 11 distinct lowercase
      classes (the other 15 are merged into their uppercase counterpart by
      the dataset's own creators — see BALANCED_TO_BYCLASS's comment
@@ -73,7 +73,7 @@ Provides digit-only supplementary data sources for MNIST digit recognition:
                          BalancedEMNISTDataset directly instead, mirroring
                          how the v2 digit gate self-contained its own
                          letter-loading rather than changing this shared
-                         module's defaults — see v3_mnist_router_ranger_*.py)
+                         module's defaults — see v4_mnist_router_ranger_*.py)
   7. Kaggle A-Z, Chars74K, PG-HWLD — still excluded (use_kaggle/
                          use_chars_hnd/use_chars_img/use_pghwld default
                          False); optional supplementary letter sources,
@@ -105,7 +105,7 @@ PG-HWLD folder mapping:
 Class balance rationale (digit ensemble only — NUM_CLASSES/DIGIT_BOOST
 below describe load_supplementary()'s digits-only default use; the
 router does its own 3-class digit/UC/LC weighting, see
-v3_mnist_router_ranger_*.py):
+v4_mnist_router_ranger_*.py):
     DIGIT_BOOST=1.0 (neutral). Weighting is pure inverse frequency across 10 classes.
 
     Raw digit samples (training-time total): ~388,148 (EMNIST Digits
@@ -190,7 +190,7 @@ NUM_CLASSES = 10
 
 # DIGIT_BOOST: no letter classes to counterbalance against in the digit
 # ensemble's own 10-class training (the router handles digit-vs-UC-vs-LC
-# balance separately — see v3_mnist_router_ranger_*.py). Set to 1.0 —
+# balance separately — see v4_mnist_router_ranger_*.py). Set to 1.0 —
 # pure inverse frequency weighting across the 10 digit classes.
 DIGIT_BOOST = 1.0
 
@@ -530,7 +530,7 @@ class EMNISTByClassDataset(Dataset):
     EMNIST ByClass — all 62 classes (0-9 digits, 10-35 uppercase, 36-61
     lowercase). Not used by the digit ensemble or the router — added in
     v3 as the sole data source for the uppercase/lowercase letter-identity
-    models (v3_mnist_letter_{uc,lc}_{optimizer}_{res}.py). Chosen over
+    models (v4_mnist_letter_{uc,lc}_{optimizer}_{res}.py). Chosen over
     EMNIST Balanced specifically because Balanced only has 11 distinct
     lowercase classes (see BALANCED_TO_BYCLASS's comment above); ByClass
     has real, distinct labels for all 26. Raw byclass label integers
@@ -1007,7 +1007,7 @@ def digit_sources_for_tier(img_size: int) -> dict:
     isn't called at all.
     """
     if img_size not in (16, 28, 32, 64, 128):
-        raise ValueError(f"Unsupported v3 resolution tier: {img_size} "
+        raise ValueError(f"Unsupported v4 resolution tier: {img_size} "
                           f"(expected 16, 28, 32, 64, or 128)")
     if img_size == 16:
         # USPS is the entire spine at this tier via load_base_usps() —
@@ -1374,7 +1374,7 @@ def load_base_usps(data_dir: Path, train_transform, val_transform, test_transfor
 # =============================================================================
 # Unlike the digit ensemble's 5-source, per-resolution-tier ladder
 # (digit_sources_for_tier()), the letter-identity models
-# (v3_mnist_letter_{uc,lc}_{optimizer}_{res}.py) have exactly ONE data
+# (v4_mnist_letter_{uc,lc}_{optimizer}_{res}.py) have exactly ONE data
 # source — EMNIST ByClass — so there is no per-tier branching here: every
 # resolution (28/32/64/128; there is no 16x16 letter tier, that was
 # USPS-digit-only) calls this same function identically. Mirrors

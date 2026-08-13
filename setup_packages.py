@@ -1,11 +1,11 @@
 """
 setup_packages.py
 ===================
-One-shot Python package installer for mnist-ocr-ensemble-v3.
+One-shot Python package installer for mnist-ocr-ensemble-v4.
 
 Installs everything needed to run:
-  - The 15 digit training scripts (v3_mnist_digit_{soap,adamw,muon}_{16,28,32,64,128}.py)
-  - The 5 router training scripts (v3_mnist_router_ranger_{16,28,32,64,128}.py)
+  - The 15 digit training scripts (v4_mnist_digit_{soap,adamw,muon}_{16,28,32,64,128}.py)
+  - The 5 router training scripts (v4_mnist_router_ranger_{16,28,32,64,128}.py)
   - The shared supplementary_data.py dataset loader and common/ package
   - The ONNX inference pipeline (ocr_pipeline_mnist.py)
 
@@ -64,10 +64,10 @@ CORE_TRAINING_PACKAGES = [
 ]
 
 OPTIMIZER_PACKAGES = [
-    ("schedulefree",      "schedulefree",      "Schedule-Free AdamW — v3_mnist_digit_adamw_*.py"),
-    ("pytorch_optimizer", "pytorch_optimizer", "SOAP optimizer — v3_mnist_digit_soap_*.py"),
+    ("schedulefree",      "schedulefree",      "Schedule-Free AdamW — v4_mnist_digit_adamw_*.py"),
+    ("pytorch_optimizer", "pytorch_optimizer", "SOAP optimizer — v4_mnist_digit_soap_*.py"),
     # Muon and Ranger are NOT here — both are inlined directly into
-    # v3_mnist_digit_muon_*.py / v3_mnist_router_ranger_*.py, no
+    # v4_mnist_digit_muon_*.py / v4_mnist_router_ranger_*.py, no
     # third-party optimizer package needed for either.
 ]
 
@@ -78,7 +78,7 @@ ONNX_INFERENCE_PACKAGES = [
                                           "CUDAExecutionProvider silently won't be available)"),
     ("onnx",         "onnx",             "ONNX export validation — imported and actually used "
                                           "(onnx.checker.check_model()/onnx.load()) only by the 5 "
-                                          "v3_mnist_digit_soap_*.py scripts' validate=True export "
+                                          "v4_mnist_digit_soap_*.py scripts' validate=True export "
                                           "path (common/onnx_export.py). Not needed by adamw/muon "
                                           "digit scripts or the router scripts, which export with "
                                           "validate=False by default."),
@@ -186,7 +186,7 @@ def main():
     args = parser.parse_args()
 
     print("=" * 70)
-    print("  mnist-ocr-ensemble-v3 — package setup")
+    print("  mnist-ocr-ensemble-v4 — package setup")
     print(f"  Interpreter: {sys.executable}")
     print(f"  Python:      {sys.version.split()[0]}")
     print("=" * 70)
@@ -221,7 +221,7 @@ def main():
         install_group(ONNX_INFERENCE_PACKAGES, "ONNX inference / SOAP-export-validation packages")
     else:
         print("\n[ONNX] --skip-onnx passed, skipping onnxruntime-gpu/onnx/opencv")
-        print("       [Warning] onnx is required by the 5 v3_mnist_digit_soap_*.py scripts'")
+        print("       [Warning] onnx is required by the 5 v4_mnist_digit_soap_*.py scripts'")
         print("       export-validation path and will raise ImportError there if missing.")
         print("       onnxruntime-gpu is required by ocr_pipeline_mnist.py. Only opencv-python")
         print("       (cv2) is genuinely inference-only. Re-run without --skip-onnx if you plan")
