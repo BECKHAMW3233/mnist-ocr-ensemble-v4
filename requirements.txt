@@ -1,0 +1,37 @@
+# mnist-ocr-ensemble-v3 — Python dependencies
+#
+# torch/torchvision need the CUDA-specific wheel index, not plain PyPI —
+# `pip install -r requirements.txt` alone will pull a CPU-only torch
+# build and CUDA will silently be unavailable. Install those two first:
+#
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+#   pip install -r requirements.txt
+#
+# ...or just run `python setup_packages.py`, which does both steps and
+# has a --check mode to verify what's already installed.
+#
+# Confirmed working combination (see v3_CHANGELOG.md and
+# run_all_training.ps1's python.exe path):
+#   Python 3.14, torch==2.13.0+cu130, torchvision==0.28.0
+
+torch
+torchvision
+numpy
+matplotlib
+Pillow                  # PIL — supplementary_data.py, router --infer
+psutil                   # hardware telemetry — common/telemetry.py, common/batch_sizing.py
+onnx                     # SOAP scripts' export validation only — v3_mnist_digit_soap_*.py
+onnxruntime-gpu           # ocr_pipeline_mnist.py inference — NOT plain onnxruntime (CPU-only,
+                          # CUDAExecutionProvider silently unavailable with the wrong package)
+opencv-python             # cv2 — ocr_pipeline_mnist.py only
+pytorch_optimizer         # SOAP optimizer — v3_mnist_digit_soap_*.py
+schedulefree               # Schedule-Free AdamW — v3_mnist_digit_adamw_*.py
+
+# Muon and Ranger need NO separate package — both are implemented inline
+# directly inside v3_mnist_digit_muon_*.py / v3_mnist_router_ranger_*.py
+# (see v3_CHANGELOG.md's modularization-scope note).
+
+# Optional
+rarfile                    # supplementary_data.py's ARDIS auto-download fallback —
+                            # only used if none of 7-Zip/unrar/unar are found on PATH;
+                            # still needs one of those as its own extraction backend
