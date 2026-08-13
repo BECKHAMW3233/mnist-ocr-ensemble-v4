@@ -669,13 +669,15 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
               f"loss: {train_loss:.6f}  acc: {train_acc:.6f}  |  "
               f"val_loss: {val_loss:.6f}  val_acc: {val_acc:.6f}  |  "
               f"lr: {current_lr:.8f}  [{elapsed:.0f}s]  |  "
-              f"VRAM {hw['nvsmi_vram_used_gb_max']:.1f}/{hw['nvsmi_vram_total_gb']:.1f}GB  "
+              f"VRAM {hw['nvsmi_vram_used_gb_max']:.1f}/{hw['nvsmi_vram_total_gb']:.1f}GB "
+              f"(other {hw['vram_other_processes_gb_max']:.1f}GB)  "
               f"CUDA {hw['cuda_util_pct_avg']:.0f}/{hw['cuda_util_pct_max']}%(avg/max)  "
               f"{hw['gpu_temp_c_avg']:.0f}/{hw['gpu_temp_c_max']}°C  {hw['gpu_power_w_avg']:.0f}W  |  "
               f"CPU {hw['cpu_pct_avg']:.0f}%  RAM {hw['ram_used_gb_avg']:.1f}/{hw['ram_total_gb']:.1f}GB  "
               f"SWAP {hw['swap_used_gb_avg']:.1f}/{hw['swap_total_gb']:.1f}GB  |  "
               f"wait {hw['data_wait_s']:.1f}s/compute {hw['compute_s']:.1f}s"
-              f"{'  [THROTTLED]' if hw['gpu_throttled_any'] == 1 else ''}")
+              f"{'  [THROTTLED]' if hw['gpu_throttled_any'] == 1 else ''}"
+              f"{'  [PCIe DEGRADED]' if (hw['pcie_link_gen_max'] != -1 and hw['pcie_link_gen_current_min'] != -1 and (hw['pcie_link_gen_current_min'] < hw['pcie_link_gen_max'] or hw['pcie_link_width_current_min'] < hw['pcie_link_width_max'])) else ''}")
 
         for k, v in [("train_loss", train_loss), ("train_acc", train_acc),
                      ("val_loss", val_loss), ("val_acc", val_acc), ("lr", current_lr)]:

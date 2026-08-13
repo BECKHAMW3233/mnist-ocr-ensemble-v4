@@ -47,6 +47,18 @@ usage. `run_all_training.ps1` runs all 44 in resolution-tier order —
 see its header comment for skip/resume behavior. `ocr_pipeline_mnist.py
 --help` for pipeline usage.
 
+## Telemetry
+
+Every training script collects per-epoch hardware telemetry via
+`common/telemetry.py`'s `HardwareMonitor` — GPU utilization/temperature
+(including thermal margin to throttle)/power/clocks/VRAM (including a
+system-wide-vs-this-process breakdown), per-core CPU, system RAM/swap,
+disk I/O, and PCIe link state/throughput — logged to each run's own
+`_log.csv`: one row per hardware sample point plus a per-epoch summary
+row (min/avg/max). See `common/cli_logging.py`'s `HW_TELEMETRY_FIELDS`/
+`_POINT_FIELDS` for the exact columns, and `v4_CHANGELOG.md` for what
+was added and why.
+
 ## Requirements
 
 See `requirements.txt`; `setup_packages.py` is a one-shot installer for

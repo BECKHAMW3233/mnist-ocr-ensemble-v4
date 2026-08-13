@@ -174,3 +174,43 @@ priority list from his own review of what `HW_TELEMETRY_FIELDS`/
 was checked against current documentation/this machine's actual
 nvidia-smi output rather than assumed, per CLAUDE.md's verification
 standard — sources cited above and in the code's own comments/docstrings.
+
+---
+
+## 2026-08-13 — Added Telemetry section to README.md
+
+**Change:** Added a "Telemetry" section to `README.md`, between
+"Usage" and "Requirements", summarizing what `HardwareMonitor` collects
+and pointing to `common/cli_logging.py`'s field-list constants and
+`v4_CHANGELOG.md` for exact columns/rationale, rather than duplicating
+that detail in the README itself.
+
+**Why:** Per William's direct instruction, following up on the Part 2
+telemetry additions — the README previously listed `telemetry.py`
+generically as one of the `common/` files with no mention of what it
+actually captures. No external source.
+
+---
+
+## 2026-08-13 — Added VRAM-other-processes and PCIe-degradation signals to per-epoch CLI output
+
+**Change:** Extended the per-epoch console print statement (identical
+block duplicated across all 44 training scripts, confirmed byte-for-byte
+identical before editing) with two additions: `vram_other_processes_gb`
+appended to the existing VRAM segment (always visible, no clean
+threshold for it), and a `[PCIe DEGRADED]` flag appended after the
+existing `[THROTTLED]` flag — appears only when this epoch's minimum
+observed PCIe link generation or width drops below the system's max,
+matching the existing `[THROTTLED]` pattern (silent in the normal case).
+Every other new Part 2 field (`cpu_pct_per_core`, PCIe tx/rx,
+`gpu_temp_tlimit_c`) deliberately left out of the console line —
+CSV-analysis fields, not live-glance signals, per William's own
+follow-up discussion on which ones were worth watching live.
+
+**Why:** Per William's direct instruction, following up on the Part 2
+telemetry additions — the new fields existed in the CSV log but weren't
+visible during a live run. PCIe degradation in particular was the
+explicit original motivation for item 4 ("silent mid-run degradation
+... wouldn't be caught today"), so surfacing it in the console output
+directly serves that goal rather than only being discoverable after the
+fact in a CSV. No external source.
