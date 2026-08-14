@@ -158,7 +158,8 @@ the full rename history and rationale.
     |-- run_all_training.ps1     # Runs all 44 training scripts in tier order
     |-- v4_CHANGELOG.md
     |-- CLAUDE.md
-    `-- README.md
+    |-- README.md
+    `-- .gitignore
 
 Model outputs (ONNX export, CSV log, PNG curves, CLI transcript) are
 created alongside each training script in a folder named after that

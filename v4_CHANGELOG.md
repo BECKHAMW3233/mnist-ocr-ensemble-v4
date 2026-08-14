@@ -355,6 +355,7 @@ checked or updated to match — per CLAUDE.md's README maintenance rule
 the README describes or should describe, update the README as part of
 that same change"). No external source — a documentation-accuracy fix
 verified directly against this repo's own `common/` directory listing
+and `git status`.
 
 ## 2026-08-14 — README's file tree fully expanded to real, on-GitHub contents
 
@@ -387,4 +388,16 @@ source — verified directly against this repo's own directory listing
 (`find digit_models lowercase_models uppercase_models router_models
 common -maxdepth 2`) and `.gitignore`'s actual contents (`*.pt`,
 `_precomputed_cache/`), not assumed.
-and `git status`.
+
+## 2026-08-14 — README missing `.gitignore` from the file tree
+
+**Change:** Added `.gitignore` to the root-level section of the file
+tree — it's a tracked file (confirmed via `git ls-files`), not
+gitignored itself, and was left out of the otherwise-complete listing
+from the previous entry.
+
+**Why:** Per William's direct instruction, after he ran `git ls-files`
+himself and it surfaced `.gitignore` as tracked-but-unlisted — same
+CLAUDE.md README maintenance rule as the two prior entries. No external
+source — verified directly against this repo's own `git ls-files`
+output.
