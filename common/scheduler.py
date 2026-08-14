@@ -2,11 +2,9 @@
 common/scheduler.py
 ====================
 Linear-warmup -> cosine-decay LR scheduler, stepped once per optimizer
-step (not once per epoch). Extracted from the WarmupCosineScheduler class
-duplicated across every v2 script that used per-step scheduling
-(mnist_soap_*.py, mnist_adahessian_*.py, mnist_digit_gate.py) — same
-shape-target-not-a-cap semantics (PATIENCE-based early stopping is what
-actually ends training; total_steps only shapes the cosine curve).
+step (not once per epoch). Shape-target-not-a-cap semantics: PATIENCE-
+based early stopping is what actually ends training; total_steps only
+shapes the cosine curve.
 
 Works unchanged over any number of param_groups: each group's own base
 LR (captured at construction) is scaled by the same warmup/decay curve,
@@ -44,12 +42,11 @@ class WarmupCosineScheduler:
     def rescale_total_steps(self, steps_per_epoch_old: int, steps_per_epoch_new: int) -> None:
         """
         Proportionally rescales the remaining step-count horizon when the
-        caller's batch size changes mid-run (2026-08-08, per direct user
-        follow-up — reactive batch-size backoff after a VRAM-reserve
-        crossing): preserves how many real EPOCHS are left until the
-        cosine curve bottoms out, re-expressed in the new batch size's
-        steps-per-epoch rate, rather than leaving total_steps fixed at
-        the step-count the OLD batch size would have taken to get there.
+        caller's batch size changes mid-run — preserves how many real
+        EPOCHS are left until the cosine curve bottoms out, re-expressed
+        in the new batch size's steps-per-epoch rate, rather than leaving
+        total_steps fixed at the step-count the OLD batch size would have
+        taken to get there.
         """
         remaining_steps = self.total_steps - self.step_count
         remaining_epochs_equiv = remaining_steps / steps_per_epoch_old

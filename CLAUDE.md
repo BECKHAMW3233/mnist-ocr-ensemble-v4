@@ -12,6 +12,7 @@ No exceptions, no "small fix" carve-outs, no writing first and explaining
 after.**
 
 For every change, before touching any file:
+
 1. Tell me which file(s) you intend to change.
 2. Show me the actual diff or exact new content — not a summary of it, the
    real text/code — so I can see precisely what will land in the file.
@@ -20,6 +21,7 @@ For every change, before touching any file:
 4. Only then write the change to disk, directly in this folder.
 
 This applies to everything, including:
+
 - Config values, hyperparameters, constants (e.g. `NUM_WORKERS`, learning rate,
   batch size, resolution, patience, seeds)
 - "Helpful" additions I did not ask for (auto-adjustment logic, extra error
@@ -45,6 +47,7 @@ below, that's mine to run, always.
 ## Why this rule exists
 
 Specific past incidents in this project:
+
 - `NUM_WORKERS` was silently changed from my intended 8 down to 4 in a past
   session, with no notice given. It took hours to track down why performance
   had degraded.

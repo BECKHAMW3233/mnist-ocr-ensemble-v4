@@ -1,29 +1,21 @@
 """
 common/onnx_export.py
 ======================
-ONNX export — extracted verbatim from the identical export_onnx()
-duplicated across every v2 training script. dynamo=False restores the
-legacy TorchScript-based exporter: PyTorch 2.9+ defaults to a newer
-dynamo-based exporter that requires the separate `onnxscript` package,
-which this project does not otherwise need (dynamic_axes, used below, is
-specifically a dynamo=False-only parameter per PyTorch's own docs).
+ONNX export. dynamo=False uses the legacy TorchScript-based exporter:
+PyTorch 2.9+ defaults to a newer dynamo-based exporter that requires the
+separate `onnxscript` package, which this project does not otherwise
+need (dynamic_axes, used below, is specifically a dynamo=False-only
+parameter per PyTorch's own docs).
 
-int8 quantization note: the v2 codebase's only reference to int8
-quantization was a book-chapter citation in a training script's
-docstring (Chollet & Watson, "Deep Learning with Python, 3rd Ed.", Ch.
-18) — no actual quantization code existed anywhere to extract. Nothing
-was modularized here for it; see v3_CHANGELOG.md.
-
-DDP note (2026-07-28, per direct user follow-up — see common/
-distributed.py, including its "NOT YET VALIDATED against real multi-GPU
-hardware" caveat, which applies here too): rank-0-only, a no-op on every
-other rank — several ranks all exporting the same .onnx path at once
-would race. No unwrap_model() call needed here despite common/
-distributed.py's checkpoint-compatibility warning: every training
-script's own model_cpu passed to this function is already a FRESH,
-never-DDP-wrapped model with a state_dict loaded from the checkpoint
-file (which EarlyStopping already saves unwrapped — see common/
-checkpointing.py), not the live DDP-wrapped training model itself.
+DDP note (see common/distributed.py, including its "NOT YET VALIDATED
+against real multi-GPU hardware" caveat, which applies here too):
+rank-0-only, a no-op on every other rank — several ranks all exporting
+the same .onnx path at once would race. No unwrap_model() call needed
+here despite common/distributed.py's checkpoint-compatibility warning:
+every training script's own model_cpu passed to this function is
+already a FRESH, never-DDP-wrapped model with a state_dict loaded from
+the checkpoint file (which EarlyStopping already saves unwrapped — see
+common/checkpointing.py), not the live DDP-wrapped training model itself.
 """
 from pathlib import Path
 
@@ -41,10 +33,8 @@ def export_onnx(model: nn.Module, path: str, img_size: int, validate: bool = Fal
     something this function enforces itself.
 
     validate=True additionally round-trips the exported file through
-    onnx.checker.check_model() (used by the v2 SOAP scripts, which
-    already depended on the `onnx` package for other reasons) — optional
-    since not every training script needs the extra `onnx` package
-    dependency just for this.
+    onnx.checker.check_model() — optional since not every training
+    script needs the extra `onnx` package dependency just for this.
     """
     if not is_main_process():
         return

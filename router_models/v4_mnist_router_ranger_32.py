@@ -1,19 +1,14 @@
 """
 v4_mnist_router_ranger_32.py
 ====================
-Router/classifier model — Stage 1 of the OCR pipeline. Adapted from v2's
-mnist_digit_gate.py, which implemented a binary digit/not-digit gate;
-this is a genuine scope expansion (2-class -> 4-class), not a rename —
-see v3_CHANGELOG.md for the full before/after. Classifies each detected
-character box into digit / UC (uppercase) / LC (lowercase) / [UNK]
-(unclassifiable). Digit-classified boxes are handed to the digit
+Router/classifier model — Stage 1 of the OCR pipeline. Classifies each
+detected character box into digit / UC (uppercase) / LC (lowercase) /
+[UNK] (unclassifiable). Digit-classified boxes are handed to the digit
 ensemble for actual digit reading; UC/LC are terminal labels for now (no
-case-specific letter-identity model exists yet — see the module
-docstring's "Scope note" in the original task description); [UNK] means
-the router itself could not classify the box at all.
+case-specific letter-identity model exists yet); [UNK] means the router
+itself could not classify the box at all.
 
-Architecture — OCRRouterNet (adapted from v2's OCRGateNet — same
-lightweight conv stem, output width changed from 2 to 3 classes):
+Architecture — OCRRouterNet:
   Filter progression: 16→32→64→64, plain Conv+BatchNorm+ReLU blocks — no
   SE attention, no residual/stochastic-depth blocks. Deliberately far
   smaller than the digit ensemble's specialist models (this is a router,
@@ -23,12 +18,8 @@ lightweight conv stem, output width changed from 2 to 3 classes):
 Output: 3 logits — index 0 = digit, index 1 = UC (uppercase), index 2 =
 LC (lowercase). No fourth "reject"/[UNK] class exists in the trained
 model — [UNK] is produced purely by a confidence threshold at inference
-time (ROUTER_UNSURE_FLOOR below), not a dedicated negative class. This
-mirrors the v2 gate's own GATE_UNSURE_LOW/HIGH confidence-band approach
-rather than introducing a second, different uncertainty mechanism —
-chosen because it requires no negative/reject training data, which
-doesn't exist anywhere in this project. See v3_CHANGELOG.md for the full
-reasoning and what alternatives were considered.
+time (ROUTER_UNSURE_FLOOR below), not a dedicated negative class, since
+no negative/reject training data exists anywhere in this project.
 
 Training data:
   digit (label=0): the SAME merged digit ensemble sources used by
@@ -40,12 +31,10 @@ Training data:
     load_base_usps()/load_supplementary()/digit_sources_for_tier().
     Individual digit identity (0-9) is discarded; every digit source
     sample becomes label=0.
-  UC (label=1) / LC (label=2): EMNIST Balanced (re-enabled for v3 — see
-    supplementary_data.py's BalancedEMNISTDataset, whose byclass mapping
-    was fixed this restructure to include lowercase — previously
-    silently dropped, see v3_CHANGELOG.md). Balanced's own digit-labeled
-    samples (byclass 0-9) are NOT used here — the router's digit class
-    is sourced entirely from the merged digit ensemble data above, for
+  UC (label=1) / LC (label=2): EMNIST Balanced (supplementary_data.py's
+    BalancedEMNISTDataset). Balanced's own digit-labeled samples
+    (byclass 0-9) are NOT used here — the router's digit class is
+    sourced entirely from the merged digit ensemble data above, for
     consistency with the digit ensemble itself and to avoid diluting it
     with a third, lower-diversity digit source. byclass 10-35 (A-Z) ->
     UC; byclass 36-61 (the EMNIST-Balanced-distinct lowercase letters,
@@ -53,48 +42,32 @@ Training data:
     tiers — EMNIST Balanced isn't part of the per-source resolution
     ladder split, only the digit class is.
   Class balance: WeightedRandomSampler, inverse-frequency across all
-  three classes — same idiom as the rest of this project
-  (get_class_weights()/WeightedRandomSampler), generalized here from the
-  v2 gate's 2-class version to 3 classes (see compute_router_sample_weights()
-  below — the letters block mixes UC and LC samples in shuffled order, so
-  each sample needs its own weight, not one shared per-block weight like
-  the gate's homogeneous 2-block case allowed).
+  three classes (see compute_router_sample_weights() below — the
+  letters block mixes UC and LC samples in shuffled order, so each
+  sample needs its own weight, not one shared per-block weight).
 
 Optimizer: Ranger (RAdam + Lookahead) — see section 2b below, in this
-same file (implemented directly here, not in a separate shared module —
-see v3_CHANGELOG.md's naming-and-modularization-scope correction).
-Switched from the v2 gate's AdaBelief (see v3_CHANGELOG.md for the full
-before/after of this optimizer swap, why the batch-size LR scaling and
-warmup-length derivation were independently re-derived for Ranger rather
-than assumed unchanged, and what alternatives were considered).
+same file:
   Reference LR 1e-3 at REFERENCE_BATCH_SIZE=256, scaled LINEARLY (not
   sqrt) with batch size and capped at 4x — see scaled_learning_rate()
-  below for why this differs from the gate's sqrt scaling.
+  below.
   Lookahead k=6, alpha=0.5 (published Ranger defaults).
   A short, FIXED 100-step external warmup (not derived from
-  steps-per-epoch like the gate's dynamic up-to-300-step warmup) — RAdam
-  already performs its own analytic variance rectification in place of a
-  hand-tuned warmup (that is RAdam's whole point), so the external warmup
-  here only needs to give Lookahead's slow-weight mechanism a stable
-  first few steps, not carry the full early-training variance-control
-  burden the gate's warmup did for AdaBelief.
+  steps-per-epoch) — RAdam already performs its own analytic variance
+  rectification in place of a hand-tuned warmup (that is RAdam's whole
+  point), so the external warmup here only needs to give Lookahead's
+  slow-weight mechanism a stable first few steps, not carry the full
+  early-training variance-control burden.
   PATIENCE=15
 
 Resolution: matches the digit ensemble's own per-source ladder split —
 16/28/32/64/128 (USPS alone at 16x16; MNIST/EMNIST/SVHN/ARDIS at 28x28;
-every source including USPS at 32/64/128) — see v3_CHANGELOG.md's
-Resolution ladder split section and supplementary_data.digit_sources_for_tier().
-
-Box detection compatibility: get_boxes() in ocr_pipeline_mnist.py was
-checked against realistic letter bounding-box shapes (ascender/descender
-letters especially) before assuming no changes were needed for the
-router to see letters at all — see ocr_pipeline_mnist.py's own docstring
-and v3_CHANGELOG.md for what was verified.
+every source including USPS at 32/64/128) — see
+supplementary_data.digit_sources_for_tier().
 
 Paths: DATA_DIR reuses supplementary_data.py's shared dataset root
 (override with the ROUTER_DATA_DIR environment variable) rather than a
-new hardcoded literal in this file — same pattern the v2 gate used
-(GATE_DATA_DIR).
+new hardcoded literal in this file.
 
 Output: ./v4_mnist_router_ranger_32/  (created next to this script)
 """
@@ -113,8 +86,7 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # common/ and
 # supplementary_data.py live at the project root, one level up from this
 # script's own digit_models/uppercase_models/lowercase_models/router_models
-# subfolder -- added when the project was reorganized into per-model-type
-# folders, see v3_CHANGELOG.md.
+# subfolder.
 
 from common.seeding import (
     apply_cublas_workspace_config, get_global_seed, set_all_seeds, reserve_cpu_threads,
@@ -185,10 +157,8 @@ LABEL_MAP = ["digit", "UC", "LC"]
 # probability at inference time; below it, the pipeline outputs [UNK]
 # instead of the top class. Chosen to sit meaningfully above the 3-class
 # uniform-chance baseline (~0.33) without over-flagging ordinary
-# confident predictions as unknown. Like the gate's original
-# GATE_UNSURE_LOW/HIGH band, this is a starting point, not a value tuned
-# against real-world data — see v3_CHANGELOG.md; real-world tuning is
-# explicitly out of scope for this restructure.
+# confident predictions as unknown — a starting point, not a value tuned
+# against real-world data.
 ROUTER_UNSURE_FLOOR = 0.6
 
 LEARNING_RATE        = 1e-3
@@ -199,10 +169,7 @@ PATIENCE         = 15
 MIN_STEPS_PER_EPOCH = 15  # floor on real gradient-update steps per epoch — see
                           # cap_batch_size_for_min_steps() in common/batch_sizing.py
 NUM_WORKERS      = usable_cpu_count()  # auto-scales to this machine's real
-                        # core count, leaving 25% for the OS (2026-07-28,
-                        # per direct user follow-up) — was a hardcoded 10,
-                        # which left cores idle on a many-core CPU and could
-                        # be too many workers on a small one. DataLoader
+                        # core count, leaving 25% for the OS. DataLoader
                         # worker processes compete for CPU regardless of
                         # whether training itself runs on GPU or CPU, so
                         # this uses the same 25%-reserved-for-the-OS policy
@@ -232,16 +199,14 @@ OUTPUT_ROOT = Path(__file__).resolve().parent / f"v4_mnist_router_ranger_{IMG_SI
 
 def scaled_learning_rate(batch_size: int) -> float:
     """
-    Linear (not sqrt) LR scaling relative to REFERENCE_BATCH_SIZE,
-    capped at 4x the reference LR. Differs deliberately from the v2
-    gate's sqrt scaling (scaled_learning_rate() there, for AdaBelief) —
-    see module docstring for the full reasoning: RAdam's own analytic
-    variance rectification already does the job AdaBelief's sqrt scaling
-    was partly compensating for (damping an adaptive optimizer's
-    early-training instability), so batch-size-to-LR scaling here follows
-    the standard linear-scaling-rule literature (Goyal et al., 2017)
-    instead, capped to avoid instability at this project's largest
-    auto-detected batch sizes (into the thousands at low resolution).
+    Linear (not sqrt) LR scaling relative to REFERENCE_BATCH_SIZE, capped
+    at 4x the reference LR. RAdam's own analytic variance rectification
+    already handles the early-training instability that sqrt scaling is
+    typically used to damp for adaptive optimizers, so batch-size-to-LR
+    scaling here follows the standard linear-scaling-rule literature
+    (Goyal et al., 2017) instead, capped to avoid instability at this
+    project's largest auto-detected batch sizes (into the thousands at
+    low resolution).
     """
     raw_scale = batch_size / REFERENCE_BATCH_SIZE
     return LEARNING_RATE * min(raw_scale, 4.0)
@@ -333,8 +298,7 @@ def load_letters_split(img_size: int, validation_split: float, split_seed: int):
     Loads EMNIST Balanced's uppercase+lowercase portion (via
     _CaseLabelDataset) and splits its train portion into train/val —
     mirrors load_base_mnist()'s own train/val split mechanics (same
-    random_split + Generator pattern), matching the v2 gate's own
-    load_letters_split() structure. Unaffected by the digit-side
+    random_split + Generator pattern). Unaffected by the digit-side
     resolution-tier split (EMNIST Balanced isn't part of that ladder).
     """
     print("[Dataset] Loading EMNIST Balanced (UC/LC classes)...")
@@ -411,12 +375,10 @@ def load_router_data(data_dir: Path, img_size: int):
 
 def compute_router_sample_weights(digit_train, letters_train_subset) -> torch.Tensor:
     """
-    Inverse-frequency sample weights across all three classes, generalized
-    from the v2 gate's 2-class version (which could use one shared weight
-    per concatenated block, since its two blocks were each internally
-    homogeneous). Here the letters block mixes UC and LC samples in
-    shuffled order (random_split()'s output), so each letters sample needs
-    its OWN weight based on its actual case label, not a block-uniform one.
+    Inverse-frequency sample weights across all three classes. The letters
+    block mixes UC and LC samples in shuffled order (random_split()'s
+    output), so each letters sample needs its OWN weight based on its
+    actual case label, not a block-uniform one.
     """
     n_digit = len(digit_train)
     base: _CaseLabelDataset = letters_train_subset.dataset
@@ -469,15 +431,12 @@ class ConvBlock(nn.Module):
 
 class OCRRouterNet(nn.Module):
     """
-    Lightweight digit/UC/LC router. Adapted from v2's OCRGateNet — same
-    conv stem, output width changed from 2 (digit/not-digit) to 3
-    (digit/UC/LC).
+    Lightweight digit/UC/LC router.
     Input:  (batch, 1, H, W) — any resolution, GlobalAveragePooling makes
             the classifier head resolution-independent.
     Output: (batch, 3) logits — index 0 = digit, 1 = UC, 2 = LC.
     Filter progression: 16→32→64→64 — downsamples via stride=2 in each
-    stage's conv (2026-08-07 fix: previously pooled via a separate
-    MaxPool2d AFTER each full-resolution conv) — see v3_CHANGELOG.md.
+    stage's conv.
     """
     def __init__(self, num_classes: int = NUM_CLASSES):
         super().__init__()
@@ -516,16 +475,15 @@ def train_one_epoch(model, loader, criterion, optimizer, scaler, device, schedul
     total_loss = total_correct = total_samples = 0
     num_batches  = len(loader)
     log_interval = max(1, round(num_batches * 0.025))
-    # Hardware telemetry (2026-08-07, per direct user follow-up): sampled
-    # every _SAMPLE_INTERVAL batches (plus the first and last batch as
-    # anchors) rather than a fixed 5 points, so sample density scales with
-    # epoch length — batch counts in this project range from the enforced
-    # 15-step floor (see MIN_STEPS_PER_EPOCH) up past 1000+ at larger
-    # batch sizes, and a fixed sample count would under-resolve long
-    # epochs. Every individual sample is written to the log as its own
-    # row (see common/cli_logging.py's save_log()), not just reduced to
-    # min/avg/max — epoch_summary() below still computes that reduction
-    # too, for the epoch's own summary row.
+    # Hardware telemetry: sampled every _SAMPLE_INTERVAL batches (plus the
+    # first and last batch as anchors) rather than a fixed count, so sample
+    # density scales with epoch length — batch counts in this project range
+    # from the enforced 15-step floor (see MIN_STEPS_PER_EPOCH) up past
+    # 1000+ at larger batch sizes, and a fixed sample count would
+    # under-resolve long epochs. Every individual sample is written to the
+    # log as its own row (see common/cli_logging.py's save_log()), not just
+    # reduced to min/avg/max — epoch_summary() below still computes that
+    # reduction too, for the epoch's own summary row.
     _hw_monitor = HardwareMonitor()
     _hw_samples = []
     _SAMPLE_INTERVAL = 25
@@ -575,23 +533,22 @@ def train_one_epoch(model, loader, criterion, optimizer, scaler, device, schedul
     hw_summary = HardwareMonitor.epoch_summary(_hw_samples)
     hw_summary["data_wait_s"] = round(_data_wait_s, 2)
     hw_summary["compute_s"]   = round(_compute_s, 2)
-    # DDP metric aggregation (2026-07-28, per direct user follow-up): each
-    # rank only sees its own shard of the training data (via
-    # DistributedWeightedRandomSampler in
-    # make_train_loader() below), so total_loss/total_correct/
-    # total_samples are LOCAL to this rank until summed across every rank
-    # — without this, a distributed run's reported train_loss/train_acc
-    # would silently reflect only one rank's slice of the epoch, not the
-    # real global numbers a single-GPU run would show. No-op passthrough
-    # when not running distributed — see common/distributed.py.
+    # Each rank only sees its own shard of the training data (via
+    # DistributedWeightedRandomSampler in make_train_loader() below), so
+    # total_loss/total_correct/total_samples are LOCAL to this rank until
+    # summed across every rank — without this, a distributed run's
+    # reported train_loss/train_acc would silently reflect only one
+    # rank's slice of the epoch, not the real global numbers a single-GPU
+    # run would show. No-op passthrough when not running distributed —
+    # see common/distributed.py.
     total_loss    = all_reduce_sum(total_loss, device)
     total_correct = all_reduce_sum(total_correct, device)
     total_samples = all_reduce_sum(total_samples, device)
     # hw_summary is the epoch's min/avg/max-reduced summary (see
     # HardwareMonitor.epoch_summary()); _hw_samples is the raw list it was
-    # reduced from — returned too (2026-08-07, per direct user follow-up)
-    # so the caller can log each individual sample point as its own CSV
-    # row, not just the reduction — see common/cli_logging.py's save_log().
+    # reduced from — returned too so the caller can log each individual
+    # sample point as its own CSV row, not just the reduction — see
+    # common/cli_logging.py's save_log().
     return total_loss / total_samples, total_correct / total_samples, hw_summary, _hw_samples
 
 
@@ -674,8 +631,7 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
 
     train_ds, val_ds, test_ds, digit_train, letters_train_subset = load_router_data(DATA_DIR, img_size)
 
-    # Minimum steps/epoch floor (2026-07-28, per direct user follow-up):
-    # the VRAM probe above tests dummy tensors before the real dataset is
+    # The VRAM probe above tests dummy tensors before the real dataset is
     # loaded, so it has no visibility into how many real training samples
     # exist — a small model (e.g. the router) or a small dataset (e.g. the
     # 16x16 USPS-only tier) can land on a batch size that gives only a
@@ -705,14 +661,14 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
     criterion = nn.CrossEntropyLoss(label_smoothing=0.05)
 
     steps_per_epoch = len(train_loader)
-    # DDP note (2026-07-28, per direct user follow-up): LR scaling uses the
-    # GLOBAL effective batch size (this rank's batch * world_size), not
-    # just this rank's own slice — the standard linear-scaling-rule
-    # convention for distributed training (every rank's gradient is
-    # already averaged across the global batch by DDP's backward hook, so
-    # the LR should reflect the batch size that average was computed
-    # over). get_world_size() is 1 for every non-distributed run, so
-    # _global_batch_size == cfg["batch_size"] unchanged there.
+    # LR scaling uses the GLOBAL effective batch size (this rank's batch *
+    # world_size), not just this rank's own slice — the standard
+    # linear-scaling-rule convention for distributed training (every
+    # rank's gradient is already averaged across the global batch by
+    # DDP's backward hook, so the LR should reflect the batch size that
+    # average was computed over). get_world_size() is 1 for every
+    # non-distributed run, so _global_batch_size == cfg["batch_size"]
+    # unchanged there.
     _global_batch_size = cfg["batch_size"] * get_world_size()
     scaled_lr       = scaled_learning_rate(_global_batch_size)
     total_steps     = SCHEDULE_EPOCH_ESTIMATE * steps_per_epoch
@@ -750,14 +706,12 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
             # optimizer/scheduler state encodes a peak LR + warmup +
             # step count computed for a DIFFERENT batch size (see
             # scaled_learning_rate()). Loading it anyway would silently
-            # resume a wrong-for-this-run LR schedule — same resume-
-            # correctness precedent as the v2 gate's own check. Model
-            # weights, epoch, and patience state are batch-size-
-            # independent and always safe to resume.
+            # resume a wrong-for-this-run LR schedule. Model weights,
+            # epoch, and patience state are batch-size-independent and
+            # always safe to resume.
             #
-            # Compared against _global_batch_size, not cfg["batch_size"]
-            # (2026-07-28, per direct user follow-up — DDP support): the
-            # LR was scaled from the GLOBAL effective batch size (this
+            # Compared against _global_batch_size, not cfg["batch_size"]:
+            # the LR was scaled from the GLOBAL effective batch size (this
             # rank's batch * world_size — see above), so a resume where
             # world_size changed but the per-rank batch size happened to
             # auto-detect the same would otherwise pass this check while
@@ -782,7 +736,6 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
         print(f"[RAM] Swap/page-file baseline for this run: {_run_swap_baseline_gb:.3f} GB")
 
     for epoch in range(start_epoch, 10**6):
-        # DDP epoch reshuffle (2026-07-28, per direct user follow-up):
         # DistributedWeightedRandomSampler's weighted draw is seeded by
         # seed + epoch (see common/distributed.py) — without telling it
         # which epoch this is, every epoch would draw the identical
@@ -796,16 +749,12 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
                 epoch=epoch, img_size=img_size
             )
         except RuntimeError as _oom_e:
-            # Real mid-training OOM catch (2026-08-09, per direct user
-            # follow-up): before this, the only OOM handling anywhere in
-            # this project was inside common/batch_sizing.py's one-time
-            # startup probe — a genuine OOM during actual training (as
-            # opposed to the probe) was a bare unhandled crash with no
-            # checkpoint save. Same substring match the probe already
-            # uses, reused here for consistency between probe-time and
-            # real-training-time OOMs. epoch-1 (not epoch) because this
-            # epoch never completed — history/early_stop/checkpoint state
-            # all still reflect the last successful epoch.
+            # Real mid-training OOM catch — same substring match
+            # common/batch_sizing.py's startup probe uses, reused here for
+            # consistency between probe-time and real-training-time OOMs.
+            # epoch-1 (not epoch) because this epoch never completed —
+            # history/early_stop/checkpoint state all still reflect the
+            # last successful epoch.
             _oom_emsg = str(_oom_e).lower()
             if not ("out of memory" in _oom_emsg or "find was unable" in _oom_emsg or "engine" in _oom_emsg):
                 raise
@@ -846,13 +795,12 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
                      ("val_loss", val_loss), ("val_acc", val_acc), ("lr", current_lr)]:
             history[k].append(v)
         # Every HardwareMonitor.epoch_summary() key auto-populates its own
-        # history column (2026-07-28, per direct user follow-up) — the old
-        # 6-field explicit list here would silently drop any new telemetry
-        # field added to epoch_summary() without a matching edit here.
+        # history column — an explicit field list here would silently
+        # drop any new telemetry field added to epoch_summary() without a
+        # matching edit here.
         # Raw per-sample-point readings, stored alongside the reduced
-        # summary (2026-08-07, per direct user follow-up) so save_log()
-        # can write each sample point as its own CSV row — see that
-        # function's own docstring for the row layout.
+        # summary so save_log() can write each sample point as its own CSV
+        # row — see that function's own docstring for the row layout.
         history.setdefault("_hw_raw_samples", []).append(hw_raw)
         for hw_key, hw_val in hw.items():
             history.setdefault(hw_key, []).append(hw_val)
@@ -866,14 +814,12 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
         # append logic.
         save_log(history, cfg["log_path"])
 
-        # Checkpoint save moved ahead of the safety-check breaks below
-        # (2026-08-08, per direct user follow-up) — early_stop() is the
-        # only thing that writes cfg["checkpoint_path"]; running it after
-        # a safety break meant a safety-triggered stop on the very first
-        # improving epoch left no checkpoint on disk at all, crashing the
-        # unconditional torch.load() after this loop. Now the current
+        # early_stop() is the only thing that writes cfg["checkpoint_path"];
+        # it must run before the safety-check breaks below so the current
         # epoch's checkpoint is always saved (if it's a new best) before
-        # any stop decision is made.
+        # any stop decision is made — otherwise a safety-triggered stop on
+        # the very first improving epoch would leave no checkpoint on disk,
+        # crashing the unconditional torch.load() after this loop.
         early_stop(val_loss, model)
 
         _ram_stop    = check_cpu_ram_safety(device, _run_swap_baseline_gb, RAM_RESERVE_GB, epoch)
@@ -883,10 +829,9 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
         )
 
         if _ram_stop or _vram_status == "stop":
-            # Resume state now also saved on a hard safety stop (2026-08-08,
-            # per direct user follow-up) — previously only a normal
-            # continuing epoch saved it, leaving a safety-triggered stop
-            # with no way to resume mid-schedule, only reload the best
+            # Resume state is also saved on a hard safety stop, not just a
+            # normal continuing epoch, so a safety-triggered stop can
+            # resume mid-schedule instead of only reloading the best
             # checkpoint from scratch.
             save_resume_state(
                 cfg["resume_path"],
@@ -902,20 +847,18 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
             break
 
         if _vram_status == "warn":
-            # Reactive batch-size backoff (2026-08-08, per direct user
-            # follow-up): this epoch's peak crossed into the 1GB advisory
-            # buffer without threatening real exhaustion — reduce batch
-            # size for subsequent epochs and keep training, rather than
-            # stopping. DataLoader is rebuilt (PyTorch doesn't support
-            # mutating an existing one's batch_size); the LR scheduler's
-            # total_steps is rescaled to match the new steps-per-epoch
-            # rate so the cosine curve still targets roughly the same
-            # real-epoch horizon. NOTE: the optimizer's LR itself is NOT
-            # re-scaled here (scaled_learning_rate() was only ever applied
-            # once, at construction) — a known limitation flagged rather
-            # than silently addressed, since re-deriving and reassigning
-            # LR mid-run for a Lookahead-wrapped optimizer was a separate
-            # judgment call this pass didn't cover.
+            # This epoch's peak crossed into the advisory buffer without
+            # threatening real exhaustion — reduce batch size for
+            # subsequent epochs and keep training, rather than stopping.
+            # DataLoader is rebuilt (PyTorch doesn't support mutating an
+            # existing one's batch_size); the LR scheduler's total_steps is
+            # rescaled to match the new steps-per-epoch rate so the cosine
+            # curve still targets roughly the same real-epoch horizon.
+            # NOTE: the optimizer's LR itself is NOT re-scaled here
+            # (scaled_learning_rate() was only ever applied once, at
+            # construction) — a known limitation, since re-deriving and
+            # reassigning LR mid-run for a Lookahead-wrapped optimizer is a
+            # separate design question.
             _old_steps_per_epoch = len(train_loader)
             cfg["batch_size"] = reduce_batch_size(
                 cfg["batch_size"], len(train_ds), MIN_STEPS_PER_EPOCH,

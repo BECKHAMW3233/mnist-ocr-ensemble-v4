@@ -2,43 +2,38 @@
 common/checkpointing.py
 ========================
 Early stopping (with best-checkpoint saving) and the resume-state save
-helper, extracted verbatim from the identical EarlyStopping class and
-try/except-wrapped torch.save() resume block duplicated across every v2
-training script.
+helper.
 
-Resume/checkpoint correctness (preserved from v2, see v3_CHANGELOG.md for
-the full precedent): a resume file records optimizer/scheduler/scaler
-state, patience counter, best val loss, epoch, and history. Each caller
-is still responsible for validating that a loaded resume file's own
-recorded batch size (where applicable — see the router's LR-scaling
-resume check, mirroring v2's digit-gate) matches the batch size THIS run
-auto-detected before trusting optimizer/scheduler state — auto-detected
-batch size is not guaranteed stable run-to-run (different machine,
-different background VRAM/RAM load), and blindly resuming
-optimizer/scheduler state built for a different batch size can silently
-carry forward a wrong-for-this-run LR schedule. That check is caller-
-specific (which state pieces are batch-size-dependent differs by
-optimizer) and is therefore NOT generalized here — see each training
-script's own resume block.
+Resume/checkpoint correctness: a resume file records optimizer/scheduler/
+scaler state, patience counter, best val loss, epoch, and history. Each
+caller is still responsible for validating that a loaded resume file's
+own recorded batch size (where applicable — see the router's LR-scaling
+resume check) matches the batch size THIS run auto-detected before
+trusting optimizer/scheduler state — auto-detected batch size is not
+guaranteed stable run-to-run (different machine, different background
+VRAM/RAM load), and blindly resuming optimizer/scheduler state built for
+a different batch size can silently carry forward a wrong-for-this-run
+LR schedule. That check is caller-specific (which state pieces are
+batch-size-dependent differs by optimizer) and is therefore NOT
+generalized here — see each training script's own resume block.
 
-DDP note (2026-07-28, per direct user follow-up — see common/
-distributed.py for the full multi-GPU picture, including the "NOT YET
-VALIDATED against real multi-GPU hardware" caveat that applies here too):
-every file write in this module is now gated to rank 0 only (a no-op,
-not an error, on every other rank) — with several ranks all training
-against the same checkpoint/resume path, letting every rank write it
-independently would race, and the loser's write could corrupt or
-truncate the file mid-read by another process. EarlyStopping's actual
-DECISION logic (best_loss/counter/stop) deliberately still runs
-identically on EVERY rank, not just rank 0 — every rank's `if
-early_stop.stop: break` must agree, or a rank that breaks while another
-doesn't will hang the others waiting on a collective call (e.g. the next
-epoch's metric all-reduce) that never comes. This works correctly
-without any extra synchronization ONLY because the val_loss fed into
-EarlyStopping.__call__() must already be the all-reduced (globally
-correct, identical-on-every-rank) value BEFORE this is called — see
-common/distributed.py's all_reduce_sum() and each training script's
-evaluate() call site.
+DDP note (see common/distributed.py for the full multi-GPU picture,
+including the "NOT YET VALIDATED against real multi-GPU hardware" caveat
+that applies here too): every file write in this module is gated to
+rank 0 only (a no-op, not an error, on every other rank) — with several
+ranks all training against the same checkpoint/resume path, letting
+every rank write it independently would race, and the loser's write
+could corrupt or truncate the file mid-read by another process.
+EarlyStopping's actual DECISION logic (best_loss/counter/stop)
+deliberately still runs identically on EVERY rank, not just rank 0 —
+every rank's `if early_stop.stop: break` must agree, or a rank that
+breaks while another doesn't will hang the others waiting on a
+collective call (e.g. the next epoch's metric all-reduce) that never
+comes. This works correctly without any extra synchronization ONLY
+because the val_loss fed into EarlyStopping.__call__() must already be
+the all-reduced (globally correct, identical-on-every-rank) value BEFORE
+this is called — see common/distributed.py's all_reduce_sum() and each
+training script's evaluate() call site.
 """
 from pathlib import Path
 
@@ -85,11 +80,10 @@ class EarlyStopping:
 
 def save_resume_state(path, **state) -> None:
     """
-    Wraps torch.save() for the per-epoch resume file in the same
-    try/except every v2 script used — a failed resume write (e.g. a
-    transient disk issue) prints a warning and lets training continue
-    rather than crashing an otherwise-healthy run. Rank-0-only (see
-    module docstring) — a no-op on every other rank.
+    Wraps torch.save() for the per-epoch resume file — a failed resume
+    write (e.g. a transient disk issue) prints a warning and lets
+    training continue rather than crashing an otherwise-healthy run.
+    Rank-0-only (see module docstring) — a no-op on every other rank.
     """
     if not is_main_process():
         return
@@ -100,9 +94,8 @@ def save_resume_state(path, **state) -> None:
 
 
 def clear_resume_state(path) -> None:
-    """Deletes the resume file once training completes successfully —
-    matches every v2 script's own cleanup-on-success behavior. Rank-0-
-    only (see module docstring) — a no-op on every other rank."""
+    """Deletes the resume file once training completes successfully.
+    Rank-0-only (see module docstring) — a no-op on every other rank."""
     if not is_main_process():
         return
     resume_p = Path(path)
@@ -116,7 +109,7 @@ def restore_optimizer_scheduler_state(resume_state: dict, current_batch_size: in
     """
     Restores optimizer/scheduler state from a loaded resume file ONLY if
     its recorded batch size matches current_batch_size — batch size
-    auto-detects fresh every run (and can now also change mid-run via
+    auto-detects fresh every run (and can also change mid-run via
     common/batch_sizing.py's reduce_batch_size()), and optimizer/
     scheduler state encodes a peak LR + warmup + step-count schedule
     computed for whatever batch size was active when it was saved.
@@ -125,23 +118,21 @@ def restore_optimizer_scheduler_state(resume_state: dict, current_batch_size: in
     independent and are the caller's responsibility to restore
     separately, regardless of this function's result.
 
-    scheduler=None (2026-08-08, per direct user follow-up, discovered
-    while wiring this into the AdamW scripts): Schedule-Free AdamW
-    eliminates the LR scheduler entirely (iterate averaging instead — see
-    each AdamW script's own module docstring), so those scripts have no
-    scheduler object and no "scheduler_state" key in their resume state
-    at all, only "optimizer_state"/"scaler_state". Passing scheduler=None
-    restores optimizer state alone; the caller is still responsible for
-    restoring scaler state itself, same as before this function existed.
+    scheduler=None: Schedule-Free AdamW eliminates the LR scheduler
+    entirely (iterate averaging instead — see each AdamW script's own
+    module docstring), so those scripts have no scheduler object and no
+    "scheduler_state" key in their resume state at all, only
+    "optimizer_state"/"scaler_state". Passing scheduler=None restores
+    optimizer state alone; the caller is still responsible for restoring
+    scaler state itself.
 
-    Centralized (2026-08-08, per direct user follow-up) from the
-    identical check duplicated across the router scripts
-    (v4_mnist_router_ranger_*.py) — originally added 2026-07-28 for the
-    router's own batch-size-dependent LR scaling (scaled_learning_rate())
-    — now extended to every script now that reactive mid-run batch-size
-    adjustment (common/batch_sizing.py's reduce_batch_size()) means
-    non-router scripts can ALSO resume against a stale-batch-size
-    optimizer/scheduler state, not just the router.
+    Centralized from the identical check duplicated across the router
+    scripts (v4_mnist_router_ranger_*.py) for the router's own
+    batch-size-dependent LR scaling (scaled_learning_rate()) — now used
+    by every script, since reactive mid-run batch-size adjustment
+    (common/batch_sizing.py's reduce_batch_size()) means non-router
+    scripts can ALSO resume against a stale-batch-size optimizer/
+    scheduler state, not just the router.
 
     Returns True if state was restored, False if it was skipped (caller
     may want this for logging/branching, though this function already

@@ -11,15 +11,13 @@ Installs everything needed to run:
 
 Muon and Ranger need NO separate package — both are implemented inline
 directly inside their respective training scripts, not imported from a
-third-party optimizer library (see v3_CHANGELOG.md's modularization-scope
-note). Nothing here installs anything for them.
+third-party optimizer library. Nothing here installs anything for them.
 
 PyTorch only — no TensorFlow, no Keras, nothing outside the PyTorch
 ecosystem is installed by this script.
 
 Confirmed against this project's actual working environment (see
-v3_CHANGELOG.md's CUDA-allocator entry and run_all_training.ps1's
-python.exe path):
+run_all_training.ps1's python.exe path):
     Python 3.14, torch==2.13.0+cu130, torchvision==0.28.0
 
 Scope note: this script installs Python packages via pip only. It does
@@ -133,8 +131,8 @@ def install_torch(cuda_tag: str):
     """
     Installs torch + torchvision from PyTorch's own wheel index for the
     given CUDA build tag (e.g. 'cu130', matching this project's confirmed
-    working version — see v3_CHANGELOG.md and run_all_training.ps1's
-    python.exe path). Uses --index-url as primary, per
+    working version — see run_all_training.ps1's python.exe path). Uses
+    --index-url as primary, per
     PyTorch's own documented install instructions; if that fails due to a
     missing dependency mirror (a known, documented issue for some CUDA
     tags), retry with --extra-index-url instead, which several real users
@@ -174,8 +172,8 @@ def main():
     parser.add_argument("--cuda", default="cu130",
                         help="CUDA wheel tag for torch (default: cu130, matching this "
                              "project's confirmed working environment — see "
-                             "v3_CHANGELOG.md and run_all_training.ps1's python.exe "
-                             "path). Use 'cpu' for a CPU-only install.")
+                             "run_all_training.ps1's python.exe path). Use 'cpu' for "
+                             "a CPU-only install.")
     parser.add_argument("--skip-onnx", action="store_true",
                         help="Skip onnxruntime-gpu/onnx/opencv. WARNING: onnx is required by "
                              "the 5 SOAP digit scripts' export-validation path, and "

@@ -4,48 +4,35 @@ common/batch_sizing.py
 Auto batch-size detection: bottom-up coarse pass through the CANDIDATES
 ladder below, stopping at the first failure, then binary-search
 refinement rounded to the nearest multiple of 8, landing within 8 of the
-true VRAM/RAM ceiling. Extracted from the determine_batch_size() /
-_probe_batch_size() pair that was duplicated across every v2 training
-script with only the model/optimizer-construction lines differing (see
-v2's mnist_soap_64.py vs mnist_adamw_64.py: identical algorithm, identical
-OOM/shared-VRAM/CPU-RAM/swap detection, differing only in whether the
-probe step uses AMP+GradScaler+gradient clipping or a plain float32
-backward with neither).
+true VRAM/RAM ceiling.
 
-Candidate ladder (2026-08-02, per direct user follow-up — future-proofing
-for hardware beyond the current RTX 4080 16GB, up to a 300GB-VRAM-per-
-device ceiling — the highest currently on the market as of this writing
-is 288GB, NVIDIA B300/AMD MI350X/MI355X; see v3_CHANGELOG.md for sources):
-doubles 64 -> 2048 (6 candidates), then steps by a constant +1536 up to
-306176, capped with one final point at 307200 (= 300 x 1024, mirroring
-the same "round GB boundary" convention used at 98304 = 96 x 1024
-earlier in the ladder) — 205 candidates total. This is a no-op ceiling
-on today's 16GB card (the coarse pass below stops at the FIRST candidate
-that fails, so a long tail of never-reached candidates costs nothing) —
-the same file needs no further edits if/when bigger hardware (a better
-single GPU, a cloud instance, or a compute-cluster node with more VRAM
-per device) becomes available; it'll just naturally probe further up
-this same ladder. Whether the ladder's top is ever reached in practice
-still depends heavily on image resolution — per-sample activation memory
-grows with img_size far more than with available VRAM, so the smaller
-resolution tiers (e.g. 16x16) are far more likely to approach the top of
-this ladder than 64x64/128x128 will on any single device. Note this
-probes PER-DEVICE VRAM (torch.cuda.get_device_properties(gpu_idx).total_memory
-on whichever single GPU the process is bound to) — a cluster's aggregate
-memory across many GPUs doesn't raise this ceiling unless a single
-device itself has more VRAM.
+Candidate ladder: future-proofed for hardware beyond the current RTX
+4080 16GB, up to a 300GB-VRAM-per-device ceiling. Doubles 64 -> 2048 (6
+candidates), then steps by a constant +1536 up to 306176, capped with
+one final point at 307200 (= 300 x 1024, mirroring the same "round GB
+boundary" convention used at 98304 = 96 x 1024 earlier in the ladder) —
+205 candidates total. This is a no-op ceiling on today's 16GB card (the
+coarse pass below stops at the FIRST candidate that fails, so a long
+tail of never-reached candidates costs nothing) — the same file needs no
+further edits if/when bigger hardware becomes available; it'll just
+naturally probe further up this same ladder. Whether the ladder's top is
+ever reached in practice still depends heavily on image resolution —
+per-sample activation memory grows with img_size far more than with
+available VRAM, so the smaller resolution tiers (e.g. 16x16) are far
+more likely to approach the top of this ladder than 64x64/128x128 will
+on any single device. Note this probes PER-DEVICE VRAM
+(torch.cuda.get_device_properties(gpu_idx).total_memory on whichever
+single GPU the process is bound to) — a cluster's aggregate memory
+across many GPUs doesn't raise this ceiling unless a single device
+itself has more VRAM.
 
-Behavior preserved exactly: same candidate ladder, same VRAM/RAM
-pre-flight and per-step/post-loop checks, same refinement algorithm. The
-AMP-vs-not and gradient-clipping-vs-not branches below are exactly the
-two branches that existed, verbatim, across the v2 scripts (SOAP: no AMP,
-no clipping; every other optimizer, including the router: AMP + clip
-max_norm=1.0) — now selected by a parameter instead of being hardcoded
-per file. The AMP branch delegates to common/amp.py's amp_train_step()
-rather than repeating the autocast/GradScaler/clip/step mechanics a
-third time in this file — the batch-size probe and the real training
-loop now share the exact same mixed-precision step function, not just a
-close copy of it.
+The AMP-vs-not and gradient-clipping-vs-not branches below are selected
+by a parameter (SOAP: no AMP, no clipping; every other optimizer,
+including the router: AMP + clip max_norm=1.0). The AMP branch delegates
+to common/amp.py's amp_train_step() rather than repeating the autocast/
+GradScaler/clip/step mechanics a second time in this file — the
+batch-size probe and the real training loop share the exact same
+mixed-precision step function, not just a close copy of it.
 
 Callers supply:
   build_model()         -> a fresh, untrained nn.Module (not yet .to(device))
@@ -70,20 +57,12 @@ RAM_RESERVE_GB = 4.0  # reserved for the OS on CPU-only runs — higher than
                       # system RAM usage is meaningfully higher than idle
                       # VRAM usage on a typical desktop OS.
 
-VRAM_RESERVE_GB = 1.0  # reverted to William's original 1.0 (2026-07-28,
-                       # per direct, repeated user instruction). Contributing
-                       # factor: adamw_*.py/router_ranger_*.py never call
+VRAM_RESERVE_GB = 1.0  # adamw_*.py/router_ranger_*.py never call
                        # torch.cuda.reset_peak_memory_stats() per epoch
                        # (unlike soap_*.py/muon_*.py, which do), so their
                        # console VRAM telemetry is a cumulative peak since
                        # the batch-size probe ran, not a clean per-epoch
-                       # reading — weakening the telemetry-based case for
-                       # a wider margin. The one piece of evidence NOT
-                       # affected by that (batch 4864's real OOM exception,
-                       # read live from CUDA at the moment of failure, not
-                       # from this project's own telemetry) still stands —
-                       # William's call to accept that risk. See
-                       # v3_CHANGELOG.md.
+                       # reading.
 
 
 def _probe_batch_size(bs: int, build_model, build_optimizer, criterion,
@@ -97,17 +76,13 @@ def _probe_batch_size(bs: int, build_model, build_optimizer, criterion,
     spills to shared VRAM/system RAM.
     """
     _on_cuda = device.type == "cuda"
-    # Multi-GPU support (2026-07-28, per direct user follow-up): every
-    # torch.cuda.get_device_properties(...)/nvidia-smi call below used to
-    # hardcode index 0, which is wrong the moment a run is pointed at a
-    # different card via --gpu (setup_device()'s gpu_id parameter) —
-    # get_device_properties(0) always means the PHYSICAL first GPU,
-    # unlike memory_reserved()/empty_cache()/etc. below (unchanged),
-    # which correctly operate on whatever CUDA's "current device" is.
-    # Uses the actual `device` object already passed into this function
-    # (device.index) rather than querying torch.cuda.current_device()
-    # fresh, since `device` is the authoritative source of which GPU this
-    # probe is actually meant to run on.
+    # Multi-GPU support: uses the actual `device` object already passed
+    # into this function (device.index) rather than querying
+    # torch.cuda.current_device() fresh, since `device` is the
+    # authoritative source of which GPU this probe is actually meant to
+    # run on — get_device_properties(0) always means the PHYSICAL first
+    # GPU, unlike memory_reserved()/empty_cache()/etc. below, which
+    # correctly operate on whatever CUDA's "current device" is.
     _gpu_idx = (device.index if device.index is not None else torch.cuda.current_device()) if _on_cuda else 0
     _candidate_swap_baseline_gb = round(psutil.swap_memory().used / 1024**3, 3) if HAS_PSUTIL else 0.0
 
@@ -245,23 +220,17 @@ def determine_batch_size(build_model, build_optimizer, criterion, img_size: int,
                           grad_clip_norm=1.0) -> int:
     """
     Bottom-up coarse pass + binary-search refinement. See module
-    docstring for the full rationale — identical algorithm to every v2
-    training script.
+    docstring for the full rationale.
 
-    DDP note (2026-08-02, per direct user follow-up — see common/
-    distributed.py, including its "NOT YET VALIDATED against real multi-
-    GPU hardware" caveat, which applies here too): on a distributed run,
-    EVERY rank now runs the full probe independently against its own
-    device, and the final result is the MINIMUM across all ranks (via
-    all_reduce_min()), not rank 0's value alone. Supersedes the original
-    2026-07-28 design (rank 0 probes, broadcasts to everyone), which
-    silently assumed every rank's GPU had equivalent free VRAM — true on
-    a dedicated/exclusive multi-GPU box, but not on a shared/contended
-    compute node where another tenant's job can leave one rank's GPU
-    with meaningfully less free VRAM than another's even on identical
-    hardware. Costs every rank its own probe's time and VRAM churn
-    (previously only rank 0 paid that cost) — the correct trade-off once
-    ranks can no longer be assumed identical.
+    DDP note (see common/distributed.py, including its "NOT YET
+    VALIDATED against real multi-GPU hardware" caveat, which applies
+    here too): on a distributed run, EVERY rank runs the full probe
+    independently against its own device, and the final result is the
+    MINIMUM across all ranks (via all_reduce_min()) — a shared/contended
+    compute node can leave one rank's GPU with meaningfully less free
+    VRAM than another's even on identical hardware, so trusting one
+    rank's probe alone would be unsafe. Costs every rank its own probe's
+    time and VRAM churn.
     """
     print(f"[Batch] Auto-detecting batch size for {img_size}x{img_size} "
           f"({probe_steps} real training steps per candidate, bottom-up "
@@ -326,14 +295,12 @@ def cap_batch_size_for_min_steps(batch_size: int, dataset_size: int, min_steps: 
     size already yields >= min_steps for this dataset, it's returned
     unchanged.
 
-    world_size (2026-07-28, per direct user follow-up — DDP support, see
-    common/distributed.py): under distributed training, `batch_size` here
-    is the PER-RANK batch size, but every rank steps together in lockstep
-    each iteration — the real number of optimizer.step() calls per epoch
-    is dataset_size / (batch_size * world_size), not dataset_size /
-    batch_size. Defaults to 1 (unchanged formula) for every non-
-    distributed call site, which is every call site that existed before
-    this parameter was added.
+    world_size (DDP, see common/distributed.py): under distributed
+    training, `batch_size` here is the PER-RANK batch size, but every
+    rank steps together in lockstep each iteration — the real number of
+    optimizer.step() calls per epoch is dataset_size / (batch_size *
+    world_size), not dataset_size / batch_size. Defaults to 1 (unchanged
+    formula) for every non-distributed call site.
     """
     max_batch_for_min_steps = max(1, dataset_size // (min_steps * world_size))
     return min(batch_size, max_batch_for_min_steps)
@@ -345,25 +312,22 @@ def reduce_batch_size(current_batch_size: int, dataset_size: int, min_steps: int
     """
     Steps a batch size down by backoff_pct (rounded to a multiple of 8)
     for reactive mid-run adjustment after a completed epoch's peak VRAM
-    crosses into check_vram_safety()'s warn_reserve_gb buffer (2026-08-08,
-    per direct user follow-up) — floored by the same min-steps-per-epoch
-    guarantee cap_batch_size_for_min_steps() already enforces at initial
-    auto-detect time, so repeated reductions can't collapse batch size
-    below what the dataset needs for a meaningful epoch.
+    crosses into check_vram_safety()'s warn_reserve_gb buffer — floored
+    by the same min-steps-per-epoch guarantee cap_batch_size_for_min_steps()
+    already enforces at initial auto-detect time, so repeated reductions
+    can't collapse batch size below what the dataset needs for a
+    meaningful epoch.
 
-    device (2026-08-09, per direct user follow-up — root cause traced to
-    this project's own soap_28/adamw_28 transcripts): if given and CUDA,
-    calls torch.cuda.empty_cache() before returning. Confirmed via
-    PyTorch's own CUDA memory-management docs (docs.pytorch.org, version
-    2.13 notes/cuda.html) that nvidia-smi's memory.used reports the
-    caching allocator's reserved pool, not just live tensors, and that
-    "the unused memory managed by the allocator will still show as if
-    used in nvidia-smi" until empty_cache() releases it — nothing in this
-    project's training loops called it, so a reduced batch size never
-    actually lowered the nvidia-smi reading check_vram_safety() watches,
-    only the batch's live tensor footprint. Optional/defaulted to None so
-    every pre-existing call site keeps working unchanged until it's
-    updated to pass its own device.
+    device: if given and CUDA, calls torch.cuda.empty_cache() before
+    returning. nvidia-smi's memory.used reports the caching allocator's
+    reserved pool, not just live tensors, and "the unused memory managed
+    by the allocator will still show as if used in nvidia-smi" until
+    empty_cache() releases it (per PyTorch's own CUDA memory-management
+    docs) — without this call, a reduced batch size never actually
+    lowers the nvidia-smi reading check_vram_safety() watches, only the
+    batch's live tensor footprint. Optional/defaulted to None so every
+    pre-existing call site keeps working unchanged until it's updated to
+    pass its own device.
     """
     reduced = max(8, round((current_batch_size * (1 - backoff_pct)) / 8) * 8)
     result = cap_batch_size_for_min_steps(reduced, dataset_size, min_steps, world_size)

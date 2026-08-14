@@ -2,11 +2,9 @@
 common/amp.py
 ==============
 Mixed-precision training step: autocast forward/loss + GradScaler-managed
-backward/step/clip. Extracted from the identical block duplicated across
-every v2 script that used AMP (all except SOAP, which requires float32
-throughout for its Kronecker eigendecomposition and never enables AMP —
-that script correctly does not import this module) and every v3 script
-in the same position (AdamW, Muon, the router). Also used by
+backward/step/clip. Used by every training script that runs AMP (all
+except SOAP, which requires float32 throughout for its Kronecker
+eigendecomposition and never enables AMP). Also used by
 common/batch_sizing.py's probe, so the exact same mechanics that decide
 a batch size are the ones actually used during real training — not a
 close copy that could quietly drift from it.

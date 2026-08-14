@@ -2,22 +2,18 @@
 common/cli_logging.py
 ======================
 CLI transcript mirroring (_Tee), per-epoch multi-row CSV logging, and
-training-curve plotting — the _Tee/plot_history trio extracted verbatim
-from the identical duplicate across every v2 training script (unchanged);
-save_log()'s row structure was reworked 2026-08-07 (per direct user
-follow-up) from one row per epoch to multiple rows per epoch — see
-save_log()'s own docstring below for the current format.
+training-curve plotting.
 
-DDP note (2026-07-28, per direct user follow-up — see common/
-distributed.py, including its "NOT YET VALIDATED against real multi-GPU
-hardware" caveat, which applies here too): _Tee/save_log()/plot_history()
-are all rank-0-only now. Every rank's own console stdout still prints
-normally (useful for spotting a hung/crashed non-rank-0 process) — only
-the FILE writes (transcript .txt, CSV, .png) are suppressed on every
-rank but 0, since several ranks all appending to or overwriting the same
-path would race and could corrupt the file. On a single-process run
-(the default — no torchrun involved) this is a complete no-op: rank 0 of
-world size 1 is exactly what every existing invocation already was.
+DDP note (see common/distributed.py, including its "NOT YET VALIDATED
+against real multi-GPU hardware" caveat, which applies here too):
+_Tee/save_log()/plot_history() are all rank-0-only. Every rank's own
+console stdout still prints normally (useful for spotting a hung/crashed
+non-rank-0 process) — only the FILE writes (transcript .txt, CSV, .png)
+are suppressed on every rank but 0, since several ranks all appending to
+or overwriting the same path would race and could corrupt the file. On
+a single-process run (the default — no torchrun involved) this is a
+complete no-op: rank 0 of world size 1 is exactly what every existing
+invocation already was.
 """
 import csv
 import sys
@@ -77,19 +73,18 @@ def plot_history(history: dict, path: str, img_size: int, title: str):
     print(f"[Plot] Saved to {path}")
 
 
-# Per-epoch SUMMARY hardware telemetry columns (2026-07-28, per direct user
-# follow-up — expanded from the original 4-field cuda_util_pct/gpu_temp_c/
-# cpu_pct/ram_used_gb set). Sourced from HardwareMonitor.epoch_summary()
-# (common/telemetry.py) plus the two data_wait_s/compute_s fields each
-# training script's own train_one_epoch() times directly (see that
-# module's docstring for why that timing lives in the caller, not here).
-# Listed as one constant so save_log() and any caller building a history
-# dict agree on the exact same column set without repeating it. These
-# columns are only populated on each epoch's own "summary" row (see
-# save_log() below) — they sit in the same CSV as the raw per-sample-point
-# columns (_POINT_FIELDS below), which are populated only on that epoch's
-# non-summary rows. Every row leaves the other row-type's columns blank
-# rather than mixing summary/point data into the same cell.
+# Per-epoch SUMMARY hardware telemetry columns. Sourced from
+# HardwareMonitor.epoch_summary() (common/telemetry.py) plus the two
+# data_wait_s/compute_s fields each training script's own
+# train_one_epoch() times directly (see that module's docstring for why
+# that timing lives in the caller, not here). Listed as one constant so
+# save_log() and any caller building a history dict agree on the exact
+# same column set without repeating it. These columns are only populated
+# on each epoch's own "summary" row (see save_log() below) — they sit in
+# the same CSV as the raw per-sample-point columns (_POINT_FIELDS below),
+# which are populated only on that epoch's non-summary rows. Every row
+# leaves the other row-type's columns blank rather than mixing
+# summary/point data into the same cell.
 HW_TELEMETRY_FIELDS = [
     "cuda_util_pct_min", "cuda_util_pct_avg", "cuda_util_pct_max",
     "cuda_mem_util_pct_min", "cuda_mem_util_pct_avg", "cuda_mem_util_pct_max",
@@ -115,13 +110,12 @@ HW_TELEMETRY_FIELDS = [
     "data_wait_s", "compute_s",
 ]
 
-# Per-SAMPLE-POINT raw hardware telemetry columns (2026-08-07, per direct
-# user follow-up — previously these 12 metrics were only ever visible
-# reduced into HW_TELEMETRY_FIELDS' min/avg/max; now the individual
-# readings that reduction was computed from are logged directly too, one
-# row per sample point, so the actual shape within the epoch — not just
-# its range — is visible). Populated only on each epoch's non-summary rows
-# (see save_log() below); blank on the summary row.
+# Per-SAMPLE-POINT raw hardware telemetry columns — the individual
+# readings HW_TELEMETRY_FIELDS' min/avg/max are reduced from, logged
+# directly too, one row per sample point, so the actual shape within the
+# epoch — not just its range — is visible. Populated only on each
+# epoch's non-summary rows (see save_log() below); blank on the summary
+# row.
 _POINT_FIELDS = [
     "cuda_util_pct", "cuda_mem_util_pct", "gpu_temp_c", "gpu_temp_tlimit_c",
     "gpu_power_w",
@@ -137,8 +131,7 @@ _POINT_FIELDS = [
 
 def save_log(history: dict, path: str):
     """
-    Writes multiple CSV rows per epoch (2026-08-07, per direct user
-    follow-up — replaces the previous one-row-per-epoch format):
+    Writes multiple CSV rows per epoch:
       - One row per hardware sample point taken during that epoch (see
         each training script's own train_one_epoch() for the sampling
         schedule — batch counts in this project range from a 15-step
@@ -151,9 +144,7 @@ def save_log(history: dict, path: str):
       - One final "summary" row per epoch (sample_point == "summary"):
         train_loss/train_acc/val_loss/val_acc/lr/epoch_time_s plus the
         HW_TELEMETRY_FIELDS min/avg/max/avg/any reduction across that
-        epoch's sample points — this row's content is unchanged from what
-        the previous one-row-per-epoch format wrote, it just now has
-        siblings instead of being the only record for that epoch.
+        epoch's sample points.
     history["_hw_raw_samples"] holds, per epoch, the list of raw
     HardwareMonitor.sample() dicts each training script's train_one_epoch()
     collected (returned alongside its existing epoch_summary()-reduced

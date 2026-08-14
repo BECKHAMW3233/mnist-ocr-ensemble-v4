@@ -37,13 +37,9 @@ Usage:
 Output markers:
   ??            A character position was detected but the digit ensemble
                 could not agree on a digit (models split with no
-                majority/weighted winner). This is now the ONLY thing ??
-                means in v3 — v2's second meaning ("the gate confidently
-                said not-digit") no longer applies, since the router
-                fully replaces the standalone binary gate rather than
-                running alongside it (see v3_CHANGELOG.md's router-wiring
-                entry for the full reasoning) — a router "not a digit"
-                call now produces UC, LC, or [UNK] instead, never ??.
+                majority/weighted winner). The router (if loaded) has
+                already run by this point — a router "not a digit" call
+                produces UC, LC, or [UNK] instead, never ??.
                 Distinct from [NON-DIGIT?] below, which means every
                 DIGIT model's own top confidence was too low to trust
                 any answer at all — a symptom of ensemble uncertainty,
@@ -66,8 +62,7 @@ Output markers:
                 ROUTER_UNSURE_FLOOR below) — the router itself could not
                 classify the box as digit, UC, or LC with enough
                 confidence to commit. The digit ensemble never runs on
-                an [UNK] box (mirroring how a confident not-digit call
-                skipped the ensemble under v2's gate). Excluded from
+                an [UNK] box. Excluded from
                 accuracy scoring, with its own warn line, its own count
                 in PER-MODEL SUMMARY ([R?]), and its own flag in
                 CHARACTER DETAIL (✗ router) — see CHARACTER DETAIL /
@@ -88,8 +83,8 @@ no character-slot was ever created for it. ?? only covers characters that WERE
 detected and handed to the models but couldn't be agreed on afterward.
 
 Letters and box detection: get_boxes()'s size windows and aspect-ratio
-bounds were originally tuned against digit test images only. Checked for
-v3 (not assumed fine) against realistic letter bounding-box shapes before
+bounds were originally tuned against digit test images only, then checked
+(not assumed fine) against realistic letter bounding-box shapes before
 routing became part of this pipeline — see get_boxes()'s own docstring
 for what was verified and the one change made (the aspect-ratio floor).
 
@@ -217,10 +212,7 @@ def short_model_name(path: str) -> str:
     v4_mnist_router_ranger_64.onnx   -> router_ranger_64
     v4_mnist_letter_uc_soap_64.onnx  -> letter_uc_soap_64
     v4_mnist_letter_lc_adamw_28.onnx -> letter_lc_adamw_28
-    v1_lion_64_64.onnx             -> lion_64   (v2 naming, kept for
-                                                  backward compatibility)
-    adahessian_64.onnx             -> adahessian_64  (older v1/v2 naming)
-    anything_else.onnx             -> filename stem (no extension)
+    anything_else.onnx               -> filename stem (no extension)
     """
     stem = os.path.splitext(os.path.basename(path))[0]
     # v4_mnist_digit_{optimizer}_{res} pattern
@@ -235,11 +227,7 @@ def short_model_name(path: str) -> str:
     m = re.match(r"v4_mnist_letter_(uc|lc)_([a-z0-9]+)_(\d+)$", stem)
     if m:
         return f"letter_{m.group(1)}_{m.group(2)}_{m.group(3)}"
-    # v1_{optimizer}_{res}_{res} pattern (v2 naming)
-    m = re.match(r"v1_([a-z0-9]+)_(\d+)_\d+$", stem)
-    if m:
-        return f"{m.group(1)}_{m.group(2)}"
-    # {optimizer}_{res} pattern (v2/v1 naming, e.g. adahessian_64, soap_128)
+    # {optimizer}_{res} fallback pattern for any other name_number.onnx file
     m = re.match(r"([a-z0-9]+)_(\d+)$", stem)
     if m:
         return f"{m.group(1)}_{m.group(2)}"
@@ -309,15 +297,12 @@ def predict_router(session, char_gray, img_size: int, unsure_floor: float = ROUT
     router was trained on the same clean/centered image domain the digit
     specialists were (see v4_mnist_router_ranger_*.py's get_transforms()),
     so it needs the same real-scan-to-training-domain bridge
-    normalize_char() already provides for them. No separate preprocessing
-    path for the router — this is a deliberate v3 requirement, not an
-    oversight.
+    normalize_char() already provides for them.
 
-    Unlike the v2 gate's predict_gate() (a symmetric confidence BAND
-    around a single P(digit) output), this is a single confidence FLOOR
-    applied to the router's own top-class probability across 3 classes —
-    the router's output head has no natural "0.5 midpoint" to be
-    symmetric around, since it's not a binary decision.
+    This applies a single confidence FLOOR to the router's own top-class
+    probability across 3 classes — the router's output head has no
+    natural "0.5 midpoint" to be symmetric around, since it's not a
+    binary decision.
     """
     normalized = normalize_char(char_gray, img_size)
     if normalized is None:
@@ -393,12 +378,10 @@ def get_boxes(image_path):
     box heights). There is no assumption that digits are evenly spaced,
     uniformly sized, or aligned to rows/columns — real handwriting isn't.
 
-    Letters (v3): this project's box detection was originally tuned only
-    against digit test images (v1/v2). Before wiring in the router (which
-    needs realistic letter boxes to reach it at all — see
-    v4_mnist_router_ranger_*.py), the size windows and aspect-ratio bounds
-    below were checked against realistic letter shapes rather than assumed
-    fine:
+    Letters: the size windows and aspect-ratio bounds below were checked
+    against realistic letter shapes, not just digits, since the router
+    (v4_mnist_router_ranger_*.py) needs realistic letter boxes to reach
+    it at all:
       - Ascender/descender letters (b, d, h, k, l; g, j, p, q, y): their
         bounding-box HEIGHT is comparable to or taller than a digit's in
         the same handwriting (digits already span roughly cap-height to
@@ -420,8 +403,7 @@ def get_boxes(image_path):
         pass: unaffected by the letter case specifically (both were
         already about very small vs. very wide boxes, not narrow ones).
     This is a documented judgment call based on reasoning about letter
-    shapes, not a real-world letter-image validation run — see
-    v3_CHANGELOG.md's "what was and wasn't verified" note for this entry.
+    shapes, not a real-world letter-image validation run.
 
     Multi-scale detection: the same contour set is filtered through three
     overlapping height/width acceptance windows (small/medium/large,
@@ -464,8 +446,8 @@ def get_boxes(image_path):
     cv2.MORPH_OPEN) and erases them before contour extraction, rather than
     rescuing an oversized box after the fact. That approach was reasoned
     through against this project's own images, not actually tested (no
-    test images/dataset were available in this environment — see
-    v3_CHANGELOG.md's Verification note), and NOT adopted here: as an
+    test images/dataset were available in this environment), and NOT
+    adopted here: as an
     illustrative estimate rather than a measured value, a stray stroke on
     a real "5" in this dataset would run only ~45px long (~8% of the
     working image width) — a kernel wide enough to reliably reject
@@ -479,8 +461,7 @@ def get_boxes(image_path):
     the remaining failure modes below for what it still misses). This is
     a documented judgment call based on reasoning about typical
     stroke/artifact proportions, not a real-world image-measurement
-    validation run — see v3_CHANGELOG.md's "what was and wasn't verified"
-    note for this entry.
+    validation run.
 
     Remaining known failure modes (still neither raise an error nor flag
     anything — the character in question is just absent from the returned
@@ -530,25 +511,23 @@ def get_boxes(image_path):
     SIZE_WINDOWS = [
         ("small",  0.015, 0.12, 0.005, 0.10),   # h_min%, h_max%, w_min%, w_max%
         ("medium", 0.03,  0.35, 0.01,  0.25),   # original single-pass range
-        ("large",  0.20,  0.80, 0.08,  0.55),   # ceiling raised from 0.60 to 0.80 —
+        ("large",  0.20,  0.80, 0.08,  0.55),   # height ceiling 0.80 —
                                                   # reasoning-based estimate, not a
-                                                  # measured case (see v3_CHANGELOG.md's
-                                                  # Verification note): on a very short
+                                                  # measured case: on a very short
                                                   # hand-cropped line image, a normal
                                                   # single digit could plausibly occupy
                                                   # 70%+ of the image height (e.g. an
                                                   # illustrative h=108 on a 156px-tall
-                                                  # crop), which the old 60% ceiling
+                                                  # crop), which a lower ceiling
                                                   # would silently reject with no other
                                                   # window covering it either
     ]
 
     # Aspect-ratio (w/h) bounds — see get_boxes()'s own docstring's
-    # "Letters (v3)" section for why MIN_ASPECT_RATIO was lowered from the
-    # v1/v2 value (0.1) to admit narrow single-stroke letters (i, l) that
-    # digit-only tuning didn't need to consider. MAX_ASPECT_RATIO (wide
-    # merged/touching-character blobs, or scan artifacts) is unrelated to
-    # the letter case and unchanged.
+    # "Letters" section for why MIN_ASPECT_RATIO admits narrow
+    # single-stroke letters (i, l) that digit-only tuning didn't need to
+    # consider. MAX_ASPECT_RATIO (wide merged/touching-character blobs, or
+    # scan artifacts) is unrelated to the letter case.
     MIN_ASPECT_RATIO = 0.06
     MAX_ASPECT_RATIO = 10.0
 

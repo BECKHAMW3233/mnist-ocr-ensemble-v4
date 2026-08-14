@@ -5,12 +5,10 @@ Lowercase letter-identity ensemble — OCRConvNetTriplePyramid, SOAP
 optimizer, 128x128. Pure PyTorch — Triple-width channels + Multi-Scale
 feature pyramid fusion. Same architecture and hyperparameters as
 v4_mnist_digit_soap_128.py (the digit ensemble), retargeted at a 26-class
-lowercase a-z letter-identity problem — see v3_CHANGELOG.md for the full
-rationale (why EMNIST ByClass over EMNIST Balanced, why no digit mixing,
-why no 16x16 tier).
+lowercase a-z letter-identity problem.
 
-Architecture — OCRConvNetTriplePyramid (unchanged from the digit ensemble
-except the classifier head's output width, 10 -> 26):
+Architecture — OCRConvNetTriplePyramid (same as the digit ensemble except
+the classifier head's output width, 10 -> 26):
   Channel progression: 96→192→384→768
   Feature pyramid: concatenates pooled outputs from stages 2+3+4 (fused_dim=1344)
   Classifier head: 1344→1024→512→256→128→26 (5 layers, GELU)
@@ -20,19 +18,18 @@ except the classifier head's output width, 10 -> 26):
 Install: pip install pytorch_optimizer psutil
 
 OPTIMIZER — SOAP (Shampoo + Adam, Kronecker-factored second-order).
-Identical hyperparameters to v4_mnist_digit_soap_128.py — see that file's
-own docstring / v3_CHANGELOG.md for the full tuning rationale, unchanged here:
+Identical hyperparameters to v4_mnist_digit_soap_128.py:
   lr=1e-3, betas=(0.95, 0.95), weight_decay=5e-4
   precondition_frequency=100 — Kronecker factor update every 100 steps
   500-step linear warmup before cosine decay (common/scheduler.py)
   PATIENCE=20
   Standard first-order backward — no create_graph needed.
-  AMP kept disabled for SOAP, per v2 practice — not independently
-    re-verified against pytorch_optimizer's current internals.
+  AMP kept disabled for SOAP — not independently re-verified against
+    pytorch_optimizer's current internals.
 
 Data source: EMNIST ByClass, lowercase portion only (byclass 36-61,
 remapped to dense 0-25 — see supplementary_data.load_base_emnist_letters()).
-No digit classes, no lowercase classes, no supplementary sources, and no
+No digit classes, no uppercase classes, no supplementary sources, and no
 per-resolution source ladder (unlike the digit ensemble's own
 digit_sources_for_tier()) — every letter-model resolution tier (28/32/64/128;
 there is no 16x16 letter tier, that was USPS-digit-only) loads identically.
@@ -55,8 +52,7 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # common/ and
 # supplementary_data.py live at the project root, one level up from this
 # script's own digit_models/uppercase_models/lowercase_models/router_models
-# subfolder -- added when the project was reorganized into per-model-type
-# folders, see v3_CHANGELOG.md.
+# subfolder.
 
 from common.seeding import (
     apply_cublas_workspace_config, get_global_seed, set_all_seeds, reserve_cpu_threads,
@@ -120,9 +116,7 @@ DATA_DIR      = Path(r"E:\CSC-114\emnist-model\datasets\pytorch")
 # ^ Specific to the original project machine — change this to wherever
 # YOU want EMNIST to be downloaded/read from on your own system (see
 # supplementary_data.py's own DATA_DIR for the canonical version of this
-# path; this local copy must be kept in sync with it manually, matching
-# the digit ensemble's own convention of each script carrying its own
-# DATA_DIR literal).
+# path; this local copy must be kept in sync with it manually).
 
 LETTER_CASE   = "lower"
 NUM_CLASSES   = 26
@@ -180,7 +174,7 @@ def get_transforms(img_size: int, augment: bool = False) -> transforms.Compose:
 
 def load_letters(img_size: int):
     """
-    Loads the uppercase 26-class letter split from EMNIST ByClass — this
+    Loads the lowercase 26-class letter split from EMNIST ByClass — this
     model's sole data source. No supplementary sources, no per-resolution
     source ladder (unlike the digit ensemble's digit_sources_for_tier()) —
     every letter-model resolution tier calls this identically.
@@ -219,7 +213,7 @@ def make_eval_dataloader(dataset, batch_size: int):
 
 
 # =============================================================================
-# 3. ARCHITECTURE — OCRConvNetTriplePyramid (unchanged from the digit ensemble)
+# 3. ARCHITECTURE — OCRConvNetTriplePyramid
 # =============================================================================
 
 class SEBlock(nn.Module):
@@ -345,31 +339,23 @@ class OCRConvNetTriplePyramid(nn.Module):
 def train_one_epoch(model, loader, criterion, optimizer, scheduler, device,
                     epoch: int = None, img_size: int = None) -> tuple:
     """No AMP/GradScaler and no gradient clipping — AMP kept disabled
-    for SOAP per v2 practice, not independently re-verified against
-    pytorch_optimizer's current internals; clipping was never part of
-    this optimizer's configuration here. Standard first-order backward."""
+    for SOAP, not independently re-verified against pytorch_optimizer's
+    current internals; clipping was never part of this optimizer's
+    configuration here. Standard first-order backward."""
     model.train()
     total_loss = total_correct = total_samples = 0
     num_batches  = len(loader)
     log_interval = max(1, round(num_batches * 0.025))
-    # Hardware telemetry (2026-08-07, per direct user follow-up): sampled
-    # every _SAMPLE_INTERVAL batches (plus the first and last batch as
-    # anchors) rather than a fixed 5 points, so sample density scales with
-    # epoch length — batch counts in this project range from the enforced
-    # 15-step floor (see MIN_STEPS_PER_EPOCH) up past 1000+ at larger
-    # batch sizes, and a fixed sample count would under-resolve long
-    # epochs. Every individual sample is written to the log as its own
-    # row (see common/cli_logging.py's save_log()), not just reduced to
-    # min/avg/max — epoch_summary() below still computes that reduction
-    # too, for the epoch's own summary row.
+    # Sampled every _SAMPLE_INTERVAL batches (plus first/last) so sample
+    # density scales with epoch length instead of a fixed count
+    # under-resolving long epochs.
     _hw_monitor = HardwareMonitor()
     _hw_samples = []
     _SAMPLE_INTERVAL = 25
     _sample_points = (set(range(0, num_batches, _SAMPLE_INTERVAL)) | {num_batches - 1}) if num_batches else set()
-    # Data-wait vs. compute time: times the dataloader's next-batch yield
-    # separately from the training step itself, so a GPU-starved-by-data
-    # bottleneck (CPU/disk-bound) is distinguishable from a genuinely
-    # GPU-bound run — utilization% alone can't tell those apart.
+    # Times the dataloader's next-batch yield separately from the training
+    # step, so a data-bound stall is distinguishable from a genuinely
+    # GPU-bound run.
     _data_wait_s = 0.0
     _compute_s   = 0.0
     _t_prev = time.time()
@@ -410,22 +396,16 @@ def train_one_epoch(model, loader, criterion, optimizer, scheduler, device,
     hw_summary = HardwareMonitor.epoch_summary(_hw_samples)
     hw_summary["data_wait_s"] = round(_data_wait_s, 2)
     hw_summary["compute_s"]   = round(_compute_s, 2)
-    # DDP metric aggregation: each rank only sees its own shard of the
-    # training data (via DistributedWeightedRandomSampler in
-    # make_dataloader() below), so total_loss/total_correct/total_samples
-    # are LOCAL to this rank until summed across every rank — without
-    # this, a distributed run's reported train_loss/train_acc would
-    # silently reflect only one rank's slice of the epoch, not the real
-    # global numbers a single-GPU run would show. No-op passthrough when
-    # not running distributed — see common/distributed.py.
+    # No-op passthrough when not running distributed. Otherwise, each rank
+    # only sees its own shard of the training data, so
+    # total_loss/total_correct/total_samples are LOCAL to this rank until
+    # summed across every rank — see common/distributed.py.
     total_loss    = all_reduce_sum(total_loss, device)
     total_correct = all_reduce_sum(total_correct, device)
     total_samples = all_reduce_sum(total_samples, device)
-    # hw_summary is the epoch's min/avg/max-reduced summary (see
-    # HardwareMonitor.epoch_summary()); _hw_samples is the raw list it was
-    # reduced from — returned too (2026-08-07, per direct user follow-up)
-    # so the caller can log each individual sample point as its own CSV
-    # row, not just the reduction — see common/cli_logging.py's save_log().
+    # hw_summary is the epoch's min/avg/max-reduced summary; _hw_samples is
+    # the raw list it was reduced from, returned too so the caller can log
+    # each sample point as its own CSV row.
     return total_loss / total_samples, total_correct / total_samples, hw_summary, _hw_samples
 
 
@@ -509,11 +489,10 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
 
     train_ds, val_ds, test_ds, train_targets = load_letters(img_size)
 
-    # Minimum steps/epoch floor: the VRAM probe above tests dummy tensors
-    # before the real dataset is loaded, so it has no visibility into how
-    # many real training samples exist. Capped here, now that the real
-    # training set size is known, before the DataLoader is built — never
-    # raises the batch size, only lowers it.
+    # The VRAM probe above tests dummy tensors before the real dataset is
+    # loaded, so it can't know the real dataset size when picking a batch
+    # size — capped here now that it's known, before the DataLoader is
+    # built. Never raises the batch size, only lowers it.
     _min_steps_batch = cap_batch_size_for_min_steps(
         cfg["batch_size"], len(train_ds), MIN_STEPS_PER_EPOCH,
         world_size=get_world_size(),
@@ -576,10 +555,10 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
               f"— every epoch below is checked against THIS fixed value, not a rolling one.")
 
     for epoch in range(start_epoch, 10**6):
-        # DDP epoch reshuffle: DistributedWeightedRandomSampler's weighted
-        # draw is seeded by seed + epoch (see common/distributed.py) —
-        # without telling it which epoch this is, every epoch would draw
-        # the identical weighted sample. No-op when not running distributed.
+        # DistributedWeightedRandomSampler's weighted draw is seeded by
+        # seed + epoch (see common/distributed.py) — without telling it
+        # which epoch this is, every epoch would draw the identical
+        # weighted sample. No-op when not running distributed.
         if is_distributed():
             train_loader.sampler.set_epoch(epoch)
         if device.type == "cuda":
@@ -592,16 +571,10 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
                 epoch=epoch, img_size=img_size
             )
         except RuntimeError as _oom_e:
-            # Real mid-training OOM catch (2026-08-09, per direct user
-            # follow-up): before this, the only OOM handling anywhere in
-            # this project was inside common/batch_sizing.py's one-time
-            # startup probe — a genuine OOM during actual training (as
-            # opposed to the probe) was a bare unhandled crash with no
-            # checkpoint save. Same substring match the probe already
-            # uses, reused here for consistency between probe-time and
-            # real-training-time OOMs. epoch-1 (not epoch) because this
-            # epoch never completed — history/early_stop/checkpoint state
-            # all still reflect the last successful epoch.
+            # Same substring match common/batch_sizing.py's startup probe
+            # uses. epoch-1 (not epoch) because this epoch never completed —
+            # history/early_stop/checkpoint state still reflect the last
+            # successful epoch.
             _oom_emsg = str(_oom_e).lower()
             if not ("out of memory" in _oom_emsg or "find was unable" in _oom_emsg or "engine" in _oom_emsg):
                 raise
@@ -641,34 +614,21 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
                      ("val_loss", val_loss), ("val_acc", val_acc), ("lr", current_lr)]:
             history[k].append(v)
         # Every HardwareMonitor.epoch_summary() key auto-populates its own
-        # history column — the alternative (an explicit field list here)
-        # would silently drop any new telemetry field added to
-        # epoch_summary() without a matching edit here.
-        # Raw per-sample-point readings, stored alongside the reduced
-        # summary (2026-08-07, per direct user follow-up) so save_log()
-        # can write each sample point as its own CSV row — see that
-        # function's own docstring for the row layout.
+        # history column, so a new telemetry field needs no matching edit
+        # here. Raw per-sample-point readings stored alongside the reduced
+        # summary so save_log() can write each as its own CSV row.
         history.setdefault("_hw_raw_samples", []).append(hw_raw)
         for hw_key, hw_val in hw.items():
             history.setdefault(hw_key, []).append(hw_val)
         history.setdefault("epoch_time_s", []).append(round(elapsed, 1))
 
-        # Write/update the CSV after every epoch (not just at the end) so it
-        # exists from the first completed epoch and survives a crash or
-        # manual stop. A resumed run's `history` already contains the
-        # pre-resume epochs (restored from the checkpoint above), so this
-        # naturally continues the same file rather than needing separate
-        # append logic.
+        # Written after every epoch, not just at the end, so it survives a
+        # crash or manual stop.
         save_log(history, cfg["log_path"])
 
-        # Checkpoint save moved ahead of the safety-check breaks below
-        # (2026-08-08, per direct user follow-up) — early_stop() is the
-        # only thing that writes cfg["checkpoint_path"]; running it after
-        # a safety break meant a safety-triggered stop on the very first
-        # improving epoch left no checkpoint on disk at all, crashing the
-        # unconditional torch.load() after this loop. Now the current
-        # epoch's checkpoint is always saved (if it's a new best) before
-        # any stop decision is made.
+        # Must run before the safety-check breaks below — early_stop() is
+        # the only thing that writes cfg["checkpoint_path"], and the
+        # unconditional torch.load() after this loop needs one to exist.
         early_stop(val_loss, model)
 
         _ram_stop    = check_cpu_ram_safety(device, _run_swap_baseline_gb, RAM_RESERVE_GB, epoch)
@@ -678,11 +638,9 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
         )
 
         if _ram_stop or _vram_status == "stop":
-            # Resume state now also saved on a hard safety stop (2026-08-08,
-            # per direct user follow-up) — previously only a normal
-            # continuing epoch saved it, leaving a safety-triggered stop
-            # with no way to resume mid-schedule, only reload the best
-            # checkpoint from scratch.
+            # Saved here too (not just on a normal continuing epoch) so a
+            # safety-triggered stop can resume mid-schedule instead of
+            # reloading the best checkpoint from scratch.
             save_resume_state(
                 cfg["resume_path"],
                 epoch=epoch,
@@ -696,15 +654,13 @@ def run_training(img_size: int, batch_override: int = None, gpu_id: int = None):
             break
 
         if _vram_status == "warn":
-            # Reactive batch-size backoff (2026-08-08, per direct user
-            # follow-up): this epoch's peak crossed into the 1GB advisory
-            # buffer without threatening real exhaustion — reduce batch
-            # size for subsequent epochs and keep training, rather than
-            # stopping. DataLoader is rebuilt (PyTorch doesn't support
-            # mutating an existing one's batch_size); the LR scheduler's
-            # total_steps is rescaled to match the new steps-per-epoch
-            # rate so the cosine curve still targets roughly the same
-            # real-epoch horizon.
+            # This epoch's peak crossed the advisory buffer without
+            # threatening real exhaustion — reduce batch size and keep
+            # training rather than stopping. DataLoader is rebuilt
+            # (PyTorch doesn't support mutating batch_size in place); the
+            # LR scheduler's total_steps is rescaled to match the new
+            # steps-per-epoch rate so the cosine curve still targets
+            # roughly the same real-epoch horizon.
             _old_steps_per_epoch = len(train_loader)
             cfg["batch_size"] = reduce_batch_size(
                 cfg["batch_size"], len(train_ds), MIN_STEPS_PER_EPOCH,

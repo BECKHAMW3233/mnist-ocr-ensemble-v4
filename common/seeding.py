@@ -1,22 +1,18 @@
 """
 common/seeding.py
 ==================
-Deterministic seeding, shared across every v3 training script. Extracted
-verbatim from the set_all_seeds() block that was duplicated identically
-across all 16 v2 training scripts (12 optimizer scripts + the v2 digit
-gate) — same GLOBAL_SEED/MNIST_SEED environment-variable convention, same
-CUBLAS_WORKSPACE_CONFIG requirement, same cudnn.deterministic/benchmark
-settings. Behavior is unchanged from v2; only the code's location moved.
+Deterministic seeding, shared across every training script: GLOBAL_SEED/
+MNIST_SEED environment-variable convention, CUBLAS_WORKSPACE_CONFIG
+requirement, cudnn.deterministic/benchmark settings.
 
-IMPORTANT — import order, preserved from every v2 script:
+IMPORTANT — required import order:
     apply_cublas_workspace_config()   # before `import torch`
     import torch
     reserve_cpu_threads()             # immediately after `import torch`,
                                        # before any other torch call
     set_all_seeds(get_global_seed())  # before importing torch.nn / torchvision
 Getting this order wrong silently reintroduces nondeterminism (cuBLAS) or
-a CPU thread count that doesn't reliably take effect — both documented,
-confirmed issues in the v2 codebase this ordering fixes.
+a CPU thread count that doesn't reliably take effect.
 """
 import os
 
@@ -29,9 +25,9 @@ def apply_cublas_workspace_config() -> None:
 
 
 def get_global_seed() -> int:
-    """Reads MNIST_SEED (default 42, matching the v2 split-seed convention).
-    Read via env var rather than a --seed CLI flag because set_all_seeds()
-    must run at import time, before argparse ever gets a chance to parse."""
+    """Reads MNIST_SEED (default 42). Read via env var rather than a
+    --seed CLI flag because set_all_seeds() must run at import time,
+    before argparse ever gets a chance to parse."""
     return int(os.environ.get("MNIST_SEED", 42))
 
 
@@ -74,9 +70,9 @@ def usable_cpu_count(cpu_reserve_pct: int = 25) -> int:
     Returns the number of logical cores usable after reserving
     cpu_reserve_pct% for the OS — the same reservation math
     reserve_cpu_threads() uses for torch.set_num_threads(), exposed
-    standalone here (2026-07-28, per direct user follow-up) so DataLoader
-    worker counts (NUM_WORKERS in every training script) can auto-scale
-    to this machine's real core count instead of a hardcoded literal.
+    standalone here so DataLoader worker counts (NUM_WORKERS in every
+    training script) can auto-scale to this machine's real core count
+    instead of a hardcoded literal.
 
     Deliberately NOT gated on CUDA availability the way
     reserve_cpu_threads() is below — torch.set_num_threads() only matters

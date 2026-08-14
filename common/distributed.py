@@ -1,29 +1,29 @@
 """
 common/distributed.py
 ======================
-Optional multi-GPU DistributedDataParallel (DDP) support (2026-07-28, per
-direct user follow-up) — splits ONE model's training across multiple
-GPUs on the same machine, launched via `torchrun`. This is the second,
-much larger multi-GPU mode; see setup_device()'s gpu_id parameter
-(common/telemetry.py) for the simpler "run different independent models
-on different cards at once" mode, which needs none of this module.
+Optional multi-GPU DistributedDataParallel (DDP) support — splits ONE
+model's training across multiple GPUs on the same machine, launched via
+`torchrun`. This is the second, much larger multi-GPU mode; see
+setup_device()'s gpu_id parameter (common/telemetry.py) for the simpler
+"run different independent models on different cards at once" mode,
+which needs none of this module.
 
 *** NOT YET VALIDATED AGAINST REAL MULTI-GPU HARDWARE ***
-Every real run this whole v3 codebase has ever been checked against —
-every batch size, every VRAM number, every telemetry field, every real
-accuracy figure cited anywhere in v3_CHANGELOG.md — came from a single
-RTX 4080. This module was written from PyTorch's own documented
-`torch.distributed`/DDP API and standard, widely-used patterns for
-combining weighted sampling with distributed sharding, reasoned through
-carefully, but has NEVER been run against actual multi-GPU hardware,
-because none is available in the environment this was built in. DDP bugs
-are specifically the class of bug that "imports cleanly" and "reads
-correctly" cannot catch — mismatched collective calls across ranks
-deadlock instead of raising, and a checkpoint race from an unguarded
-write is silent until the file is corrupted. Treat every training script
-run under `torchrun` as unverified until confirmed on real hardware; the
-single-GPU / --gpu-flag path is completely unaffected by anything in
-this file and remains exactly as validated as before.
+Every real run this codebase has ever been checked against — every
+batch size, every VRAM number, every telemetry field, every real
+accuracy figure — came from a single RTX 4080. This module was written
+from PyTorch's own documented `torch.distributed`/DDP API and standard,
+widely-used patterns for combining weighted sampling with distributed
+sharding, reasoned through carefully, but has NEVER been run against
+actual multi-GPU hardware, because none is available in the environment
+this was built in. DDP bugs are specifically the class of bug that
+"imports cleanly" and "reads correctly" cannot catch — mismatched
+collective calls across ranks deadlock instead of raising, and a
+checkpoint race from an unguarded write is silent until the file is
+corrupted. Treat every training script run under `torchrun` as
+unverified until confirmed on real hardware; the single-GPU / --gpu-flag
+path is completely unaffected by anything in this file and remains
+exactly as validated as before.
 
 How it's triggered: `torchrun` (PyTorch's own launcher) sets RANK,
 WORLD_SIZE, and LOCAL_RANK environment variables automatically, one
@@ -165,19 +165,15 @@ def all_reduce_sum(value: float, device: torch.device) -> float:
 def all_reduce_min(value, device: torch.device):
     """
     Takes the minimum of `value` across every rank and returns the same
-    minimum to all of them — used for the auto-detected batch size
-    (2026-08-02, per direct user follow-up): rather than trusting rank
-    0's probe alone (which silently assumed every rank's GPU had
-    equivalent free VRAM — see broadcast_int()'s own docstring for the
-    original reasoning, and why that assumption doesn't hold on a
-    shared/contended compute node, where another tenant's job can leave
-    one rank's GPU with meaningfully less free VRAM than another's even
-    on identical hardware), every rank now probes its own device
-    independently (see determine_batch_size() in common/batch_sizing.py)
-    and this takes the minimum across all of them, so every rank trains
-    at a batch size that's safe for the rank with the LEAST available
-    VRAM, not just whatever rank 0 happened to have free. No-op
-    passthrough (returns value unchanged) when not running distributed.
+    minimum to all of them — used for the auto-detected batch size:
+    every rank probes its own device independently (see
+    determine_batch_size() in common/batch_sizing.py) and this takes the
+    minimum across all of them, so every rank trains at a batch size
+    that's safe for the rank with the LEAST available VRAM, not just
+    whatever rank 0 happened to have free — a shared/contended compute
+    node can leave one rank's GPU with meaningfully less free VRAM than
+    another's even on identical hardware. No-op passthrough (returns
+    value unchanged) when not running distributed.
     """
     if not is_distributed():
         return value
@@ -190,16 +186,8 @@ def all_reduce_min(value, device: torch.device):
 def broadcast_int(value: int, device: torch.device, src: int = 0) -> int:
     """
     Broadcasts an integer FROM rank `src` (default rank 0) to every
-    other rank, returning the same value everywhere. Used specifically
-    for the auto-detected batch size (2026-07-28): rather than assuming
-    every rank's VRAM probe would independently land on the identical
-    batch size (true only if every GPU in the job is genuinely
-    identical, which this codebase has no way to verify), the probe now
-    runs ONLY on rank 0 and every other rank receives that exact same
-    number via this call — guarantees every rank trains with the same
-    batch size even on a mixed-GPU job, and halves the batch-size-probe
-    VRAM churn on every rank but one. No-op passthrough (returns value
-    unchanged) when not running distributed.
+    other rank, returning the same value everywhere. No-op passthrough
+    (returns value unchanged) when not running distributed.
     """
     if not is_distributed():
         return value

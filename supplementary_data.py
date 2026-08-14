@@ -1,54 +1,44 @@
 """
 supplementary_data.py
 =====================
-Shared supplementary dataset loader — v4. Extends the v2 module of the
-same name; the loading pattern (per-source Dataset wrapper classes,
-graceful skip-on-missing, WeightedRandomSampler-friendly label
-extraction) is unchanged, not replaced. Four additions for v3:
+Shared supplementary dataset loader: per-source Dataset wrapper classes,
+graceful skip-on-missing, WeightedRandomSampler-friendly label extraction.
 
-  1. digit_sources_for_tier(img_size) — the per-source resolution-ladder
-     split (see Part 1 of this restructure / v3_CHANGELOG.md): MNIST, EMNIST
-     Digits, SVHN, and ARDIS IV ladder 28->32->64->128; USPS ladders
-     16->32->64->128 (its own native resolution, skipping 28x28 — not
-     native or meaningfully closer to native for USPS than either of its
-     real neighbors). All five sources are present at 32/64/128; only the
-     28x28 tier excludes USPS. This function is the single place that
-     encodes that split so every digit training script and the router
-     stay consistent with each other by construction rather than by each
-     one re-deriving it.
+  digit_sources_for_tier(img_size) — the per-source resolution-ladder
+  split: MNIST, EMNIST Digits, SVHN, and ARDIS IV ladder 28->32->64->128;
+  USPS ladders 16->32->64->128 (its own native resolution, skipping
+  28x28 — not native or meaningfully closer to native for USPS than
+  either of its real neighbors). All five sources are present at
+  32/64/128; only the 28x28 tier excludes USPS. This function is the
+  single place that encodes that split so every digit training script
+  and the router stay consistent with each other by construction rather
+  than by each one re-deriving it.
 
-  2. BALANCED_TO_BYCLASS now correctly covers EMNIST Balanced's full
-     47-class label space (previously only 0-35 — see the comment above
-     the dict below). This was found while re-enabling EMNIST Balanced
-     as the v3 router's letter source (Part 3) — BalancedEMNISTDataset
-     itself is otherwise unchanged.
+  BALANCED_TO_BYCLASS covers EMNIST Balanced's full 47-class label space
+  (digits, uppercase, and the 11 lowercase letters EMNIST Balanced keeps
+  distinct — see the comment above the dict below).
 
-  3. _correct_emnist_orientation() — torchvision's EMNIST dataset class
-     (every split: digits, balanced, byclass, etc.) returns images
-     rotated 90 degrees and mirrored relative to upright — a real,
-     still-open torchvision bug (github.com/pytorch/vision/issues/8783),
-     confirmed by reading torchvision 0.28.0's own mnist.py directly:
-     EMNIST.__getitem__ inherits MNIST.__getitem__ unchanged, which
-     applies zero rotation/flip correction. Applied in
-     EMNISTDigitsDataset, BalancedEMNISTDataset, and the new
-     EMNISTByClassDataset below, so training images match the upright
-     orientation real scanned character crops have at inference time.
-     Added 2026-08-02, per direct user follow-up after this was found
-     while building the v3 letter-identity models (Part 4) — see
-     v3_CHANGELOG.md.
+  _correct_emnist_orientation() — torchvision's EMNIST dataset class
+  (every split: digits, balanced, byclass, etc.) returns images rotated
+  90 degrees and mirrored relative to upright — a real, still-open
+  torchvision bug (github.com/pytorch/vision/issues/8783), confirmed by
+  reading torchvision 0.28.0's own mnist.py directly: EMNIST.__getitem__
+  inherits MNIST.__getitem__ unchanged, which applies zero rotation/flip
+  correction. Applied in EMNISTDigitsDataset, BalancedEMNISTDataset, and
+  EMNISTByClassDataset below, so training images match the upright
+  orientation real scanned character crops have at inference time.
 
-  4. EMNISTByClassDataset / load_base_emnist_letters() — EMNIST ByClass
-     (all 62 classes, not previously used anywhere in this project — only
-     "digits" and "balanced" were), added as the sole data source for the
-     v3 uppercase/lowercase letter-identity models
-     (v4_mnist_letter_{uc,lc}_{optimizer}_{res}.py). Chosen over EMNIST
-     Balanced specifically because Balanced only has 11 distinct lowercase
-     classes (the other 15 are merged into their uppercase counterpart by
-     the dataset's own creators — see BALANCED_TO_BYCLASS's comment
-     above); ByClass has all 26. Raw byclass label integers already match
-     this project's own 0-9/10-35/36-61 convention directly (confirmed by
-     reading torchvision's own EMNIST.classes_split_dict) — no remapping
-     bug, unlike BALANCED_TO_BYCLASS above.
+  EMNISTByClassDataset / load_base_emnist_letters() — EMNIST ByClass (all
+  62 classes) is the sole data source for the uppercase/lowercase
+  letter-identity models (v4_mnist_letter_{uc,lc}_{optimizer}_{res}.py).
+  Chosen over EMNIST Balanced specifically because Balanced only has 11
+  distinct lowercase classes (the other 15 are merged into their
+  uppercase counterpart by the dataset's own creators — see
+  BALANCED_TO_BYCLASS's comment above); ByClass has all 26. Raw byclass
+  label integers already match this project's own 0-9/10-35/36-61
+  convention directly (confirmed by reading torchvision's own
+  EMNIST.classes_split_dict) — no remapping needed, unlike
+  BALANCED_TO_BYCLASS above.
 
 Provides digit-only supplementary data sources for MNIST digit recognition:
 
@@ -66,20 +56,19 @@ Provides digit-only supplementary data sources for MNIST digit recognition:
                          tool, etc.), it prints manual download/setup instructions.
 
   LETTER DATASETS:
-  6. EMNIST Balanced   — re-enabled in v3 as the router's UC/LC training
-                         source (see load_supplementary()'s use_balanced
-                         flag, still False by default — the DIGIT ensemble
-                         stays digits-only; the router imports
-                         BalancedEMNISTDataset directly instead, mirroring
-                         how the v2 digit gate self-contained its own
-                         letter-loading rather than changing this shared
-                         module's defaults — see v4_mnist_router_ranger_*.py)
+  6. EMNIST Balanced   — the router's UC/LC training source (see
+                         load_supplementary()'s use_balanced flag, still
+                         False by default — the DIGIT ensemble stays
+                         digits-only; the router imports
+                         BalancedEMNISTDataset directly instead of
+                         changing this shared module's defaults — see
+                         v4_mnist_router_ranger_*.py)
   7. Kaggle A-Z, Chars74K, PG-HWLD — still excluded (use_kaggle/
                          use_chars_hnd/use_chars_img/use_pghwld default
                          False); optional supplementary letter sources,
-                         not required for the router per this restructure)
+                         not required for the router
   8. EMNIST ByClass    — 814,255 samples across all 62 classes; the sole
-                         source for the v3 letter-identity models
+                         source for the letter-identity models
                          (uppercase/lowercase, 26 classes each — see
                          EMNISTByClassDataset / load_base_emnist_letters()
                          above). Not wired into load_supplementary() at
@@ -146,14 +135,14 @@ from PIL import Image, ImageOps
 # torchvision's own download=True mechanism — you just need this to point
 # at a folder that exists (it's created automatically if missing) and has
 # enough free space (a few GB across all of them combined). EMNIST
-# Balanced (re-enabled in v3 for the router — see module docstring) reuses
+# Balanced (used by the router — see module docstring) reuses
 # this same DATA_DIR, same as its digit-only sibling EMNIST Digits; it
 # does not get its own path constant.
 DATA_DIR      = Path(r"E:\CSC-114\emnist-model\datasets\pytorch")
 
 # KAGGLE_DIR / KAGGLE_IMGS / KAGGLE_LBLS: Kaggle A-Z letters dataset.
 # NOT used by the digit ensemble (use_kaggle=False everywhere it's
-# called) or by the v3 router (which uses EMNIST Balanced instead — see
+# called) or by the router (which uses EMNIST Balanced instead — see
 # module docstring) — safe to leave pointed at a nonexistent path unless
 # you specifically opt into this as a supplementary letter source, in
 # which case note the path below is specific to the original machine
@@ -163,7 +152,7 @@ KAGGLE_IMGS   = KAGGLE_DIR / "az_images.npy"
 KAGGLE_LBLS   = KAGGLE_DIR / "az_labels.npy"
 
 # CHARS74K_HND / CHARS74K_IMG: Chars74K handwritten/image letter datasets.
-# Also NOT used by the digit ensemble or the v3 router by default — same
+# Also NOT used by the digit ensemble or the router by default — same
 # as above, safe to leave as-is unless you opt into this as a
 # supplementary letter source — both paths below are specific to the
 # original machine and will need changing if you do.
@@ -180,7 +169,7 @@ ARDIS_IMGS    = ARDIS_DIR / "ardis_images.npy"
 ARDIS_LBLS    = ARDIS_DIR / "ardis_labels.npy"
 
 # PGHWLD_DIR: Pashto handwritten letters dataset. NOT used by the digit
-# ensemble or the v3 router by default (use_pghwld=False everywhere) —
+# ensemble or the router by default (use_pghwld=False everywhere) —
 # safe to leave as-is unless you opt into this as a supplementary letter
 # source, in which case the path below is specific to the original
 # machine and will need changing.
@@ -204,17 +193,11 @@ DIGIT_BOOST = 1.0
 # emnist-balanced-mapping.txt, EMNIST Balanced indices 36-46 are, in
 # order: a, b, d, e, f, g, h, n, q, r, t.
 #
-# The v2 version of this dict only mapped indices 0-35 (digits +
-# uppercase) — BalancedEMNISTDataset's own `if label in
-# BALANCED_TO_BYCLASS` filter silently dropped every lowercase sample as
-# a result, with no error or warning (BalancedEMNISTDataset was never
-# actually used anywhere in v2 — use_balanced was False at every call
-# site — so this had no behavioral effect until now). Found while
-# re-enabling EMNIST Balanced as the v3 router's letter source (Part 3),
-# which genuinely needs lowercase representation; fixed here so
-# BalancedEMNISTDataset returns complete, correct byclass labels (0-61)
-# for all 47 of its actual classes, matching CHARS74K_TO_BYCLASS's own
-# already-correct byclass 36-61 = a-z convention below.
+# BALANCED_TO_BYCLASS maps all 47 classes to this project's own byclass
+# convention (0-9 digits, 10-35 uppercase, 36-61 lowercase), so
+# BalancedEMNISTDataset returns complete, correct byclass labels for
+# every one of its actual classes, matching CHARS74K_TO_BYCLASS's own
+# byclass 36-61 = a-z convention below.
 _EMNIST_BALANCED_LOWERCASE = "abdefghnqrt"  # EMNIST Balanced indices 36-46, in order
 BALANCED_TO_BYCLASS = {
     **{i: i for i in range(10)},              # digits 0-9      -> byclass 0-9
@@ -229,7 +212,7 @@ DIGIT_TO_BYCLASS    = {i: i for i in range(10)}
 
 
 # =============================================================================
-# Native-resolution disk cache (2026-08-08, per direct user follow-up)
+# Native-resolution disk cache
 # =============================================================================
 # Reads the native-resolution cache files build_dataset_cache.py produces
 # (William runs that script separately — see its own docstring). Only the
@@ -267,8 +250,7 @@ def _correct_emnist_orientation(img):
     inherits MNIST.__getitem__ unchanged, which applies zero rotation/flip
     correction before handing back the PIL image. Undoes it so training
     images match the upright orientation real scanned character crops
-    have at inference time. Added 2026-08-02, per direct user follow-up —
-    see v3_CHANGELOG.md.
+    have at inference time.
     """
     return ImageOps.mirror(img.rotate(-90, expand=True))
 
@@ -475,10 +457,10 @@ class BalancedEMNISTDataset(Dataset):
     """
     EMNIST Balanced — 47 classes remapped to byclass indices (0-9 digits,
     10-35 uppercase, 36-61 the 11 EMNIST-Balanced-distinct lowercase
-    letters — see BALANCED_TO_BYCLASS above). Re-enabled in v3 as the
-    router's letter source (both uppercase and lowercase); the digit
-    ensemble does not use this class (use_balanced stays False in every
-    load_supplementary() call the digit ensemble makes).
+    letters — see BALANCED_TO_BYCLASS above). The router's letter source
+    (both uppercase and lowercase); the digit ensemble does not use this
+    class (use_balanced stays False in every load_supplementary() call
+    the digit ensemble makes).
     """
     def __init__(self, train: bool = True, transform=None):
         self.transform = transform
@@ -528,9 +510,9 @@ class BalancedEMNISTDataset(Dataset):
 class EMNISTByClassDataset(Dataset):
     """
     EMNIST ByClass — all 62 classes (0-9 digits, 10-35 uppercase, 36-61
-    lowercase). Not used by the digit ensemble or the router — added in
-    v3 as the sole data source for the uppercase/lowercase letter-identity
-    models (v4_mnist_letter_{uc,lc}_{optimizer}_{res}.py). Chosen over
+    lowercase). Not used by the digit ensemble or the router — the sole
+    data source for the uppercase/lowercase letter-identity models
+    (v4_mnist_letter_{uc,lc}_{optimizer}_{res}.py). Chosen over
     EMNIST Balanced specifically because Balanced only has 11 distinct
     lowercase classes (see BALANCED_TO_BYCLASS's comment above); ByClass
     has real, distinct labels for all 26. Raw byclass label integers
@@ -969,13 +951,13 @@ def _extract_targets(dataset) -> torch.Tensor:
 
 
 # =============================================================================
-# Per-resolution-tier digit source selection (v3)
+# Per-resolution-tier digit source selection
 # =============================================================================
 
 def digit_sources_for_tier(img_size: int) -> dict:
     """
     Returns the load_supplementary() keyword flags for which SUPPLEMENTARY
-    digit sources are included at a given v3 resolution tier, per the
+    digit sources are included at a given resolution tier, per the
     per-source resolution ladder split:
         MNIST, EMNIST Digits, SVHN, ARDIS IV:  28 -> 32 -> 64 -> 128
         USPS:                                  16 -> 32 -> 64 -> 128
@@ -997,9 +979,7 @@ def digit_sources_for_tier(img_size: int) -> dict:
         calling it anyway with all flags False is harmless, it just
         prints "no supplementary data available" and returns None).
     This means there are 5 resolution-tagged files per optimizer/router
-    family (16, 28, 32, 64, 128), not 4 — see v3_CHANGELOG.md's resolution-
-    ladder-split entry for the full reasoning, including the genuine
-    ambiguity in the original task text this resolved.
+    family (16, 28, 32, 64, 128), not 4.
 
     use_mnist here governs load_supplementary()'s OWN separate MNIST
     copy (on top of load_base_mnist()'s own train/val/test split) at the
@@ -1069,7 +1049,7 @@ def load_supplementary(
     Callers should pass **digit_sources_for_tier(img_size) for the
     use_digits/use_mnist/use_usps/use_svhn/use_ardis flags rather than
     hardcoding them, so every training script stays consistent with the
-    v3 per-source resolution ladder split by construction.
+    per-source resolution ladder split by construction.
     """
     datasets = []
     total    = 0
@@ -1217,16 +1197,13 @@ def get_combined_weights(byclass_dataset, supplementary_dataset) -> torch.Tensor
 # script's own get_transforms()) — this function only handles the actual
 # dataset fetch/split mechanics, not per-script augmentation choices.
 #
-# Known, accepted overlap (unchanged from v2, not introduced or fixed by
-# this restructure): load_supplementary(use_mnist=True) loads a SECOND,
-# full 60k-sample MNIST training copy as a "supplementary" source, on top
-# of the 51k-sample train subset load_base_mnist() below already returns
-# after its own 85/15 split — meaning some images that landed in
-# load_base_mnist()'s held-out validation subset can still reach the
-# model via that second copy during training. This predates v3 and Part
-# 2 of this restructure is a structural refactor only (no behavior
-# changes), so it's preserved exactly as-is; flagged here rather than
-# silently carried forward unmentioned.
+# Known, accepted overlap: load_supplementary(use_mnist=True) loads a
+# SECOND, full 60k-sample MNIST training copy as a "supplementary"
+# source, on top of the 51k-sample train subset load_base_mnist() below
+# already returns after its own 85/15 split — meaning some images that
+# landed in load_base_mnist()'s held-out validation subset can still
+# reach the model via that second copy during training. Flagged here
+# rather than silently carried forward unmentioned.
 
 def load_base_mnist(data_dir: Path, train_transform, val_transform, test_transform,
                      validation_split: float = 0.15, split_seed: int = 42,
@@ -1296,11 +1273,11 @@ def load_base_mnist(data_dir: Path, train_transform, val_transform, test_transfo
 
 
 # =============================================================================
-# Base USPS loader (v3 — 16x16 tier)
+# Base USPS loader (16x16 tier)
 # =============================================================================
 # USPS is the ENTIRE training spine at the 16x16 resolution tier (see
 # digit_sources_for_tier() above) — not a supplementary addition on top
-# of load_base_mnist(), the way it is at 32/64/128. Every v3 digit
+# of load_base_mnist(), the way it is at 32/64/128. Every digit
 # training script and the router branch on `if img_size == 16:` to call
 # this instead of load_base_mnist(); load_supplementary() is still
 # called afterward for consistency with the other tiers, but
@@ -1325,10 +1302,9 @@ def load_base_usps(data_dir: Path, train_transform, val_transform, test_transfor
     used as the digit ensemble's/router's entire training spine at the
     16x16 resolution tier instead of load_base_mnist() +
     load_supplementary(): at 16x16, USPS is the ONLY source in the
-    ladder (see v3_CHANGELOG.md's Resolution ladder split section), so there's
-    no separate "base spine" + "supplementary sources" split the way
-    there is for the 28/32/64/128 tiers — USPS's own train/test split
-    serves both roles directly.
+    ladder, so there's no separate "base spine" + "supplementary
+    sources" split the way there is for the 28/32/64/128 tiers — USPS's
+    own train/test split serves both roles directly.
 
     Args mirror load_base_mnist() exactly; same defaults, same
     return_train_targets behavior.
@@ -1370,7 +1346,7 @@ def load_base_usps(data_dir: Path, train_transform, val_transform, test_transfor
 
 
 # =============================================================================
-# Base EMNIST ByClass letter loader (v3 — uppercase/lowercase models)
+# Base EMNIST ByClass letter loader (uppercase/lowercase models)
 # =============================================================================
 # Unlike the digit ensemble's 5-source, per-resolution-tier ladder
 # (digit_sources_for_tier()), the letter-identity models

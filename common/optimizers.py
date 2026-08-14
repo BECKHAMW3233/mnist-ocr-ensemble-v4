@@ -1,15 +1,9 @@
 """
 common/optimizers.py
 =====================
-Optimizer construction, centralized (2026-08-08, per direct user follow-up,
-knowingly overriding the 2026-07-27 decision documented in
-v3_CHANGELOG.md's "Naming and modularization-scope correction" — that
-entry reverted an earlier attempt at this exact centralization, reasoning
-that optimizer algorithms were never part of Part 2's modularization
-scope. That history was shown directly and William chose to proceed
-anyway) from build_soap()/build_adamw_sf()/build_muon()/
+Optimizer construction: build_soap()/build_adamw_sf()/build_muon()/
 build_ranger_optimizer() and their supporting classes (Muon, RAdam,
-Lookahead) and hyperparameter constants — verified byte-for-byte
+Lookahead) and hyperparameter constants. Verified byte-for-byte
 identical (module-level constants and function/class bodies) across all
 44 training scripts; none of it varies by resolution or model category.
 
