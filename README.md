@@ -21,6 +21,7 @@ the full rename history and rationale.
     |   |-- onnx_export.py
     |   |-- optimizers.py
     |   |-- scheduler.py
+    |   |-- seeding.py
     |   `-- telemetry.py
     |-- digit_models/            # 15 digit training scripts (SOAP/AdamW/Muon x 5 resolutions)
     |-- lowercase_models/        # 12 lowercase letter training scripts (SOAP/AdamW/Muon x 4 resolutions)
@@ -37,8 +38,12 @@ the full rename history and rationale.
     `-- README.md
 
 Model outputs (checkpoints, ONNX exports, logs, training curves) are
-created alongside each training script when it runs — none exist yet,
-training hasn't started under the v4 naming.
+created alongside each training script when it runs, in a folder named
+after the script (e.g. `digit_models/v4_mnist_digit_adamw_16/`).
+Several resolution tiers have completed at least one training run so
+far; `.pt` checkpoint weight files are gitignored and stay local-only,
+but each completed run's `.onnx` export, `_log.csv`, `_curves.png`, and
+CLI transcript are tracked.
 
 ## Usage
 

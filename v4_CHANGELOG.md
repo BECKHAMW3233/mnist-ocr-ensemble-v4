@@ -330,3 +330,29 @@ condensation task had only covered `common/` and the four model
 directories, not the rest of the `.py` files in the project. No external
 source — a code-cleanup/readability decision, not a technical
 correctness question.
+
+## 2026-08-14 — README updated for actual file structure and output state
+
+**Change:** `README.md`'s file-tree listing under `common/` was missing
+`seeding.py` (it exists on disk, alphabetically between `scheduler.py`
+and `telemetry.py`, and was never added to the listing). Added it.
+
+Also replaced the "Model outputs... none exist yet, training hasn't
+started under the v4 naming" paragraph — no longer true, since several
+resolution tiers across `digit_models/`, `lowercase_models/`,
+`uppercase_models/`, and `router_models/` have completed at least one
+training run and now have output folders (`.onnx`, `_log.csv`,
+`_curves.png`, CLI transcript) sitting alongside their scripts. New
+text describes the actual output-folder pattern and notes `.pt`
+checkpoint weight files are gitignored/local-only while the rest of
+each run's output is tracked.
+
+**Why:** Per William's direct instruction, after he pointed out these
+training-output folders were about to be committed and pushed to GitHub
+and the README's structure/output-state description hadn't been
+checked or updated to match — per CLAUDE.md's README maintenance rule
+("Whenever an approved change adds, removes, or renames a file...that
+the README describes or should describe, update the README as part of
+that same change"). No external source — a documentation-accuracy fix
+verified directly against this repo's own `common/` directory listing
+and `git status`.
