@@ -355,4 +355,36 @@ checked or updated to match — per CLAUDE.md's README maintenance rule
 the README describes or should describe, update the README as part of
 that same change"). No external source — a documentation-accuracy fix
 verified directly against this repo's own `common/` directory listing
+
+## 2026-08-14 — README's file tree fully expanded to real, on-GitHub contents
+
+**Change:** The prose-only fix above (previous entry) was insufficient
+— William pointed out the "Current structure" tree itself still didn't
+show the actual training-output folders. Replaced the collapsed
+one-line-per-directory tree under `digit_models/`, `lowercase_models/`,
+`uppercase_models/`, and `router_models/` with the full, real contents:
+every one of the 44 training scripts, plus every output folder that
+currently exists (16 total) with the exact files inside each, verified
+directly against a fresh directory listing of the actual filesystem
+(not assumed or reconstructed from memory).
+
+Per William's follow-up correction, only files that actually exist in
+the GitHub repo are shown: `.pt` checkpoint weight files are omitted
+from every folder (gitignored, never pushed), and `_precomputed_cache/`
+was removed from the tree entirely (100% gitignored `.npz` files, never
+pushed) — previously listed with a one-line description even though
+none of its contents ever reach GitHub. `v4_mnist_digit_soap_32/`'s
+in-progress run is shown with only its two real, pushed files (CSV log,
+CLI transcript) rather than being dropped from the tree — an in-progress
+run with real files on GitHub is still real repo state and belongs in
+the tree, just showing only what that run has actually produced so far.
+
+**Why:** Per William's direct instruction and follow-up correction, in
+the same exchange as the previous entry — the same CLAUDE.md README
+maintenance rule applies; this entry documents the corrected, complete
+fix after the first attempt was called out as incomplete. No external
+source — verified directly against this repo's own directory listing
+(`find digit_models lowercase_models uppercase_models router_models
+common -maxdepth 2`) and `.gitignore`'s actual contents (`*.pt`,
+`_precomputed_cache/`), not assumed.
 and `git status`.

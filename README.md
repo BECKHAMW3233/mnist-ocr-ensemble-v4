@@ -24,10 +24,132 @@ the full rename history and rationale.
     |   |-- seeding.py
     |   `-- telemetry.py
     |-- digit_models/            # 15 digit training scripts (SOAP/AdamW/Muon x 5 resolutions)
+    |   |-- v4_mnist_digit_adamw_16.py
+    |   |-- v4_mnist_digit_adamw_16/
+    |   |   |-- v4_mnist_digit_adamw_16.onnx
+    |   |   |-- v4_mnist_digit_adamw_16_cli_20260813_223018.txt
+    |   |   |-- v4_mnist_digit_adamw_16_curves.png
+    |   |   `-- v4_mnist_digit_adamw_16_log.csv
+    |   |-- v4_mnist_digit_adamw_28.py
+    |   |-- v4_mnist_digit_adamw_28/
+    |   |   |-- v4_mnist_digit_adamw_28.onnx
+    |   |   |-- v4_mnist_digit_adamw_28_cli_20260814_010715.txt
+    |   |   |-- v4_mnist_digit_adamw_28_curves.png
+    |   |   `-- v4_mnist_digit_adamw_28_log.csv
+    |   |-- v4_mnist_digit_adamw_32.py
+    |   |-- v4_mnist_digit_adamw_64.py
+    |   |-- v4_mnist_digit_adamw_128.py
+    |   |-- v4_mnist_digit_muon_16.py
+    |   |-- v4_mnist_digit_muon_16/
+    |   |   |-- v4_mnist_digit_muon_16.onnx
+    |   |   |-- v4_mnist_digit_muon_16_cli_20260813_223156.txt
+    |   |   |-- v4_mnist_digit_muon_16_curves.png
+    |   |   `-- v4_mnist_digit_muon_16_log.csv
+    |   |-- v4_mnist_digit_muon_28.py
+    |   |-- v4_mnist_digit_muon_28/
+    |   |   |-- v4_mnist_digit_muon_28.onnx
+    |   |   |-- v4_mnist_digit_muon_28_cli_20260814_045142.txt
+    |   |   |-- v4_mnist_digit_muon_28_curves.png
+    |   |   `-- v4_mnist_digit_muon_28_log.csv
+    |   |-- v4_mnist_digit_muon_32.py
+    |   |-- v4_mnist_digit_muon_64.py
+    |   |-- v4_mnist_digit_muon_128.py
+    |   |-- v4_mnist_digit_soap_16.py
+    |   |-- v4_mnist_digit_soap_16/
+    |   |   |-- v4_mnist_digit_soap_16.onnx
+    |   |   |-- v4_mnist_digit_soap_16_cli_20260813_215204.txt
+    |   |   |-- v4_mnist_digit_soap_16_cli_20260813_222706.txt
+    |   |   |-- v4_mnist_digit_soap_16_curves.png
+    |   |   `-- v4_mnist_digit_soap_16_log.csv
+    |   |-- v4_mnist_digit_soap_28.py
+    |   |-- v4_mnist_digit_soap_28/
+    |   |   |-- v4_mnist_digit_soap_28.onnx
+    |   |   |-- v4_mnist_digit_soap_28_cli_20260813_225730.txt
+    |   |   |-- v4_mnist_digit_soap_28_curves.png
+    |   |   `-- v4_mnist_digit_soap_28_log.csv
+    |   |-- v4_mnist_digit_soap_32.py
+    |   |-- v4_mnist_digit_soap_32/    # run in progress — no .onnx/curves yet
+    |   |   |-- v4_mnist_digit_soap_32_cli_20260814_072820.txt
+    |   |   `-- v4_mnist_digit_soap_32_log.csv
+    |   |-- v4_mnist_digit_soap_64.py
+    |   `-- v4_mnist_digit_soap_128.py
     |-- lowercase_models/        # 12 lowercase letter training scripts (SOAP/AdamW/Muon x 4 resolutions)
+    |   |-- v4_mnist_letter_lc_adamw_28.py
+    |   |-- v4_mnist_letter_lc_adamw_28/
+    |   |   |-- v4_mnist_letter_lc_adamw_28.onnx
+    |   |   |-- v4_mnist_letter_lc_adamw_28_cli_20260814_063230.txt
+    |   |   |-- v4_mnist_letter_lc_adamw_28_curves.png
+    |   |   `-- v4_mnist_letter_lc_adamw_28_log.csv
+    |   |-- v4_mnist_letter_lc_adamw_32.py
+    |   |-- v4_mnist_letter_lc_adamw_64.py
+    |   |-- v4_mnist_letter_lc_adamw_128.py
+    |   |-- v4_mnist_letter_lc_muon_28.py
+    |   |-- v4_mnist_letter_lc_muon_28/
+    |   |   |-- v4_mnist_letter_lc_muon_28.onnx
+    |   |   |-- v4_mnist_letter_lc_muon_28_cli_20260814_065006.txt
+    |   |   |-- v4_mnist_letter_lc_muon_28_curves.png
+    |   |   `-- v4_mnist_letter_lc_muon_28_log.csv
+    |   |-- v4_mnist_letter_lc_muon_32.py
+    |   |-- v4_mnist_letter_lc_muon_64.py
+    |   |-- v4_mnist_letter_lc_muon_128.py
+    |   |-- v4_mnist_letter_lc_soap_28.py
+    |   |-- v4_mnist_letter_lc_soap_28/
+    |   |   |-- v4_mnist_letter_lc_soap_28.onnx
+    |   |   |-- v4_mnist_letter_lc_soap_28_cli_20260814_062021.txt
+    |   |   |-- v4_mnist_letter_lc_soap_28_curves.png
+    |   |   `-- v4_mnist_letter_lc_soap_28_log.csv
+    |   |-- v4_mnist_letter_lc_soap_32.py
+    |   |-- v4_mnist_letter_lc_soap_64.py
+    |   `-- v4_mnist_letter_lc_soap_128.py
     |-- uppercase_models/        # 12 uppercase letter training scripts (SOAP/AdamW/Muon x 4 resolutions)
+    |   |-- v4_mnist_letter_uc_adamw_28.py
+    |   |-- v4_mnist_letter_uc_adamw_28/
+    |   |   |-- v4_mnist_letter_uc_adamw_28.onnx
+    |   |   |-- v4_mnist_letter_uc_adamw_28_cli_20260814_053632.txt
+    |   |   |-- v4_mnist_letter_uc_adamw_28_curves.png
+    |   |   `-- v4_mnist_letter_uc_adamw_28_log.csv
+    |   |-- v4_mnist_letter_uc_adamw_32.py
+    |   |-- v4_mnist_letter_uc_adamw_64.py
+    |   |-- v4_mnist_letter_uc_adamw_128.py
+    |   |-- v4_mnist_letter_uc_muon_28.py
+    |   |-- v4_mnist_letter_uc_muon_28/
+    |   |   |-- v4_mnist_letter_uc_muon_28.onnx
+    |   |   |-- v4_mnist_letter_uc_muon_28_cli_20260814_060531.txt
+    |   |   |-- v4_mnist_letter_uc_muon_28_curves.png
+    |   |   `-- v4_mnist_letter_uc_muon_28_log.csv
+    |   |-- v4_mnist_letter_uc_muon_32.py
+    |   |-- v4_mnist_letter_uc_muon_64.py
+    |   |-- v4_mnist_letter_uc_muon_128.py
+    |   |-- v4_mnist_letter_uc_soap_28.py
+    |   |-- v4_mnist_letter_uc_soap_28/
+    |   |   |-- v4_mnist_letter_uc_soap_28.onnx
+    |   |   |-- v4_mnist_letter_uc_soap_28_cli_20260814_050958.txt
+    |   |   |-- v4_mnist_letter_uc_soap_28_curves.png
+    |   |   `-- v4_mnist_letter_uc_soap_28_log.csv
+    |   |-- v4_mnist_letter_uc_soap_32.py
+    |   |-- v4_mnist_letter_uc_soap_64.py
+    |   `-- v4_mnist_letter_uc_soap_128.py
     |-- router_models/           # 5 router training scripts (Ranger x 5 resolutions)
-    |-- _precomputed_cache/      # Precomputed dataset cache (.npz files)
+    |   |-- v4_mnist_router_ranger_16.py
+    |   |-- v4_mnist_router_ranger_16/
+    |   |   |-- v4_mnist_router_ranger_16.onnx
+    |   |   |-- v4_mnist_router_ranger_16_cli_20260813_214251.txt
+    |   |   |-- v4_mnist_router_ranger_16_curves.png
+    |   |   `-- v4_mnist_router_ranger_16_log.csv
+    |   |-- v4_mnist_router_ranger_28.py
+    |   |-- v4_mnist_router_ranger_28/
+    |   |   |-- v4_mnist_router_ranger_28.onnx
+    |   |   |-- v4_mnist_router_ranger_28_cli_20260813_223358.txt
+    |   |   |-- v4_mnist_router_ranger_28_curves.png
+    |   |   `-- v4_mnist_router_ranger_28_log.csv
+    |   |-- v4_mnist_router_ranger_32.py
+    |   |-- v4_mnist_router_ranger_32/
+    |   |   |-- v4_mnist_router_ranger_32.onnx
+    |   |   |-- v4_mnist_router_ranger_32_cli_20260814_070238.txt
+    |   |   |-- v4_mnist_router_ranger_32_curves.png
+    |   |   `-- v4_mnist_router_ranger_32_log.csv
+    |   |-- v4_mnist_router_ranger_64.py
+    |   `-- v4_mnist_router_ranger_128.py
     |-- ocr_pipeline_mnist.py    # Inference pipeline
     |-- supplementary_data.py    # Shared dataset loading
     |-- build_dataset_cache.py   # One-time dataset cache builder
@@ -35,15 +157,17 @@ the full rename history and rationale.
     |-- requirements.txt
     |-- run_all_training.ps1     # Runs all 44 training scripts in tier order
     |-- v4_CHANGELOG.md
+    |-- CLAUDE.md
     `-- README.md
 
-Model outputs (checkpoints, ONNX exports, logs, training curves) are
-created alongside each training script when it runs, in a folder named
-after the script (e.g. `digit_models/v4_mnist_digit_adamw_16/`).
-Several resolution tiers have completed at least one training run so
-far; `.pt` checkpoint weight files are gitignored and stay local-only,
-but each completed run's `.onnx` export, `_log.csv`, `_curves.png`, and
-CLI transcript are tracked.
+Model outputs (ONNX export, CSV log, PNG curves, CLI transcript) are
+created alongside each training script in a folder named after that
+script. `v4_mnist_digit_soap_32.py`'s run is still in progress — its
+folder above only has a CSV log and CLI transcript so far, no `.onnx`/
+`curves.png` yet, since those are only written once training finishes.
+`.pt` checkpoint weight files and `_precomputed_cache/`'s `.npz` files
+exist locally but are gitignored and never reach GitHub, so neither
+appears above.
 
 ## Usage
 
