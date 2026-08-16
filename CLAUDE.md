@@ -311,6 +311,11 @@ happened and why from the commit message alone.**
 - Since I run all git commands myself (see Git/GitHub above), this
   applies to any commit message you draft for me to use — get it right
   before handing it over, not as a first pass to be iterated on.
+- Drafted commit messages contain only the subject + body content
+  above — nothing else. No trailers, signatures, or other additions
+  (e.g. a `Co-Authored-By: Claude...` line) unless I explicitly
+  instruct you to include one. I run every commit myself under my own
+  git identity; there is no co-authorship to record unless I say so.
 
 Documented, 2026-08-11: a drafted commit message written as dense,
 jargon-heavy semicolon-joined clauses ("raise Windows pagefile to 128GB
@@ -321,6 +326,19 @@ would be confused about why any of it happened. A second attempt at
 structure, not an actual fix — caught and called out separately. The
 real fix was a proper subject line plus a prose body explaining the
 crash and the fix in plain terms, not a jargon-compressed summary.
+
+Documented, 2026-08-16: a `Co-Authored-By: Claude Sonnet 5
+<noreply@anthropic.com>` trailer was included in drafted commit
+messages three separate times in this project before actually being
+fixed — twice in a single 2026-08-14 session (once caught and dropped
+by Claude itself mid-conversation, with an offer to save it to memory
+that was never followed through on; a second time caught directly by
+William on a different commit later that same session), and a third
+time on 2026-08-16 in a new session, because the rule had never
+actually been written down despite being discussed at length twice
+already. William: "you are only to give em the comments to use in my
+git commits not add unnecessary things to them like co authored by
+unless i specifically instruct you to."
 
 ## Delivering finished work
 

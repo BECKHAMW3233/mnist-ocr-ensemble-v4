@@ -430,3 +430,26 @@ since been produced by training runs, and the intro line's "planned"
 wording no longer matched what the repo contains. No external source —
 verified directly against this repo's own `git ls-files`, `git status
 --porcelain --untracked-files=all`, and `.gitignore` output.
+
+## 2026-08-16 — CLAUDE.md: commit messages contain only what's asked, no added trailers
+
+**Change:** Added a bullet to the "Commit message style" section
+stating that drafted commit messages contain only the subject + body
+content asked for — no trailers, signatures, or other additions (e.g.
+a `Co-Authored-By: Claude...` line) unless William explicitly instructs
+otherwise — plus a "Documented, 2026-08-16" paragraph recording the
+incident that prompted it.
+
+**Why:** Per William's direct instruction, after a `Co-Authored-By:
+Claude Sonnet 5 <noreply@anthropic.com>` trailer was included in a
+drafted commit message earlier in this session. William: "you are only
+to give em the comments to use in my git commits not add unnecessary
+things to them like co authored by unless i specifically instruct you
+to." Investigation (reading the raw 2026-08-14 session transcript
+directly, not just this project's memory files) found this had already
+happened twice before in this same project on 2026-08-14 — once
+self-caught by Claude with an offer to save it to memory that was never
+followed through on, once caught directly by William — and neither
+time was the rule ever actually written down, which is why it recurred
+a third time today. No external source — a project-governance rule
+addition, not a technical/library correctness question.
