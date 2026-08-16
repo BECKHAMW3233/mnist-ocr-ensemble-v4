@@ -1,0 +1,1188 @@
+
+======================================================================
+[Session start] 2026-08-15T02:52:31
+======================================================================
+
+############################################################
+  LETTER IDENTITY ENSEMBLE — LOWERCASE — MUON 32x32
+  Seed: GLOBAL_SEED=42 (override with MNIST_SEED env var)
+############################################################
+
+[CPU] 24 logical cores detected — reserving 6 (25%) for the OS, 18 usable (this machine's NUM_WORKERS = 18 DataLoader workers; also the thread count torch.set_num_threads() uses on CPU-only runs)
+[Device] GPU 0/0: NVIDIA GeForce RTX 4080  |  16.0 GB VRAM  |  CUDA 13.0  |  AMP: True
+[Startup VRAM] GPU 0: 380 MB / 16376 MB in use before this script has allocated anything
+[Batch] Auto-detecting batch size for 32x32 (5 real training steps per candidate, bottom-up with binary-search refinement)...
+[Batch] Batch size 64 — OK (5 real steps completed)
+[Batch] Batch size 128 — OK (5 real steps completed)
+[Batch] Batch size 256 — OK (5 real steps completed)
+[Batch] Batch size 512 — OK (5 real steps completed)
+[Batch] Batch size 1024 — OK (5 real steps completed)
+[Batch] Batch size 2048 — OK (5 real steps completed)
+[Batch] Batch size 3584 — OK (5 real steps completed)
+[Batch] Batch size 5120 — OK (5 real steps completed)
+[Batch] Batch size 6656 — OK (5 real steps completed)
+[Batch] Batch size 8192 — failed (RuntimeError), trying next
+[Batch] Bracket found: 6656 works, 8192 fails — refining...
+[Batch] Batch size 7424 — failed (RuntimeError), trying next
+[Batch] Batch size 7040 — failed (RuntimeError), trying next
+[Batch] Batch size 6848 — failed (RuntimeError), trying next
+[Batch] Batch size 6752 — failed (RuntimeError), trying next
+[Batch] Batch size 6704 — failed (RuntimeError), trying next
+[Batch] Batch size 6680 — OK (5 real steps completed)
+[Batch] Batch size 6688 — failed (RuntimeError), trying next
+[Batch] Refined to batch size 6680 (largest confirmed-working, within 8 of the true VRAM ceiling)
+============================================================
+  Letter Identity Ensemble — Lowercase — Muon  [32x32]
+  PyTorch 2.13.0+cu130  |  AMP: True
+  Output: E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32
+  Resolution: 32x32  |  Batch: 6680 (auto-detected)
+  Optimizer: Muon (Newton-Schulz orthogonalized momentum) + AdamW fallback
+  Letter source: EMNIST ByClass, case=lower (26 classes, no digits)
+  Normalization: [0,1]
+============================================================
+[Dataset] Loading EMNIST ByClass (lower) (via supplementary_data.load_base_emnist_letters)...
+[Dataset] Train: 139,349  |  Val: 24,590  |  Test: 27,059
+
+[Model] OCRConvNetMuon — 32x32
+  Parameters : 9,681,626  (Muon group: 9,673,792  |  AdamW-fallback group: 7,834)
+  Est. size  : 36.9 MB (float32)
+[Optimizer] Muon  lr=0.02  momentum=0.95  wd=0.01  ns_steps=5
+            AdamW fallback  lr=0.0003  betas=(0.9, 0.95)  wd=0.01
+[Schedule]  warmup_steps=300  total_steps=3,150
+
+[Train] Starting 32x32 — no epoch cap | batch: 6680 | patience: 15
+[Resume] No prior checkpoint found — starting fresh
+  [32x32] Epoch   1  Batch     1/   21  loss: 3.282494  acc: 0.035030
+  [32x32] Epoch   1  Batch     2/   21  loss: 3.240691  acc: 0.068114
+  [32x32] Epoch   1  Batch     3/   21  loss: 3.228260  acc: 0.073952
+  [32x32] Epoch   1  Batch     4/   21  loss: 3.220863  acc: 0.077882
+  [32x32] Epoch   1  Batch     5/   21  loss: 3.216614  acc: 0.080000
+  [32x32] Epoch   1  Batch     6/   21  loss: 3.212723  acc: 0.082560
+  [32x32] Epoch   1  Batch     7/   21  loss: 3.210134  acc: 0.084175
+  [32x32] Epoch   1  Batch     8/   21  loss: 3.207630  acc: 0.086115
+  [32x32] Epoch   1  Batch     9/   21  loss: 3.205822  acc: 0.087242
+  [32x32] Epoch   1  Batch    10/   21  loss: 3.203631  acc: 0.088862
+  [32x32] Epoch   1  Batch    11/   21  loss: 3.201962  acc: 0.090528
+  [32x32] Epoch   1  Batch    12/   21  loss: 3.199985  acc: 0.092041
+  [32x32] Epoch   1  Batch    13/   21  loss: 3.197884  acc: 0.094185
+  [32x32] Epoch   1  Batch    14/   21  loss: 3.195871  acc: 0.095520
+  [32x32] Epoch   1  Batch    15/   21  loss: 3.193747  acc: 0.097076
+  [32x32] Epoch   1  Batch    16/   21  loss: 3.191804  acc: 0.098905
+  [32x32] Epoch   1  Batch    17/   21  loss: 3.189244  acc: 0.101057
+  [32x32] Epoch   1  Batch    18/   21  loss: 3.186749  acc: 0.103426
+  [32x32] Epoch   1  Batch    19/   21  loss: 3.183693  acc: 0.106366
+  [32x32] Epoch   1  Batch    20/   21  loss: 3.180791  acc: 0.109341
+  [32x32] Epoch   1  Batch    21/   21  loss: 3.178091  acc: 0.111791
+[32x32] Epoch   1  loss: 3.178091  acc: 0.111791  |  val_loss: 3.266200  val_acc: 0.043920  |  lr: 0.00140000  [56s]  |  VRAM 15.0/16.0GB (other 0.7GB)  CUDA 100/100%(avg/max)  56/60°C  155W  |  CPU 9%  RAM 35.8/63.2GB  SWAP 0.1/18.0GB  |  wait 46.0s/compute 6.5s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 3.266200*  saved
+  [32x32] Epoch   2  Batch     1/   21  loss: 3.105944  acc: 0.188772
+  [32x32] Epoch   2  Batch     2/   21  loss: 3.098685  acc: 0.194686
+  [32x32] Epoch   2  Batch     3/   21  loss: 3.093227  acc: 0.199900
+  [32x32] Epoch   2  Batch     4/   21  loss: 3.087661  acc: 0.207111
+  [32x32] Epoch   2  Batch     5/   21  loss: 3.080869  acc: 0.215449
+  [32x32] Epoch   2  Batch     6/   21  loss: 3.074065  acc: 0.224227
+  [32x32] Epoch   2  Batch     7/   21  loss: 3.067166  acc: 0.231223
+  [32x32] Epoch   2  Batch     8/   21  loss: 3.059732  acc: 0.238922
+  [32x32] Epoch   2  Batch     9/   21  loss: 3.052090  acc: 0.247239
+  [32x32] Epoch   2  Batch    10/   21  loss: 3.044510  acc: 0.254940
+  [32x32] Epoch   2  Batch    11/   21  loss: 3.036540  acc: 0.262180
+  [32x32] Epoch   2  Batch    12/   21  loss: 3.028297  acc: 0.269449
+  [32x32] Epoch   2  Batch    13/   21  loss: 3.019631  acc: 0.277176
+  [32x32] Epoch   2  Batch    14/   21  loss: 3.010263  acc: 0.285554
+  [32x32] Epoch   2  Batch    15/   21  loss: 3.000614  acc: 0.293633
+  [32x32] Epoch   2  Batch    16/   21  loss: 2.990135  acc: 0.302002
+  [32x32] Epoch   2  Batch    17/   21  loss: 2.979721  acc: 0.309783
+  [32x32] Epoch   2  Batch    18/   21  loss: 2.969099  acc: 0.317798
+  [32x32] Epoch   2  Batch    19/   21  loss: 2.957746  acc: 0.325638
+  [32x32] Epoch   2  Batch    20/   21  loss: 2.945628  acc: 0.334147
+  [32x32] Epoch   2  Batch    21/   21  loss: 2.935185  acc: 0.340713
+[32x32] Epoch   2  loss: 2.935185  acc: 0.340713  |  val_loss: 2.739199  val_acc: 0.579382  |  lr: 0.00280000  [12s]  |  VRAM 15.5/16.0GB (other 0.0GB)  CUDA 86/100%(avg/max)  52/59°C  139W  |  CPU 28%  RAM 38.8/63.2GB  SWAP 0.1/22.1GB  |  wait 3.0s/compute 6.3s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 2.739199*  saved
+  [32x32] Epoch   3  Batch     1/   21  loss: 2.654156  acc: 0.513323
+  [32x32] Epoch   3  Batch     2/   21  loss: 2.637875  acc: 0.520584
+  [32x32] Epoch   3  Batch     3/   21  loss: 2.617564  acc: 0.528443
+  [32x32] Epoch   3  Batch     4/   21  loss: 2.597877  acc: 0.533046
+  [32x32] Epoch   3  Batch     5/   21  loss: 2.578608  acc: 0.538892
+  [32x32] Epoch   3  Batch     6/   21  loss: 2.558935  acc: 0.543762
+  [32x32] Epoch   3  Batch     7/   21  loss: 2.539740  acc: 0.547177
+  [32x32] Epoch   3  Batch     8/   21  loss: 2.518725  acc: 0.552957
+  [32x32] Epoch   3  Batch     9/   21  loss: 2.498478  acc: 0.556770
+  [32x32] Epoch   3  Batch    10/   21  loss: 2.477355  acc: 0.561452
+  [32x32] Epoch   3  Batch    11/   21  loss: 2.455422  acc: 0.566236
+  [32x32] Epoch   3  Batch    12/   21  loss: 2.433465  acc: 0.570871
+  [32x32] Epoch   3  Batch    13/   21  loss: 2.410307  acc: 0.575990
+  [32x32] Epoch   3  Batch    14/   21  loss: 2.386699  acc: 0.581234
+  [32x32] Epoch   3  Batch    15/   21  loss: 2.362522  acc: 0.586487
+  [32x32] Epoch   3  Batch    16/   21  loss: 2.337728  acc: 0.592075
+  [32x32] Epoch   3  Batch    17/   21  loss: 2.313235  acc: 0.597376
+  [32x32] Epoch   3  Batch    18/   21  loss: 2.288117  acc: 0.602653
+  [32x32] Epoch   3  Batch    19/   21  loss: 2.263634  acc: 0.607595
+  [32x32] Epoch   3  Batch    20/   21  loss: 2.238202  acc: 0.612687
+  [32x32] Epoch   3  Batch    21/   21  loss: 2.215293  acc: 0.617794
+[32x32] Epoch   3  loss: 2.215293  acc: 0.617794  |  val_loss: 1.278018  val_acc: 0.839325  |  lr: 0.00420000  [12s]  |  VRAM 15.5/16.0GB (other 0.0GB)  CUDA 100/100%(avg/max)  54/61°C  143W  |  CPU 27%  RAM 38.8/63.2GB  SWAP 0.1/22.1GB  |  wait 3.0s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 1.278018*  saved
+  [VRAM] 15.50 GB peak this epoch — within 1.0 GB of this GPU's 15.99 GB physical capacity for 3 straight epochs — reducing batch size and continuing
+  [VRAM] Recent trend (epochs 1-3): 15.05 -> 15.50 -> 15.50 GB (avg +0.45GB/epoch over epochs 1-2, this epoch +0.00GB)
+[Batch] Reduced to 6016 for subsequent epochs
+  [32x32] Epoch   4  Batch     1/   24  loss: 1.659037  acc: 0.730552
+  [32x32] Epoch   4  Batch     2/   24  loss: 1.625819  acc: 0.737450
+  [32x32] Epoch   4  Batch     3/   24  loss: 1.600839  acc: 0.740691
+  [32x32] Epoch   4  Batch     4/   24  loss: 1.571045  acc: 0.747590
+  [32x32] Epoch   4  Batch     5/   24  loss: 1.544494  acc: 0.751928
+  [32x32] Epoch   4  Batch     6/   24  loss: 1.517317  acc: 0.758062
+  [32x32] Epoch   4  Batch     7/   24  loss: 1.490090  acc: 0.763179
+  [32x32] Epoch   4  Batch     8/   24  loss: 1.464330  acc: 0.766892
+  [32x32] Epoch   4  Batch     9/   24  loss: 1.440182  acc: 0.770741
+  [32x32] Epoch   4  Batch    10/   24  loss: 1.414230  acc: 0.774917
+  [32x32] Epoch   4  Batch    11/   24  loss: 1.389072  acc: 0.779422
+  [32x32] Epoch   4  Batch    12/   24  loss: 1.364857  acc: 0.783522
+  [32x32] Epoch   4  Batch    13/   24  loss: 1.341192  acc: 0.787362
+  [32x32] Epoch   4  Batch    14/   24  loss: 1.317391  acc: 0.792363
+  [32x32] Epoch   4  Batch    15/   24  loss: 1.294786  acc: 0.796387
+  [32x32] Epoch   4  Batch    16/   24  loss: 1.273026  acc: 0.799722
+  [32x32] Epoch   4  Batch    17/   24  loss: 1.252134  acc: 0.802830
+  [32x32] Epoch   4  Batch    18/   24  loss: 1.231729  acc: 0.806294
+  [32x32] Epoch   4  Batch    19/   24  loss: 1.212257  acc: 0.809202
+  [32x32] Epoch   4  Batch    20/   24  loss: 1.193073  acc: 0.812276
+  [32x32] Epoch   4  Batch    21/   24  loss: 1.174973  acc: 0.814914
+  [32x32] Epoch   4  Batch    22/   24  loss: 1.157075  acc: 0.818121
+  [32x32] Epoch   4  Batch    23/   24  loss: 1.139429  acc: 0.821136
+  [32x32] Epoch   4  Batch    24/   24  loss: 1.137026  acc: 0.821463
+[32x32] Epoch   4  loss: 1.137026  acc: 0.821463  |  val_loss: 0.588529  val_acc: 0.930216  |  lr: 0.00580000  [79s]  |  VRAM 14.0/16.0GB (other 0.7GB)  CUDA 100/100%(avg/max)  50/58°C  130W  |  CPU 12%  RAM 35.8/63.2GB  SWAP 0.1/17.0GB  |  wait 46.0s/compute 6.5s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 0.588529*  saved
+  [32x32] Epoch   5  Batch     1/   24  loss: 0.721535  acc: 0.892786
+  [32x32] Epoch   5  Batch     2/   24  loss: 0.724339  acc: 0.891705
+  [32x32] Epoch   5  Batch     3/   24  loss: 0.719677  acc: 0.892232
+  [32x32] Epoch   5  Batch     4/   24  loss: 0.712939  acc: 0.892952
+  [32x32] Epoch   5  Batch     5/   24  loss: 0.706616  acc: 0.893584
+  [32x32] Epoch   5  Batch     6/   24  loss: 0.700288  acc: 0.895529
+  [32x32] Epoch   5  Batch     7/   24  loss: 0.695843  acc: 0.896538
+  [32x32] Epoch   5  Batch     8/   24  loss: 0.690682  acc: 0.898022
+  [32x32] Epoch   5  Batch     9/   24  loss: 0.686291  acc: 0.898641
+  [32x32] Epoch   5  Batch    10/   24  loss: 0.681184  acc: 0.900316
+  [32x32] Epoch   5  Batch    11/   24  loss: 0.677915  acc: 0.901384
+  [32x32] Epoch   5  Batch    12/   24  loss: 0.674439  acc: 0.902274
+  [32x32] Epoch   5  Batch    13/   24  loss: 0.671581  acc: 0.903258
+  [32x32] Epoch   5  Batch    14/   24  loss: 0.668341  acc: 0.904481
+  [32x32] Epoch   5  Batch    15/   24  loss: 0.665925  acc: 0.905264
+  [32x32] Epoch   5  Batch    16/   24  loss: 0.662730  acc: 0.906188
+  [32x32] Epoch   5  Batch    17/   24  loss: 0.660230  acc: 0.907042
+  [32x32] Epoch   5  Batch    18/   24  loss: 0.658783  acc: 0.907524
+  [32x32] Epoch   5  Batch    19/   24  loss: 0.656000  acc: 0.908665
+  [32x32] Epoch   5  Batch    20/   24  loss: 0.653714  acc: 0.909250
+  [32x32] Epoch   5  Batch    21/   24  loss: 0.651717  acc: 0.909923
+  [32x32] Epoch   5  Batch    22/   24  loss: 0.649345  acc: 0.910678
+  [32x32] Epoch   5  Batch    23/   24  loss: 0.647243  acc: 0.911360
+  [32x32] Epoch   5  Batch    24/   24  loss: 0.646988  acc: 0.911453
+[32x32] Epoch   5  loss: 0.646988  acc: 0.911453  |  val_loss: 0.535457  val_acc: 0.947133  |  lr: 0.00740000  [40s]  |  VRAM 15.5/16.0GB (other 0.0GB)  CUDA 100/100%(avg/max)  50/56°C  111W  |  CPU 13%  RAM 37.8/63.2GB  SWAP 0.1/21.1GB  |  wait 2.5s/compute 10.9s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 0.535457*  saved
+  [32x32] Epoch   6  Batch     1/   24  loss: 0.608156  acc: 0.918551
+  [32x32] Epoch   6  Batch     2/   24  loss: 0.602199  acc: 0.924202
+  [32x32] Epoch   6  Batch     3/   24  loss: 0.602702  acc: 0.923870
+  [32x32] Epoch   6  Batch     4/   24  loss: 0.600187  acc: 0.925532
+  [32x32] Epoch   6  Batch     5/   24  loss: 0.596835  acc: 0.927028
+  [32x32] Epoch   6  Batch     6/   24  loss: 0.596606  acc: 0.926695
+  [32x32] Epoch   6  Batch     7/   24  loss: 0.594758  acc: 0.927075
+  [32x32] Epoch   6  Batch     8/   24  loss: 0.594153  acc: 0.927776
+  [32x32] Epoch   6  Batch     9/   24  loss: 0.593149  acc: 0.928025
+  [32x32] Epoch   6  Batch    10/   24  loss: 0.591938  acc: 0.928474
+  [32x32] Epoch   6  Batch    11/   24  loss: 0.591386  acc: 0.928116
+  [32x32] Epoch   6  Batch    12/   24  loss: 0.590053  acc: 0.928413
+  [32x32] Epoch   6  Batch    13/   24  loss: 0.589238  acc: 0.928307
+  [32x32] Epoch   6  Batch    14/   24  loss: 0.589898  acc: 0.927990
+  [32x32] Epoch   6  Batch    15/   24  loss: 0.588857  acc: 0.928280
+  [32x32] Epoch   6  Batch    16/   24  loss: 0.588532  acc: 0.928420
+  [32x32] Epoch   6  Batch    17/   24  loss: 0.587416  acc: 0.928661
+  [32x32] Epoch   6  Batch    18/   24  loss: 0.586488  acc: 0.928810
+  [32x32] Epoch   6  Batch    19/   24  loss: 0.585630  acc: 0.929128
+  [32x32] Epoch   6  Batch    20/   24  loss: 0.584130  acc: 0.929480
+  [32x32] Epoch   6  Batch    21/   24  loss: 0.582794  acc: 0.929980
+  [32x32] Epoch   6  Batch    22/   24  loss: 0.582261  acc: 0.929960
+  [32x32] Epoch   6  Batch    23/   24  loss: 0.581312  acc: 0.930164
+  [32x32] Epoch   6  Batch    24/   24  loss: 0.580970  acc: 0.930254
+[32x32] Epoch   6  loss: 0.580970  acc: 0.930254  |  val_loss: 0.519336  val_acc: 0.951200  |  lr: 0.00900000  [40s]  |  VRAM 15.5/16.0GB (other 0.0GB)  CUDA 99/100%(avg/max)  49/53°C  110W  |  CPU 12%  RAM 37.8/63.2GB  SWAP 0.1/21.1GB  |  wait 2.6s/compute 10.9s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 0.519336*  saved
+  [32x32] Epoch   7  Batch     1/   24  loss: 0.557786  acc: 0.938664
+  [32x32] Epoch   7  Batch     2/   24  loss: 0.559585  acc: 0.936087
+  [32x32] Epoch   7  Batch     3/   24  loss: 0.558022  acc: 0.934896
+  [32x32] Epoch   7  Batch     4/   24  loss: 0.555016  acc: 0.936544
+  [32x32] Epoch   7  Batch     5/   24  loss: 0.553391  acc: 0.936569
+  [32x32] Epoch   7  Batch     6/   24  loss: 0.553203  acc: 0.936780
+  [32x32] Epoch   7  Batch     7/   24  loss: 0.553882  acc: 0.936621
+  [32x32] Epoch   7  Batch     8/   24  loss: 0.553015  acc: 0.936586
+  [32x32] Epoch   7  Batch     9/   24  loss: 0.552338  acc: 0.936780
+  [32x32] Epoch   7  Batch    10/   24  loss: 0.550984  acc: 0.937035
+  [32x32] Epoch   7  Batch    11/   24  loss: 0.549187  acc: 0.937621
+  [32x32] Epoch   7  Batch    12/   24  loss: 0.548102  acc: 0.937985
+  [32x32] Epoch   7  Batch    13/   24  loss: 0.546844  acc: 0.938357
+  [32x32] Epoch   7  Batch    14/   24  loss: 0.546237  acc: 0.938367
+  [32x32] Epoch   7  Batch    15/   24  loss: 0.545579  acc: 0.938486
+  [32x32] Epoch   7  Batch    16/   24  loss: 0.544303  acc: 0.938799
+  [32x32] Epoch   7  Batch    17/   24  loss: 0.543353  acc: 0.939006
+  [32x32] Epoch   7  Batch    18/   24  loss: 0.542457  acc: 0.939402
+  [32x32] Epoch   7  Batch    19/   24  loss: 0.542197  acc: 0.939197
+  [32x32] Epoch   7  Batch    20/   24  loss: 0.541249  acc: 0.939569
+  [32x32] Epoch   7  Batch    21/   24  loss: 0.540595  acc: 0.939772
+  [32x32] Epoch   7  Batch    22/   24  loss: 0.539183  acc: 0.940160
+  [32x32] Epoch   7  Batch    23/   24  loss: 0.538628  acc: 0.940319
+  [32x32] Epoch   7  Batch    24/   24  loss: 0.538500  acc: 0.940330
+[32x32] Epoch   7  loss: 0.538500  acc: 0.940330  |  val_loss: 0.484635  val_acc: 0.956893  |  lr: 0.01060000  [41s]  |  VRAM 15.5/16.0GB (other 0.0GB)  CUDA 100/100%(avg/max)  50/54°C  108W  |  CPU 12%  RAM 37.8/63.2GB  SWAP 0.1/21.1GB  |  wait 2.7s/compute 10.9s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 0.484635*  saved
+  [VRAM] 15.48 GB peak this epoch — within 1.0 GB of this GPU's 15.99 GB physical capacity for 3 straight epochs — reducing batch size and continuing
+  [VRAM] Recent trend (epochs 3-7): 15.50 -> 13.96 -> 15.48 -> 15.48 -> 15.48 GB (avg -0.01GB/epoch over epochs 3-6, this epoch +0.00GB)
+[Batch] Reduced to 5416 for subsequent epochs
+  [32x32] Epoch   8  Batch     1/   26  loss: 0.515714  acc: 0.942393
+  [32x32] Epoch   8  Batch     2/   26  loss: 0.515107  acc: 0.944609
+  [32x32] Epoch   8  Batch     3/   26  loss: 0.515843  acc: 0.945839
+  [32x32] Epoch   8  Batch     4/   26  loss: 0.518192  acc: 0.943778
+  [32x32] Epoch   8  Batch     5/   26  loss: 0.519424  acc: 0.943353
+  [32x32] Epoch   8  Batch     6/   26  loss: 0.519530  acc: 0.943224
+  [32x32] Epoch   8  Batch     7/   26  loss: 0.518991  acc: 0.943527
+  [32x32] Epoch   8  Batch     8/   26  loss: 0.518003  acc: 0.944078
+  [32x32] Epoch   8  Batch     9/   26  loss: 0.517777  acc: 0.943891
+  [32x32] Epoch   8  Batch    10/   26  loss: 0.517943  acc: 0.944073
+  [32x32] Epoch   8  Batch    11/   26  loss: 0.516061  acc: 0.944810
+  [32x32] Epoch   8  Batch    12/   26  loss: 0.515639  acc: 0.944716
+  [32x32] Epoch   8  Batch    13/   26  loss: 0.515755  acc: 0.944807
+  [32x32] Epoch   8  Batch    14/   26  loss: 0.515745  acc: 0.944516
+  [32x32] Epoch   8  Batch    15/   26  loss: 0.515729  acc: 0.944424
+  [32x32] Epoch   8  Batch    16/   26  loss: 0.515555  acc: 0.944412
+  [32x32] Epoch   8  Batch    17/   26  loss: 0.515222  acc: 0.944511
+  [32x32] Epoch   8  Batch    18/   26  loss: 0.515148  acc: 0.944598
+  [32x32] Epoch   8  Batch    19/   26  loss: 0.514736  acc: 0.944667
+  [32x32] Epoch   8  Batch    20/   26  loss: 0.514530  acc: 0.944867
+  [32x32] Epoch   8  Batch    21/   26  loss: 0.514810  acc: 0.944556
+  [32x32] Epoch   8  Batch    22/   26  loss: 0.514520  acc: 0.944575
+  [32x32] Epoch   8  Batch    23/   26  loss: 0.514298  acc: 0.944593
+  [32x32] Epoch   8  Batch    24/   26  loss: 0.514093  acc: 0.944639
+  [32x32] Epoch   8  Batch    25/   26  loss: 0.513753  acc: 0.944645
+  [32x32] Epoch   8  Batch    26/   26  loss: 0.513250  acc: 0.944736
+[32x32] Epoch   8  loss: 0.513250  acc: 0.944736  |  val_loss: 0.490661  val_acc: 0.955510  |  lr: 0.01233333  [55s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 84/100%(avg/max)  50/54°C  140W  |  CPU 12%  RAM 36.0/63.2GB  SWAP 0.1/17.0GB  |  wait 46.4s/compute 6.7s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 1/15
+  [32x32] Epoch   9  Batch     1/   26  loss: 0.495202  acc: 0.949409
+  [32x32] Epoch   9  Batch     2/   26  loss: 0.503310  acc: 0.947747
+  [32x32] Epoch   9  Batch     3/   26  loss: 0.501108  acc: 0.948978
+  [32x32] Epoch   9  Batch     4/   26  loss: 0.501176  acc: 0.949317
+  [32x32] Epoch   9  Batch     5/   26  loss: 0.501862  acc: 0.948892
+  [32x32] Epoch   9  Batch     6/   26  loss: 0.502045  acc: 0.948455
+  [32x32] Epoch   9  Batch     7/   26  loss: 0.502345  acc: 0.947853
+  [32x32] Epoch   9  Batch     8/   26  loss: 0.502872  acc: 0.947932
+  [32x32] Epoch   9  Batch     9/   26  loss: 0.502439  acc: 0.948096
+  [32x32] Epoch   9  Batch    10/   26  loss: 0.502049  acc: 0.948172
+  [32x32] Epoch   9  Batch    11/   26  loss: 0.501148  acc: 0.948520
+  [32x32] Epoch   9  Batch    12/   26  loss: 0.500409  acc: 0.948778
+  [32x32] Epoch   9  Batch    13/   26  loss: 0.500569  acc: 0.948429
+  [32x32] Epoch   9  Batch    14/   26  loss: 0.500015  acc: 0.948407
+  [32x32] Epoch   9  Batch    15/   26  loss: 0.500224  acc: 0.948301
+  [32x32] Epoch   9  Batch    16/   26  loss: 0.499978  acc: 0.948313
+  [32x32] Epoch   9  Batch    17/   26  loss: 0.500505  acc: 0.948084
+  [32x32] Epoch   9  Batch    18/   26  loss: 0.500828  acc: 0.947953
+  [32x32] Epoch   9  Batch    19/   26  loss: 0.500560  acc: 0.947932
+  [32x32] Epoch   9  Batch    20/   26  loss: 0.500074  acc: 0.948061
+  [32x32] Epoch   9  Batch    21/   26  loss: 0.500144  acc: 0.947941
+  [32x32] Epoch   9  Batch    22/   26  loss: 0.499737  acc: 0.948217
+  [32x32] Epoch   9  Batch    23/   26  loss: 0.499729  acc: 0.948358
+  [32x32] Epoch   9  Batch    24/   26  loss: 0.499429  acc: 0.948448
+  [32x32] Epoch   9  Batch    25/   26  loss: 0.498919  acc: 0.948545
+  [32x32] Epoch   9  Batch    26/   26  loss: 0.498851  acc: 0.948625
+[32x32] Epoch   9  loss: 0.498851  acc: 0.948625  |  val_loss: 0.481897  val_acc: 0.949085  |  lr: 0.01406667  [12s]  |  VRAM 15.4/16.0GB (other 0.0GB)  CUDA 98/100%(avg/max)  48/54°C  130W  |  CPU 30%  RAM 37.3/63.2GB  SWAP 0.1/20.0GB  |  wait 2.3s/compute 7.8s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 0.481897*  saved
+  [32x32] Epoch  10  Batch     1/   26  loss: 0.489793  acc: 0.951440
+  [32x32] Epoch  10  Batch     2/   26  loss: 0.493246  acc: 0.950794
+  [32x32] Epoch  10  Batch     3/   26  loss: 0.489405  acc: 0.952425
+  [32x32] Epoch  10  Batch     4/   26  loss: 0.491325  acc: 0.951809
+  [32x32] Epoch  10  Batch     5/   26  loss: 0.489142  acc: 0.952068
+  [32x32] Epoch  10  Batch     6/   26  loss: 0.489372  acc: 0.951871
+  [32x32] Epoch  10  Batch     7/   26  loss: 0.490325  acc: 0.951467
+  [32x32] Epoch  10  Batch     8/   26  loss: 0.490757  acc: 0.951163
+  [32x32] Epoch  10  Batch     9/   26  loss: 0.490978  acc: 0.951440
+  [32x32] Epoch  10  Batch    10/   26  loss: 0.489728  acc: 0.951957
+  [32x32] Epoch  10  Batch    11/   26  loss: 0.489889  acc: 0.951994
+  [32x32] Epoch  10  Batch    12/   26  loss: 0.490029  acc: 0.952133
+  [32x32] Epoch  10  Batch    13/   26  loss: 0.490345  acc: 0.952321
+  [32x32] Epoch  10  Batch    14/   26  loss: 0.490133  acc: 0.952126
+  [32x32] Epoch  10  Batch    15/   26  loss: 0.489976  acc: 0.952068
+  [32x32] Epoch  10  Batch    16/   26  loss: 0.490217  acc: 0.951983
+  [32x32] Epoch  10  Batch    17/   26  loss: 0.490680  acc: 0.951875
+  [32x32] Epoch  10  Batch    18/   26  loss: 0.490062  acc: 0.951974
+  [32x32] Epoch  10  Batch    19/   26  loss: 0.489525  acc: 0.952354
+  [32x32] Epoch  10  Batch    20/   26  loss: 0.489377  acc: 0.952400
+  [32x32] Epoch  10  Batch    21/   26  loss: 0.489258  acc: 0.952504
+  [32x32] Epoch  10  Batch    22/   26  loss: 0.489070  acc: 0.952472
+  [32x32] Epoch  10  Batch    23/   26  loss: 0.488905  acc: 0.952339
+  [32x32] Epoch  10  Batch    24/   26  loss: 0.488920  acc: 0.952217
+  [32x32] Epoch  10  Batch    25/   26  loss: 0.488764  acc: 0.952164
+  [32x32] Epoch  10  Batch    26/   26  loss: 0.488872  acc: 0.952063
+[32x32] Epoch  10  loss: 0.488872  acc: 0.952063  |  val_loss: 0.466570  val_acc: 0.960716  |  lr: 0.01580000  [12s]  |  VRAM 15.4/16.0GB (other 0.0GB)  CUDA 100/100%(avg/max)  50/54°C  133W  |  CPU 31%  RAM 37.4/63.2GB  SWAP 0.1/20.0GB  |  wait 2.5s/compute 7.8s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 0.466570*  saved
+  [32x32] Epoch  11  Batch     1/   26  loss: 0.484318  acc: 0.954764
+  [32x32] Epoch  11  Batch     2/   26  loss: 0.484162  acc: 0.954487
+  [32x32] Epoch  11  Batch     3/   26  loss: 0.486379  acc: 0.953225
+  [32x32] Epoch  11  Batch     4/   26  loss: 0.482900  acc: 0.953702
+  [32x32] Epoch  11  Batch     5/   26  loss: 0.482758  acc: 0.953471
+  [32x32] Epoch  11  Batch     6/   26  loss: 0.483862  acc: 0.952610
+  [32x32] Epoch  11  Batch     7/   26  loss: 0.484276  acc: 0.952047
+  [32x32] Epoch  11  Batch     8/   26  loss: 0.484410  acc: 0.952156
+  [32x32] Epoch  11  Batch     9/   26  loss: 0.483965  acc: 0.952753
+  [32x32] Epoch  11  Batch    10/   26  loss: 0.484547  acc: 0.952493
+  [32x32] Epoch  11  Batch    11/   26  loss: 0.484871  acc: 0.952397
+  [32x32] Epoch  11  Batch    12/   26  loss: 0.485236  acc: 0.952502
+  [32x32] Epoch  11  Batch    13/   26  loss: 0.485291  acc: 0.952321
+  [32x32] Epoch  11  Batch    14/   26  loss: 0.485361  acc: 0.952179
+  [32x32] Epoch  11  Batch    15/   26  loss: 0.484679  acc: 0.952462
+  [32x32] Epoch  11  Batch    16/   26  loss: 0.483885  acc: 0.952906
+  [32x32] Epoch  11  Batch    17/   26  loss: 0.484448  acc: 0.952570
+  [32x32] Epoch  11  Batch    18/   26  loss: 0.484210  acc: 0.952507
+  [32x32] Epoch  11  Batch    19/   26  loss: 0.484144  acc: 0.952655
+  [32x32] Epoch  11  Batch    20/   26  loss: 0.484644  acc: 0.952437
+  [32x32] Epoch  11  Batch    21/   26  loss: 0.484939  acc: 0.952460
+  [32x32] Epoch  11  Batch    22/   26  loss: 0.484969  acc: 0.952472
+  [32x32] Epoch  11  Batch    23/   26  loss: 0.485058  acc: 0.952412
+  [32x32] Epoch  11  Batch    24/   26  loss: 0.484919  acc: 0.952510
+  [32x32] Epoch  11  Batch    25/   26  loss: 0.484636  acc: 0.952644
+  [32x32] Epoch  11  Batch    26/   26  loss: 0.484336  acc: 0.952716
+[32x32] Epoch  11  loss: 0.484336  acc: 0.952716  |  val_loss: 0.466093  val_acc: 0.956568  |  lr: 0.01753333  [12s]  |  VRAM 15.4/16.0GB (other 0.0GB)  CUDA 100/100%(avg/max)  50/54°C  140W  |  CPU 30%  RAM 37.4/63.2GB  SWAP 0.1/20.0GB  |  wait 2.4s/compute 7.9s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 0.466093*  saved
+  [VRAM] 15.40 GB peak this epoch — within 1.0 GB of this GPU's 15.99 GB physical capacity for 3 straight epochs — reducing batch size and continuing
+  [VRAM] Recent trend (epochs 7-11): 15.48 -> 13.45 -> 15.40 -> 15.40 -> 15.40 GB (avg -0.02GB/epoch over epochs 7-10, this epoch +0.00GB)
+[Batch] Reduced to 4872 for subsequent epochs
+  [32x32] Epoch  12  Batch     1/   29  loss: 0.479331  acc: 0.955049
+  [32x32] Epoch  12  Batch     2/   29  loss: 0.476319  acc: 0.955973
+  [32x32] Epoch  12  Batch     3/   29  loss: 0.480655  acc: 0.954228
+  [32x32] Epoch  12  Batch     4/   29  loss: 0.480704  acc: 0.953664
+  [32x32] Epoch  12  Batch     5/   29  loss: 0.479283  acc: 0.954475
+  [32x32] Epoch  12  Batch     6/   29  loss: 0.480656  acc: 0.953886
+  [32x32] Epoch  12  Batch     7/   29  loss: 0.480423  acc: 0.953642
+  [32x32] Epoch  12  Batch     8/   29  loss: 0.480739  acc: 0.953330
+  [32x32] Epoch  12  Batch     9/   29  loss: 0.480698  acc: 0.953362
+  [32x32] Epoch  12  Batch    10/   29  loss: 0.481059  acc: 0.953140
+  [32x32] Epoch  12  Batch    11/   29  loss: 0.481332  acc: 0.952847
+  [32x32] Epoch  12  Batch    12/   29  loss: 0.481417  acc: 0.952774
+  [32x32] Epoch  12  Batch    13/   29  loss: 0.481598  acc: 0.952791
+  [32x32] Epoch  12  Batch    14/   29  loss: 0.480952  acc: 0.952982
+  [32x32] Epoch  12  Batch    15/   29  loss: 0.481997  acc: 0.952504
+  [32x32] Epoch  12  Batch    16/   29  loss: 0.481312  acc: 0.952779
+  [32x32] Epoch  12  Batch    17/   29  loss: 0.480868  acc: 0.952852
+  [32x32] Epoch  12  Batch    18/   29  loss: 0.480963  acc: 0.953088
+  [32x32] Epoch  12  Batch    19/   29  loss: 0.480865  acc: 0.953126
+  [32x32] Epoch  12  Batch    20/   29  loss: 0.480551  acc: 0.953161
+  [32x32] Epoch  12  Batch    21/   29  loss: 0.480780  acc: 0.952928
+  [32x32] Epoch  12  Batch    22/   29  loss: 0.480915  acc: 0.952801
+  [32x32] Epoch  12  Batch    23/   29  loss: 0.480334  acc: 0.953077
+  [32x32] Epoch  12  Batch    24/   29  loss: 0.480445  acc: 0.953065
+  [32x32] Epoch  12  Batch    25/   29  loss: 0.480486  acc: 0.953128
+  [32x32] Epoch  12  Batch    26/   29  loss: 0.480510  acc: 0.953115
+  [32x32] Epoch  12  Batch    27/   29  loss: 0.480601  acc: 0.953065
+  [32x32] Epoch  12  Batch    28/   29  loss: 0.480425  acc: 0.953107
+  [32x32] Epoch  12  Batch    29/   29  loss: 0.480195  acc: 0.953211
+[32x32] Epoch  12  loss: 0.480195  acc: 0.953211  |  val_loss: 0.464033  val_acc: 0.959699  |  lr: 0.01946667  [54s]  |  VRAM 11.8/16.0GB (other 0.7GB)  CUDA 98/100%(avg/max)  50/56°C  158W  |  CPU 10%  RAM 36.1/63.2GB  SWAP 0.1/16.0GB  |  wait 46.1s/compute 6.6s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 0.464033*  saved
+  [32x32] Epoch  13  Batch     1/   29  loss: 0.479862  acc: 0.955460
+  [32x32] Epoch  13  Batch     2/   29  loss: 0.477699  acc: 0.955973
+  [32x32] Epoch  13  Batch     3/   29  loss: 0.474924  acc: 0.956828
+  [32x32] Epoch  13  Batch     4/   29  loss: 0.478274  acc: 0.954947
+  [32x32] Epoch  13  Batch     5/   29  loss: 0.479183  acc: 0.954433
+  [32x32] Epoch  13  Batch     6/   29  loss: 0.479860  acc: 0.954365
+  [32x32] Epoch  13  Batch     7/   29  loss: 0.480087  acc: 0.953847
+  [32x32] Epoch  13  Batch     8/   29  loss: 0.481052  acc: 0.953612
+  [32x32] Epoch  13  Batch     9/   29  loss: 0.481381  acc: 0.953727
+  [32x32] Epoch  13  Batch    10/   29  loss: 0.481061  acc: 0.953818
+  [32x32] Epoch  13  Batch    11/   29  loss: 0.481699  acc: 0.953706
+  [32x32] Epoch  13  Batch    12/   29  loss: 0.481684  acc: 0.953937
+  [32x32] Epoch  13  Batch    13/   29  loss: 0.482011  acc: 0.953597
+  [32x32] Epoch  13  Batch    14/   29  loss: 0.481381  acc: 0.953730
+  [32x32] Epoch  13  Batch    15/   29  loss: 0.481175  acc: 0.953640
+  [32x32] Epoch  13  Batch    16/   29  loss: 0.481161  acc: 0.953728
+  [32x32] Epoch  13  Batch    17/   29  loss: 0.481069  acc: 0.953504
+  [32x32] Epoch  13  Batch    18/   29  loss: 0.481125  acc: 0.953601
+  [32x32] Epoch  13  Batch    19/   29  loss: 0.481264  acc: 0.953710
+  [32x32] Epoch  13  Batch    20/   29  loss: 0.481434  acc: 0.953387
+  [32x32] Epoch  13  Batch    21/   29  loss: 0.481198  acc: 0.953505
+  [32x32] Epoch  13  Batch    22/   29  loss: 0.481371  acc: 0.953407
+  [32x32] Epoch  13  Batch    23/   29  loss: 0.480875  acc: 0.953595
+  [32x32] Epoch  13  Batch    24/   29  loss: 0.480818  acc: 0.953630
+  [32x32] Epoch  13  Batch    25/   29  loss: 0.480479  acc: 0.953662
+  [32x32] Epoch  13  Batch    26/   29  loss: 0.480473  acc: 0.953660
+  [32x32] Epoch  13  Batch    27/   29  loss: 0.480761  acc: 0.953460
+  [32x32] Epoch  13  Batch    28/   29  loss: 0.480530  acc: 0.953451
+  [32x32] Epoch  13  Batch    29/   29  loss: 0.480285  acc: 0.953441
+[32x32] Epoch  13  loss: 0.480285  acc: 0.953441  |  val_loss: 0.465835  val_acc: 0.957096  |  lr: 0.01999864  [11s]  |  VRAM 15.1/16.0GB (other 0.7GB)  CUDA 66/100%(avg/max)  51/58°C  181W  |  CPU 26%  RAM 36.2/63.2GB  SWAP 0.1/19.1GB  |  wait 2.4s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 1/15
+  [32x32] Epoch  14  Batch     1/   29  loss: 0.481474  acc: 0.954433
+  [32x32] Epoch  14  Batch     2/   29  loss: 0.479316  acc: 0.955152
+  [32x32] Epoch  14  Batch     3/   29  loss: 0.477792  acc: 0.955323
+  [32x32] Epoch  14  Batch     4/   29  loss: 0.478721  acc: 0.954895
+  [32x32] Epoch  14  Batch     5/   29  loss: 0.477349  acc: 0.955049
+  [32x32] Epoch  14  Batch     6/   29  loss: 0.477161  acc: 0.954878
+  [32x32] Epoch  14  Batch     7/   29  loss: 0.476525  acc: 0.954844
+  [32x32] Epoch  14  Batch     8/   29  loss: 0.475877  acc: 0.955152
+  [32x32] Epoch  14  Batch     9/   29  loss: 0.476203  acc: 0.955232
+  [32x32] Epoch  14  Batch    10/   29  loss: 0.476245  acc: 0.954865
+  [32x32] Epoch  14  Batch    11/   29  loss: 0.476901  acc: 0.954788
+  [32x32] Epoch  14  Batch    12/   29  loss: 0.477328  acc: 0.954536
+  [32x32] Epoch  14  Batch    13/   29  loss: 0.477445  acc: 0.954465
+  [32x32] Epoch  14  Batch    14/   29  loss: 0.476889  acc: 0.954683
+  [32x32] Epoch  14  Batch    15/   29  loss: 0.476935  acc: 0.954611
+  [32x32] Epoch  14  Batch    16/   29  loss: 0.476952  acc: 0.954767
+  [32x32] Epoch  14  Batch    17/   29  loss: 0.477084  acc: 0.954772
+  [32x32] Epoch  14  Batch    18/   29  loss: 0.476842  acc: 0.954924
+  [32x32] Epoch  14  Batch    19/   29  loss: 0.476960  acc: 0.954909
+  [32x32] Epoch  14  Batch    20/   29  loss: 0.477155  acc: 0.954834
+  [32x32] Epoch  14  Batch    21/   29  loss: 0.477371  acc: 0.954551
+  [32x32] Epoch  14  Batch    22/   29  loss: 0.477429  acc: 0.954452
+  [32x32] Epoch  14  Batch    23/   29  loss: 0.477686  acc: 0.954032
+  [32x32] Epoch  14  Batch    24/   29  loss: 0.477382  acc: 0.954032
+  [32x32] Epoch  14  Batch    25/   29  loss: 0.477373  acc: 0.953949
+  [32x32] Epoch  14  Batch    26/   29  loss: 0.477043  acc: 0.954141
+  [32x32] Epoch  14  Batch    27/   29  loss: 0.476878  acc: 0.954107
+  [32x32] Epoch  14  Batch    28/   29  loss: 0.476815  acc: 0.954089
+  [32x32] Epoch  14  Batch    29/   29  loss: 0.476837  acc: 0.954137
+[32x32] Epoch  14  loss: 0.476837  acc: 0.954137  |  val_loss: 0.457026  val_acc: 0.961366  |  lr: 0.01999227  [10s]  |  VRAM 15.1/16.0GB (other 0.7GB)  CUDA 99/100%(avg/max)  55/58°C  185W  |  CPU 25%  RAM 36.1/63.2GB  SWAP 0.1/19.1GB  |  wait 2.4s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 0.457026*  saved
+  [32x32] Epoch  15  Batch     1/   29  loss: 0.488248  acc: 0.950328
+  [32x32] Epoch  15  Batch     2/   29  loss: 0.481346  acc: 0.952791
+  [32x32] Epoch  15  Batch     3/   29  loss: 0.474324  acc: 0.956076
+  [32x32] Epoch  15  Batch     4/   29  loss: 0.473050  acc: 0.956794
+  [32x32] Epoch  15  Batch     5/   29  loss: 0.471101  acc: 0.957266
+  [32x32] Epoch  15  Batch     6/   29  loss: 0.470949  acc: 0.957375
+  [32x32] Epoch  15  Batch     7/   29  loss: 0.470261  acc: 0.957718
+  [32x32] Epoch  15  Batch     8/   29  loss: 0.469689  acc: 0.957795
+  [32x32] Epoch  15  Batch     9/   29  loss: 0.470396  acc: 0.957239
+  [32x32] Epoch  15  Batch    10/   29  loss: 0.470935  acc: 0.956630
+  [32x32] Epoch  15  Batch    11/   29  loss: 0.471158  acc: 0.956635
+  [32x32] Epoch  15  Batch    12/   29  loss: 0.470651  acc: 0.956657
+  [32x32] Epoch  15  Batch    13/   29  loss: 0.470869  acc: 0.956597
+  [32x32] Epoch  15  Batch    14/   29  loss: 0.470268  acc: 0.957043
+  [32x32] Epoch  15  Batch    15/   29  loss: 0.469806  acc: 0.957198
+  [32x32] Epoch  15  Batch    16/   29  loss: 0.470252  acc: 0.956961
+  [32x32] Epoch  15  Batch    17/   29  loss: 0.470279  acc: 0.956836
+  [32x32] Epoch  15  Batch    18/   29  loss: 0.470149  acc: 0.956851
+  [32x32] Epoch  15  Batch    19/   29  loss: 0.470319  acc: 0.956951
+  [32x32] Epoch  15  Batch    20/   29  loss: 0.470076  acc: 0.957092
+  [32x32] Epoch  15  Batch    21/   29  loss: 0.469529  acc: 0.957288
+  [32x32] Epoch  15  Batch    22/   29  loss: 0.469967  acc: 0.957046
+  [32x32] Epoch  15  Batch    23/   29  loss: 0.469864  acc: 0.957254
+  [32x32] Epoch  15  Batch    24/   29  loss: 0.470108  acc: 0.957127
+  [32x32] Epoch  15  Batch    25/   29  loss: 0.470335  acc: 0.956962
+  [32x32] Epoch  15  Batch    26/   29  loss: 0.470414  acc: 0.956936
+  [32x32] Epoch  15  Batch    27/   29  loss: 0.470357  acc: 0.957003
+  [32x32] Epoch  15  Batch    28/   29  loss: 0.470092  acc: 0.957014
+  [32x32] Epoch  15  Batch    29/   29  loss: 0.469887  acc: 0.957079
+[32x32] Epoch  15  loss: 0.469887  acc: 0.957079  |  val_loss: 0.477325  val_acc: 0.945181  |  lr: 0.01998070  [11s]  |  VRAM 15.1/16.0GB (other 0.7GB)  CUDA 78/100%(avg/max)  55/57°C  181W  |  CPU 26%  RAM 36.1/63.2GB  SWAP 0.1/19.1GB  |  wait 2.4s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 1/15
+  [VRAM] 15.09 GB peak this epoch — within 1.0 GB of this GPU's 15.99 GB physical capacity for 3 straight epochs — reducing batch size and continuing
+  [VRAM] Recent trend (epochs 11-15): 15.40 -> 11.83 -> 15.09 -> 15.09 -> 15.09 GB (avg -0.10GB/epoch over epochs 11-14, this epoch +0.00GB)
+[Batch] Reduced to 4384 for subsequent epochs
+  [32x32] Epoch  16  Batch     1/   32  loss: 0.460737  acc: 0.963504
+  [32x32] Epoch  16  Batch     2/   32  loss: 0.468721  acc: 0.959854
+  [32x32] Epoch  16  Batch     3/   32  loss: 0.471806  acc: 0.957117
+  [32x32] Epoch  16  Batch     4/   32  loss: 0.472045  acc: 0.956490
+  [32x32] Epoch  16  Batch     5/   32  loss: 0.470020  acc: 0.957527
+  [32x32] Epoch  16  Batch     6/   32  loss: 0.470093  acc: 0.957231
+  [32x32] Epoch  16  Batch     7/   32  loss: 0.470457  acc: 0.957606
+  [32x32] Epoch  16  Batch     8/   32  loss: 0.470476  acc: 0.957202
+  [32x32] Epoch  16  Batch     9/   32  loss: 0.470376  acc: 0.957193
+  [32x32] Epoch  16  Batch    10/   32  loss: 0.470268  acc: 0.957162
+  [32x32] Epoch  16  Batch    11/   32  loss: 0.470313  acc: 0.957386
+  [32x32] Epoch  16  Batch    12/   32  loss: 0.470033  acc: 0.957212
+  [32x32] Epoch  16  Batch    13/   32  loss: 0.470160  acc: 0.957082
+  [32x32] Epoch  16  Batch    14/   32  loss: 0.469696  acc: 0.957361
+  [32x32] Epoch  16  Batch    15/   32  loss: 0.469559  acc: 0.957588
+  [32x32] Epoch  16  Batch    16/   32  loss: 0.469749  acc: 0.957530
+  [32x32] Epoch  16  Batch    17/   32  loss: 0.469411  acc: 0.957694
+  [32x32] Epoch  16  Batch    18/   32  loss: 0.469212  acc: 0.957776
+  [32x32] Epoch  16  Batch    19/   32  loss: 0.469383  acc: 0.957609
+  [32x32] Epoch  16  Batch    20/   32  loss: 0.469245  acc: 0.957733
+  [32x32] Epoch  16  Batch    21/   32  loss: 0.468891  acc: 0.957845
+  [32x32] Epoch  16  Batch    22/   32  loss: 0.468421  acc: 0.957967
+  [32x32] Epoch  16  Batch    23/   32  loss: 0.468230  acc: 0.957980
+  [32x32] Epoch  16  Batch    24/   32  loss: 0.468459  acc: 0.957906
+  [32x32] Epoch  16  Batch    25/   32  loss: 0.468547  acc: 0.957728
+  [32x32] Epoch  16  Batch    26/   32  loss: 0.468480  acc: 0.957652
+  [32x32] Epoch  16  Batch    27/   32  loss: 0.468248  acc: 0.957666
+  [32x32] Epoch  16  Batch    28/   32  loss: 0.468317  acc: 0.957671
+  [32x32] Epoch  16  Batch    29/   32  loss: 0.468243  acc: 0.957730
+  [32x32] Epoch  16  Batch    30/   32  loss: 0.468064  acc: 0.957672
+  [32x32] Epoch  16  Batch    31/   32  loss: 0.467814  acc: 0.957831
+  [32x32] Epoch  16  Batch    32/   32  loss: 0.468125  acc: 0.957725
+[32x32] Epoch  16  loss: 0.468125  acc: 0.957725  |  val_loss: 0.457706  val_acc: 0.958398  |  lr: 0.01996860  [54s]  |  VRAM 10.2/16.0GB (other 0.7GB)  CUDA 98/100%(avg/max)  50/57°C  169W  |  CPU 13%  RAM 36.0/63.2GB  SWAP 0.1/16.0GB  |  wait 45.5s/compute 6.5s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 2/15
+  [32x32] Epoch  17  Batch     1/   32  loss: 0.472283  acc: 0.955064
+  [32x32] Epoch  17  Batch     2/   32  loss: 0.465860  acc: 0.956661
+  [32x32] Epoch  17  Batch     3/   32  loss: 0.461207  acc: 0.959626
+  [32x32] Epoch  17  Batch     4/   32  loss: 0.459407  acc: 0.959455
+  [32x32] Epoch  17  Batch     5/   32  loss: 0.459686  acc: 0.959854
+  [32x32] Epoch  17  Batch     6/   32  loss: 0.460892  acc: 0.959208
+  [32x32] Epoch  17  Batch     7/   32  loss: 0.460426  acc: 0.959919
+  [32x32] Epoch  17  Batch     8/   32  loss: 0.461075  acc: 0.959826
+  [32x32] Epoch  17  Batch     9/   32  loss: 0.461971  acc: 0.959727
+  [32x32] Epoch  17  Batch    10/   32  loss: 0.463274  acc: 0.959170
+  [32x32] Epoch  17  Batch    11/   32  loss: 0.463402  acc: 0.959004
+  [32x32] Epoch  17  Batch    12/   32  loss: 0.463097  acc: 0.958790
+  [32x32] Epoch  17  Batch    13/   32  loss: 0.463000  acc: 0.958889
+  [32x32] Epoch  17  Batch    14/   32  loss: 0.462770  acc: 0.959202
+  [32x32] Epoch  17  Batch    15/   32  loss: 0.462685  acc: 0.959337
+  [32x32] Epoch  17  Batch    16/   32  loss: 0.462036  acc: 0.959555
+  [32x32] Epoch  17  Batch    17/   32  loss: 0.461579  acc: 0.959894
+  [32x32] Epoch  17  Batch    18/   32  loss: 0.461493  acc: 0.959930
+  [32x32] Epoch  17  Batch    19/   32  loss: 0.461021  acc: 0.960154
+  [32x32] Epoch  17  Batch    20/   32  loss: 0.461309  acc: 0.960162
+  [32x32] Epoch  17  Batch    21/   32  loss: 0.461990  acc: 0.959778
+  [32x32] Epoch  17  Batch    22/   32  loss: 0.461770  acc: 0.959823
+  [32x32] Epoch  17  Batch    23/   32  loss: 0.461677  acc: 0.959874
+  [32x32] Epoch  17  Batch    24/   32  loss: 0.461393  acc: 0.959940
+  [32x32] Epoch  17  Batch    25/   32  loss: 0.460909  acc: 0.960283
+  [32x32] Epoch  17  Batch    26/   32  loss: 0.461095  acc: 0.960214
+  [32x32] Epoch  17  Batch    27/   32  loss: 0.460881  acc: 0.960276
+  [32x32] Epoch  17  Batch    28/   32  loss: 0.460638  acc: 0.960392
+  [32x32] Epoch  17  Batch    29/   32  loss: 0.460839  acc: 0.960318
+  [32x32] Epoch  17  Batch    30/   32  loss: 0.460759  acc: 0.960409
+  [32x32] Epoch  17  Batch    31/   32  loss: 0.460506  acc: 0.960538
+  [32x32] Epoch  17  Batch    32/   32  loss: 0.460411  acc: 0.960524
+[32x32] Epoch  17  loss: 0.460411  acc: 0.960524  |  val_loss: 0.453889  val_acc: 0.963888  |  lr: 0.01994790  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 67/100%(avg/max)  52/57°C  171W  |  CPU 27%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.1s/compute 6.3s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 0.453889*  saved
+  [32x32] Epoch  18  Batch     1/   32  loss: 0.467711  acc: 0.957117
+  [32x32] Epoch  18  Batch     2/   32  loss: 0.474121  acc: 0.955634
+  [32x32] Epoch  18  Batch     3/   32  loss: 0.470672  acc: 0.956737
+  [32x32] Epoch  18  Batch     4/   32  loss: 0.470277  acc: 0.956318
+  [32x32] Epoch  18  Batch     5/   32  loss: 0.469378  acc: 0.956159
+  [32x32] Epoch  18  Batch     6/   32  loss: 0.468645  acc: 0.956204
+  [32x32] Epoch  18  Batch     7/   32  loss: 0.468193  acc: 0.956074
+  [32x32] Epoch  18  Batch     8/   32  loss: 0.466987  acc: 0.956718
+  [32x32] Epoch  18  Batch     9/   32  loss: 0.466585  acc: 0.957015
+  [32x32] Epoch  18  Batch    10/   32  loss: 0.466428  acc: 0.957391
+  [32x32] Epoch  18  Batch    11/   32  loss: 0.466244  acc: 0.957324
+  [32x32] Epoch  18  Batch    12/   32  loss: 0.465617  acc: 0.957364
+  [32x32] Epoch  18  Batch    13/   32  loss: 0.466326  acc: 0.957222
+  [32x32] Epoch  18  Batch    14/   32  loss: 0.466279  acc: 0.957215
+  [32x32] Epoch  18  Batch    15/   32  loss: 0.465072  acc: 0.957801
+  [32x32] Epoch  18  Batch    16/   32  loss: 0.464857  acc: 0.958001
+  [32x32] Epoch  18  Batch    17/   32  loss: 0.465318  acc: 0.957613
+  [32x32] Epoch  18  Batch    18/   32  loss: 0.465240  acc: 0.957763
+  [32x32] Epoch  18  Batch    19/   32  loss: 0.464373  acc: 0.958101
+  [32x32] Epoch  18  Batch    20/   32  loss: 0.464835  acc: 0.957904
+  [32x32] Epoch  18  Batch    21/   32  loss: 0.464405  acc: 0.958094
+  [32x32] Epoch  18  Batch    22/   32  loss: 0.464334  acc: 0.958268
+  [32x32] Epoch  18  Batch    23/   32  loss: 0.464610  acc: 0.958218
+  [32x32] Epoch  18  Batch    24/   32  loss: 0.464488  acc: 0.958409
+  [32x32] Epoch  18  Batch    25/   32  loss: 0.465085  acc: 0.958294
+  [32x32] Epoch  18  Batch    26/   32  loss: 0.464979  acc: 0.958433
+  [32x32] Epoch  18  Batch    27/   32  loss: 0.464478  acc: 0.958621
+  [32x32] Epoch  18  Batch    28/   32  loss: 0.464480  acc: 0.958656
+  [32x32] Epoch  18  Batch    29/   32  loss: 0.464119  acc: 0.958682
+  [32x32] Epoch  18  Batch    30/   32  loss: 0.464003  acc: 0.958660
+  [32x32] Epoch  18  Batch    31/   32  loss: 0.463731  acc: 0.958758
+  [32x32] Epoch  18  Batch    32/   32  loss: 0.463493  acc: 0.958866
+[32x32] Epoch  18  loss: 0.463493  acc: 0.958866  |  val_loss: 0.460746  val_acc: 0.962790  |  lr: 0.01992200  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 82/100%(avg/max)  53/58°C  185W  |  CPU 27%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.2s/compute 6.3s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 1/15
+  [32x32] Epoch  19  Batch     1/   32  loss: 0.455310  acc: 0.962819
+  [32x32] Epoch  19  Batch     2/   32  loss: 0.463163  acc: 0.958371
+  [32x32] Epoch  19  Batch     3/   32  loss: 0.461431  acc: 0.958637
+  [32x32] Epoch  19  Batch     4/   32  loss: 0.457612  acc: 0.960196
+  [32x32] Epoch  19  Batch     5/   32  loss: 0.458740  acc: 0.958942
+  [32x32] Epoch  19  Batch     6/   32  loss: 0.458747  acc: 0.959208
+  [32x32] Epoch  19  Batch     7/   32  loss: 0.458591  acc: 0.959463
+  [32x32] Epoch  19  Batch     8/   32  loss: 0.458699  acc: 0.959654
+  [32x32] Epoch  19  Batch     9/   32  loss: 0.460243  acc: 0.959144
+  [32x32] Epoch  19  Batch    10/   32  loss: 0.460139  acc: 0.959284
+  [32x32] Epoch  19  Batch    11/   32  loss: 0.459212  acc: 0.960165
+  [32x32] Epoch  19  Batch    12/   32  loss: 0.458558  acc: 0.960348
+  [32x32] Epoch  19  Batch    13/   32  loss: 0.458871  acc: 0.960398
+  [32x32] Epoch  19  Batch    14/   32  loss: 0.458817  acc: 0.960082
+  [32x32] Epoch  19  Batch    15/   32  loss: 0.459181  acc: 0.959839
+  [32x32] Epoch  19  Batch    16/   32  loss: 0.459311  acc: 0.959797
+  [32x32] Epoch  19  Batch    17/   32  loss: 0.459132  acc: 0.959814
+  [32x32] Epoch  19  Batch    18/   32  loss: 0.458340  acc: 0.960031
+  [32x32] Epoch  19  Batch    19/   32  loss: 0.458100  acc: 0.960238
+  [32x32] Epoch  19  Batch    20/   32  loss: 0.458193  acc: 0.960276
+  [32x32] Epoch  19  Batch    21/   32  loss: 0.457878  acc: 0.960571
+  [32x32] Epoch  19  Batch    22/   32  loss: 0.458108  acc: 0.960445
+  [32x32] Epoch  19  Batch    23/   32  loss: 0.457940  acc: 0.960479
+  [32x32] Epoch  19  Batch    24/   32  loss: 0.458100  acc: 0.960415
+  [32x32] Epoch  19  Batch    25/   32  loss: 0.457910  acc: 0.960566
+  [32x32] Epoch  19  Batch    26/   32  loss: 0.458175  acc: 0.960415
+  [32x32] Epoch  19  Batch    27/   32  loss: 0.458451  acc: 0.960293
+  [32x32] Epoch  19  Batch    28/   32  loss: 0.458030  acc: 0.960481
+  [32x32] Epoch  19  Batch    29/   32  loss: 0.458057  acc: 0.960420
+  [32x32] Epoch  19  Batch    30/   32  loss: 0.458099  acc: 0.960432
+  [32x32] Epoch  19  Batch    31/   32  loss: 0.458073  acc: 0.960553
+  [32x32] Epoch  19  Batch    32/   32  loss: 0.458019  acc: 0.960531
+[32x32] Epoch  19  loss: 0.458019  acc: 0.960531  |  val_loss: 0.449552  val_acc: 0.964660  |  lr: 0.01989093  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 66/100%(avg/max)  54/59°C  171W  |  CPU 28%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.2s/compute 6.2s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [Checkpoint] val_loss → 0.449552*  saved
+  [32x32] Epoch  20  Batch     1/   32  loss: 0.451709  acc: 0.963276
+  [32x32] Epoch  20  Batch     2/   32  loss: 0.454080  acc: 0.964302
+  [32x32] Epoch  20  Batch     3/   32  loss: 0.451505  acc: 0.964340
+  [32x32] Epoch  20  Batch     4/   32  loss: 0.448915  acc: 0.965614
+  [32x32] Epoch  20  Batch     5/   32  loss: 0.448809  acc: 0.965328
+  [32x32] Epoch  20  Batch     6/   32  loss: 0.450009  acc: 0.964378
+  [32x32] Epoch  20  Batch     7/   32  loss: 0.450811  acc: 0.963797
+  [32x32] Epoch  20  Batch     8/   32  loss: 0.451212  acc: 0.963732
+  [32x32] Epoch  20  Batch     9/   32  loss: 0.451667  acc: 0.963377
+  [32x32] Epoch  20  Batch    10/   32  loss: 0.452018  acc: 0.963230
+  [32x32] Epoch  20  Batch    11/   32  loss: 0.452287  acc: 0.963047
+  [32x32] Epoch  20  Batch    12/   32  loss: 0.452930  acc: 0.962819
+  [32x32] Epoch  20  Batch    13/   32  loss: 0.453345  acc: 0.962556
+  [32x32] Epoch  20  Batch    14/   32  loss: 0.452870  acc: 0.962705
+  [32x32] Epoch  20  Batch    15/   32  loss: 0.452513  acc: 0.962804
+  [32x32] Epoch  20  Batch    16/   32  loss: 0.452233  acc: 0.963019
+  [32x32] Epoch  20  Batch    17/   32  loss: 0.452147  acc: 0.963007
+  [32x32] Epoch  20  Batch    18/   32  loss: 0.452962  acc: 0.962705
+  [32x32] Epoch  20  Batch    19/   32  loss: 0.453043  acc: 0.962807
+  [32x32] Epoch  20  Batch    20/   32  loss: 0.452807  acc: 0.962876
+  [32x32] Epoch  20  Batch    21/   32  loss: 0.452781  acc: 0.962939
+  [32x32] Epoch  20  Batch    22/   32  loss: 0.453066  acc: 0.962954
+  [32x32] Epoch  20  Batch    23/   32  loss: 0.453185  acc: 0.962869
+  [32x32] Epoch  20  Batch    24/   32  loss: 0.453689  acc: 0.962620
+  [32x32] Epoch  20  Batch    25/   32  loss: 0.453871  acc: 0.962482
+  [32x32] Epoch  20  Batch    26/   32  loss: 0.454119  acc: 0.962425
+  [32x32] Epoch  20  Batch    27/   32  loss: 0.453848  acc: 0.962541
+  [32x32] Epoch  20  Batch    28/   32  loss: 0.453381  acc: 0.962681
+  [32x32] Epoch  20  Batch    29/   32  loss: 0.453323  acc: 0.962764
+  [32x32] Epoch  20  Batch    30/   32  loss: 0.453048  acc: 0.962941
+  [32x32] Epoch  20  Batch    31/   32  loss: 0.453022  acc: 0.962930
+  [32x32] Epoch  20  Batch    32/   32  loss: 0.453159  acc: 0.962863
+[32x32] Epoch  20  loss: 0.453159  acc: 0.962863  |  val_loss: 0.454874  val_acc: 0.962139  |  lr: 0.01985469  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 94/100%(avg/max)  55/60°C  175W  |  CPU 26%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.2s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 1/15
+  [32x32] Epoch  21  Batch     1/   32  loss: 0.449962  acc: 0.966925
+  [32x32] Epoch  21  Batch     2/   32  loss: 0.449293  acc: 0.965899
+  [32x32] Epoch  21  Batch     3/   32  loss: 0.449772  acc: 0.965252
+  [32x32] Epoch  21  Batch     4/   32  loss: 0.449385  acc: 0.964644
+  [32x32] Epoch  21  Batch     5/   32  loss: 0.449554  acc: 0.964279
+  [32x32] Epoch  21  Batch     6/   32  loss: 0.450162  acc: 0.963694
+  [32x32] Epoch  21  Batch     7/   32  loss: 0.451215  acc: 0.962885
+  [32x32] Epoch  21  Batch     8/   32  loss: 0.451953  acc: 0.963019
+  [32x32] Epoch  21  Batch     9/   32  loss: 0.452768  acc: 0.962794
+  [32x32] Epoch  21  Batch    10/   32  loss: 0.453095  acc: 0.962637
+  [32x32] Epoch  21  Batch    11/   32  loss: 0.453390  acc: 0.962467
+  [32x32] Epoch  21  Batch    12/   32  loss: 0.452984  acc: 0.962667
+  [32x32] Epoch  21  Batch    13/   32  loss: 0.453062  acc: 0.962556
+  [32x32] Epoch  21  Batch    14/   32  loss: 0.453842  acc: 0.962168
+  [32x32] Epoch  21  Batch    15/   32  loss: 0.453644  acc: 0.962120
+  [32x32] Epoch  21  Batch    16/   32  loss: 0.453000  acc: 0.962420
+  [32x32] Epoch  21  Batch    17/   32  loss: 0.453214  acc: 0.962269
+  [32x32] Epoch  21  Batch    18/   32  loss: 0.453226  acc: 0.962262
+  [32x32] Epoch  21  Batch    19/   32  loss: 0.452681  acc: 0.962543
+  [32x32] Epoch  21  Batch    20/   32  loss: 0.452649  acc: 0.962557
+  [32x32] Epoch  21  Batch    21/   32  loss: 0.452628  acc: 0.962689
+  [32x32] Epoch  21  Batch    22/   32  loss: 0.452048  acc: 0.962954
+  [32x32] Epoch  21  Batch    23/   32  loss: 0.451581  acc: 0.963157
+  [32x32] Epoch  21  Batch    24/   32  loss: 0.451835  acc: 0.963028
+  [32x32] Epoch  21  Batch    25/   32  loss: 0.452148  acc: 0.962920
+  [32x32] Epoch  21  Batch    26/   32  loss: 0.451859  acc: 0.963047
+  [32x32] Epoch  21  Batch    27/   32  loss: 0.451984  acc: 0.962980
+  [32x32] Epoch  21  Batch    28/   32  loss: 0.452167  acc: 0.962795
+  [32x32] Epoch  21  Batch    29/   32  loss: 0.452240  acc: 0.962709
+  [32x32] Epoch  21  Batch    30/   32  loss: 0.452417  acc: 0.962637
+  [32x32] Epoch  21  Batch    31/   32  loss: 0.452569  acc: 0.962635
+  [32x32] Epoch  21  Batch    32/   32  loss: 0.452576  acc: 0.962612
+[32x32] Epoch  21  loss: 0.452576  acc: 0.962612  |  val_loss: 0.456753  val_acc: 0.958601  |  lr: 0.01981330  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 100/100%(avg/max)  58/61°C  188W  |  CPU 27%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.2s/compute 6.3s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 2/15
+  [32x32] Epoch  22  Batch     1/   32  loss: 0.461592  acc: 0.959854
+  [32x32] Epoch  22  Batch     2/   32  loss: 0.450217  acc: 0.964188
+  [32x32] Epoch  22  Batch     3/   32  loss: 0.450840  acc: 0.964568
+  [32x32] Epoch  22  Batch     4/   32  loss: 0.449185  acc: 0.964245
+  [32x32] Epoch  22  Batch     5/   32  loss: 0.449260  acc: 0.963823
+  [32x32] Epoch  22  Batch     6/   32  loss: 0.448583  acc: 0.964264
+  [32x32] Epoch  22  Batch     7/   32  loss: 0.448670  acc: 0.964318
+  [32x32] Epoch  22  Batch     8/   32  loss: 0.448418  acc: 0.964502
+  [32x32] Epoch  22  Batch     9/   32  loss: 0.447860  acc: 0.964467
+  [32x32] Epoch  22  Batch    10/   32  loss: 0.448040  acc: 0.964279
+  [32x32] Epoch  22  Batch    11/   32  loss: 0.447994  acc: 0.964416
+  [32x32] Epoch  22  Batch    12/   32  loss: 0.447981  acc: 0.964397
+  [32x32] Epoch  22  Batch    13/   32  loss: 0.448533  acc: 0.964118
+  [32x32] Epoch  22  Batch    14/   32  loss: 0.448135  acc: 0.964269
+  [32x32] Epoch  22  Batch    15/   32  loss: 0.448072  acc: 0.964112
+  [32x32] Epoch  22  Batch    16/   32  loss: 0.448113  acc: 0.964088
+  [32x32] Epoch  22  Batch    17/   32  loss: 0.447900  acc: 0.964188
+  [32x32] Epoch  22  Batch    18/   32  loss: 0.447798  acc: 0.964125
+  [32x32] Epoch  22  Batch    19/   32  loss: 0.448321  acc: 0.963804
+  [32x32] Epoch  22  Batch    20/   32  loss: 0.448150  acc: 0.963960
+  [32x32] Epoch  22  Batch    21/   32  loss: 0.448633  acc: 0.963797
+  [32x32] Epoch  22  Batch    22/   32  loss: 0.448423  acc: 0.963867
+  [32x32] Epoch  22  Batch    23/   32  loss: 0.449130  acc: 0.963603
+  [32x32] Epoch  22  Batch    24/   32  loss: 0.448767  acc: 0.963732
+  [32x32] Epoch  22  Batch    25/   32  loss: 0.448321  acc: 0.964097
+  [32x32] Epoch  22  Batch    26/   32  loss: 0.448418  acc: 0.964048
+  [32x32] Epoch  22  Batch    27/   32  loss: 0.448731  acc: 0.963842
+  [32x32] Epoch  22  Batch    28/   32  loss: 0.448640  acc: 0.963903
+  [32x32] Epoch  22  Batch    29/   32  loss: 0.448687  acc: 0.963936
+  [32x32] Epoch  22  Batch    30/   32  loss: 0.448550  acc: 0.964005
+  [32x32] Epoch  22  Batch    31/   32  loss: 0.448615  acc: 0.963827
+  [32x32] Epoch  22  Batch    32/   32  loss: 0.448416  acc: 0.963918
+[32x32] Epoch  22  loss: 0.448416  acc: 0.963918  |  val_loss: 0.463300  val_acc: 0.957137  |  lr: 0.01976679  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 67/100%(avg/max)  55/60°C  172W  |  CPU 27%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.2s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 3/15
+  [32x32] Epoch  23  Batch     1/   32  loss: 0.451610  acc: 0.961451
+  [32x32] Epoch  23  Batch     2/   32  loss: 0.445501  acc: 0.963618
+  [32x32] Epoch  23  Batch     3/   32  loss: 0.449381  acc: 0.961603
+  [32x32] Epoch  23  Batch     4/   32  loss: 0.447128  acc: 0.963333
+  [32x32] Epoch  23  Batch     5/   32  loss: 0.448635  acc: 0.962363
+  [32x32] Epoch  23  Batch     6/   32  loss: 0.447490  acc: 0.963123
+  [32x32] Epoch  23  Batch     7/   32  loss: 0.447042  acc: 0.963471
+  [32x32] Epoch  23  Batch     8/   32  loss: 0.448883  acc: 0.962962
+  [32x32] Epoch  23  Batch     9/   32  loss: 0.448264  acc: 0.963478
+  [32x32] Epoch  23  Batch    10/   32  loss: 0.450069  acc: 0.963070
+  [32x32] Epoch  23  Batch    11/   32  loss: 0.450249  acc: 0.962799
+  [32x32] Epoch  23  Batch    12/   32  loss: 0.449525  acc: 0.963276
+  [32x32] Epoch  23  Batch    13/   32  loss: 0.450028  acc: 0.963346
+  [32x32] Epoch  23  Batch    14/   32  loss: 0.448845  acc: 0.963715
+  [32x32] Epoch  23  Batch    15/   32  loss: 0.448485  acc: 0.963914
+  [32x32] Epoch  23  Batch    16/   32  loss: 0.447961  acc: 0.963988
+  [32x32] Epoch  23  Batch    17/   32  loss: 0.448093  acc: 0.964027
+  [32x32] Epoch  23  Batch    18/   32  loss: 0.448498  acc: 0.964074
+  [32x32] Epoch  23  Batch    19/   32  loss: 0.448278  acc: 0.964140
+  [32x32] Epoch  23  Batch    20/   32  loss: 0.448292  acc: 0.964097
+  [32x32] Epoch  23  Batch    21/   32  loss: 0.447820  acc: 0.964449
+  [32x32] Epoch  23  Batch    22/   32  loss: 0.447996  acc: 0.964385
+  [32x32] Epoch  23  Batch    23/   32  loss: 0.448199  acc: 0.964416
+  [32x32] Epoch  23  Batch    24/   32  loss: 0.448372  acc: 0.964302
+  [32x32] Epoch  23  Batch    25/   32  loss: 0.448461  acc: 0.964133
+  [32x32] Epoch  23  Batch    26/   32  loss: 0.448623  acc: 0.964118
+  [32x32] Epoch  23  Batch    27/   32  loss: 0.448497  acc: 0.964112
+  [32x32] Epoch  23  Batch    28/   32  loss: 0.448536  acc: 0.964041
+  [32x32] Epoch  23  Batch    29/   32  loss: 0.448273  acc: 0.964109
+  [32x32] Epoch  23  Batch    30/   32  loss: 0.447963  acc: 0.964264
+  [32x32] Epoch  23  Batch    31/   32  loss: 0.447686  acc: 0.964394
+  [32x32] Epoch  23  Batch    32/   32  loss: 0.447488  acc: 0.964506
+[32x32] Epoch  23  loss: 0.447488  acc: 0.964506  |  val_loss: 0.462243  val_acc: 0.954900  |  lr: 0.01971517  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 98/100%(avg/max)  58/61°C  180W  |  CPU 28%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.1s/compute 6.3s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 4/15
+  [32x32] Epoch  24  Batch     1/   32  loss: 0.446320  acc: 0.963732
+  [32x32] Epoch  24  Batch     2/   32  loss: 0.445504  acc: 0.964530
+  [32x32] Epoch  24  Batch     3/   32  loss: 0.444695  acc: 0.965861
+  [32x32] Epoch  24  Batch     4/   32  loss: 0.446269  acc: 0.965671
+  [32x32] Epoch  24  Batch     5/   32  loss: 0.443980  acc: 0.967153
+  [32x32] Epoch  24  Batch     6/   32  loss: 0.443027  acc: 0.967153
+  [32x32] Epoch  24  Batch     7/   32  loss: 0.443444  acc: 0.966436
+  [32x32] Epoch  24  Batch     8/   32  loss: 0.443762  acc: 0.966241
+  [32x32] Epoch  24  Batch     9/   32  loss: 0.443484  acc: 0.966266
+  [32x32] Epoch  24  Batch    10/   32  loss: 0.443552  acc: 0.966241
+  [32x32] Epoch  24  Batch    11/   32  loss: 0.442914  acc: 0.966448
+  [32x32] Epoch  24  Batch    12/   32  loss: 0.442620  acc: 0.966583
+  [32x32] Epoch  24  Batch    13/   32  loss: 0.442681  acc: 0.966592
+  [32x32] Epoch  24  Batch    14/   32  loss: 0.442000  acc: 0.966811
+  [32x32] Epoch  24  Batch    15/   32  loss: 0.441890  acc: 0.966727
+  [32x32] Epoch  24  Batch    16/   32  loss: 0.441704  acc: 0.966768
+  [32x32] Epoch  24  Batch    17/   32  loss: 0.442410  acc: 0.966684
+  [32x32] Epoch  24  Batch    18/   32  loss: 0.442795  acc: 0.966304
+  [32x32] Epoch  24  Batch    19/   32  loss: 0.442502  acc: 0.966337
+  [32x32] Epoch  24  Batch    20/   32  loss: 0.442603  acc: 0.966309
+  [32x32] Epoch  24  Batch    21/   32  loss: 0.442391  acc: 0.966339
+  [32x32] Epoch  24  Batch    22/   32  loss: 0.442859  acc: 0.966127
+  [32x32] Epoch  24  Batch    23/   32  loss: 0.442962  acc: 0.965983
+  [32x32] Epoch  24  Batch    24/   32  loss: 0.442590  acc: 0.966108
+  [32x32] Epoch  24  Batch    25/   32  loss: 0.442322  acc: 0.966232
+  [32x32] Epoch  24  Batch    26/   32  loss: 0.442779  acc: 0.966048
+  [32x32] Epoch  24  Batch    27/   32  loss: 0.442969  acc: 0.965962
+  [32x32] Epoch  24  Batch    28/   32  loss: 0.442973  acc: 0.966021
+  [32x32] Epoch  24  Batch    29/   32  loss: 0.443158  acc: 0.965966
+  [32x32] Epoch  24  Batch    30/   32  loss: 0.443431  acc: 0.965861
+  [32x32] Epoch  24  Batch    31/   32  loss: 0.443319  acc: 0.965932
+  [32x32] Epoch  24  Batch    32/   32  loss: 0.443361  acc: 0.965891
+[32x32] Epoch  24  loss: 0.443361  acc: 0.965891  |  val_loss: 0.458128  val_acc: 0.958926  |  lr: 0.01965849  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 65/97%(avg/max)  60/63°C  179W  |  CPU 28%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.1s/compute 6.2s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 5/15
+  [32x32] Epoch  25  Batch     1/   32  loss: 0.437671  acc: 0.967609
+  [32x32] Epoch  25  Batch     2/   32  loss: 0.438077  acc: 0.967267
+  [32x32] Epoch  25  Batch     3/   32  loss: 0.438656  acc: 0.968674
+  [32x32] Epoch  25  Batch     4/   32  loss: 0.439467  acc: 0.967667
+  [32x32] Epoch  25  Batch     5/   32  loss: 0.439400  acc: 0.967564
+  [32x32] Epoch  25  Batch     6/   32  loss: 0.439883  acc: 0.967191
+  [32x32] Epoch  25  Batch     7/   32  loss: 0.440088  acc: 0.967251
+  [32x32] Epoch  25  Batch     8/   32  loss: 0.441518  acc: 0.966612
+  [32x32] Epoch  25  Batch     9/   32  loss: 0.441916  acc: 0.966570
+  [32x32] Epoch  25  Batch    10/   32  loss: 0.440749  acc: 0.967199
+  [32x32] Epoch  25  Batch    11/   32  loss: 0.440792  acc: 0.967278
+  [32x32] Epoch  25  Batch    12/   32  loss: 0.440461  acc: 0.967381
+  [32x32] Epoch  25  Batch    13/   32  loss: 0.440993  acc: 0.967188
+  [32x32] Epoch  25  Batch    14/   32  loss: 0.441410  acc: 0.967088
+  [32x32] Epoch  25  Batch    15/   32  loss: 0.442024  acc: 0.966804
+  [32x32] Epoch  25  Batch    16/   32  loss: 0.442266  acc: 0.966726
+  [32x32] Epoch  25  Batch    17/   32  loss: 0.442222  acc: 0.966778
+  [32x32] Epoch  25  Batch    18/   32  loss: 0.442661  acc: 0.966532
+  [32x32] Epoch  25  Batch    19/   32  loss: 0.442517  acc: 0.966673
+  [32x32] Epoch  25  Batch    20/   32  loss: 0.442251  acc: 0.966708
+  [32x32] Epoch  25  Batch    21/   32  loss: 0.441978  acc: 0.966838
+  [32x32] Epoch  25  Batch    22/   32  loss: 0.441898  acc: 0.966894
+  [32x32] Epoch  25  Batch    23/   32  loss: 0.441920  acc: 0.966895
+  [32x32] Epoch  25  Batch    24/   32  loss: 0.441878  acc: 0.966840
+  [32x32] Epoch  25  Batch    25/   32  loss: 0.442401  acc: 0.966697
+  [32x32] Epoch  25  Batch    26/   32  loss: 0.442028  acc: 0.966758
+  [32x32] Epoch  25  Batch    27/   32  loss: 0.442437  acc: 0.966545
+  [32x32] Epoch  25  Batch    28/   32  loss: 0.442758  acc: 0.966469
+  [32x32] Epoch  25  Batch    29/   32  loss: 0.442573  acc: 0.966555
+  [32x32] Epoch  25  Batch    30/   32  loss: 0.442599  acc: 0.966477
+  [32x32] Epoch  25  Batch    31/   32  loss: 0.442732  acc: 0.966469
+  [32x32] Epoch  25  Batch    32/   32  loss: 0.442588  acc: 0.966523
+[32x32] Epoch  25  loss: 0.442588  acc: 0.966523  |  val_loss: 0.453191  val_acc: 0.961366  |  lr: 0.01959676  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 98/100%(avg/max)  59/62°C  176W  |  CPU 27%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.2s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 6/15
+  [32x32] Epoch  26  Batch     1/   32  loss: 0.436769  acc: 0.972400
+  [32x32] Epoch  26  Batch     2/   32  loss: 0.440901  acc: 0.967267
+  [32x32] Epoch  26  Batch     3/   32  loss: 0.439401  acc: 0.967609
+  [32x32] Epoch  26  Batch     4/   32  loss: 0.439589  acc: 0.967952
+  [32x32] Epoch  26  Batch     5/   32  loss: 0.441507  acc: 0.966560
+  [32x32] Epoch  26  Batch     6/   32  loss: 0.440880  acc: 0.966887
+  [32x32] Epoch  26  Batch     7/   32  loss: 0.440598  acc: 0.966827
+  [32x32] Epoch  26  Batch     8/   32  loss: 0.440972  acc: 0.966840
+  [32x32] Epoch  26  Batch     9/   32  loss: 0.441195  acc: 0.966773
+  [32x32] Epoch  26  Batch    10/   32  loss: 0.441225  acc: 0.966560
+  [32x32] Epoch  26  Batch    11/   32  loss: 0.441833  acc: 0.966179
+  [32x32] Epoch  26  Batch    12/   32  loss: 0.441836  acc: 0.966184
+  [32x32] Epoch  26  Batch    13/   32  loss: 0.441794  acc: 0.966065
+  [32x32] Epoch  26  Batch    14/   32  loss: 0.441715  acc: 0.966111
+  [32x32] Epoch  26  Batch    15/   32  loss: 0.441414  acc: 0.966043
+  [32x32] Epoch  26  Batch    16/   32  loss: 0.441050  acc: 0.966212
+  [32x32] Epoch  26  Batch    17/   32  loss: 0.440972  acc: 0.966241
+  [32x32] Epoch  26  Batch    18/   32  loss: 0.440464  acc: 0.966532
+  [32x32] Epoch  26  Batch    19/   32  loss: 0.441068  acc: 0.966133
+  [32x32] Epoch  26  Batch    20/   32  loss: 0.441047  acc: 0.966207
+  [32x32] Epoch  26  Batch    21/   32  loss: 0.441161  acc: 0.966230
+  [32x32] Epoch  26  Batch    22/   32  loss: 0.440986  acc: 0.966241
+  [32x32] Epoch  26  Batch    23/   32  loss: 0.441115  acc: 0.966271
+  [32x32] Epoch  26  Batch    24/   32  loss: 0.441228  acc: 0.966298
+  [32x32] Epoch  26  Batch    25/   32  loss: 0.441108  acc: 0.966323
+  [32x32] Epoch  26  Batch    26/   32  loss: 0.441144  acc: 0.966294
+  [32x32] Epoch  26  Batch    27/   32  loss: 0.441028  acc: 0.966317
+  [32x32] Epoch  26  Batch    28/   32  loss: 0.440966  acc: 0.966388
+  [32x32] Epoch  26  Batch    29/   32  loss: 0.440890  acc: 0.966430
+  [32x32] Epoch  26  Batch    30/   32  loss: 0.440748  acc: 0.966515
+  [32x32] Epoch  26  Batch    31/   32  loss: 0.440612  acc: 0.966550
+  [32x32] Epoch  26  Batch    32/   32  loss: 0.440615  acc: 0.966544
+[32x32] Epoch  26  loss: 0.440615  acc: 0.966544  |  val_loss: 0.458761  val_acc: 0.957869  |  lr: 0.01953001  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 65/97%(avg/max)  61/63°C  178W  |  CPU 27%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.1s/compute 6.2s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 7/15
+  [32x32] Epoch  27  Batch     1/   32  loss: 0.444139  acc: 0.966241
+  [32x32] Epoch  27  Batch     2/   32  loss: 0.440925  acc: 0.967267
+  [32x32] Epoch  27  Batch     3/   32  loss: 0.442923  acc: 0.966089
+  [32x32] Epoch  27  Batch     4/   32  loss: 0.443457  acc: 0.965785
+  [32x32] Epoch  27  Batch     5/   32  loss: 0.441878  acc: 0.966378
+  [32x32] Epoch  27  Batch     6/   32  loss: 0.440758  acc: 0.966773
+  [32x32] Epoch  27  Batch     7/   32  loss: 0.441732  acc: 0.966273
+  [32x32] Epoch  27  Batch     8/   32  loss: 0.441143  acc: 0.966298
+  [32x32] Epoch  27  Batch     9/   32  loss: 0.440305  acc: 0.966748
+  [32x32] Epoch  27  Batch    10/   32  loss: 0.440060  acc: 0.966925
+  [32x32] Epoch  27  Batch    11/   32  loss: 0.439118  acc: 0.967423
+  [32x32] Epoch  27  Batch    12/   32  loss: 0.438855  acc: 0.967628
+  [32x32] Epoch  27  Batch    13/   32  loss: 0.438387  acc: 0.967627
+  [32x32] Epoch  27  Batch    14/   32  loss: 0.438814  acc: 0.967561
+  [32x32] Epoch  27  Batch    15/   32  loss: 0.438776  acc: 0.967625
+  [32x32] Epoch  27  Batch    16/   32  loss: 0.438293  acc: 0.967852
+  [32x32] Epoch  27  Batch    17/   32  loss: 0.438051  acc: 0.967985
+  [32x32] Epoch  27  Batch    18/   32  loss: 0.437699  acc: 0.968078
+  [32x32] Epoch  27  Batch    19/   32  loss: 0.438057  acc: 0.967826
+  [32x32] Epoch  27  Batch    20/   32  loss: 0.437539  acc: 0.967929
+  [32x32] Epoch  27  Batch    21/   32  loss: 0.437379  acc: 0.967816
+  [32x32] Epoch  27  Batch    22/   32  loss: 0.437309  acc: 0.967827
+  [32x32] Epoch  27  Batch    23/   32  loss: 0.437149  acc: 0.967917
+  [32x32] Epoch  27  Batch    24/   32  loss: 0.436969  acc: 0.968113
+  [32x32] Epoch  27  Batch    25/   32  loss: 0.437073  acc: 0.968102
+  [32x32] Epoch  27  Batch    26/   32  loss: 0.437123  acc: 0.968083
+  [32x32] Epoch  27  Batch    27/   32  loss: 0.437307  acc: 0.968066
+  [32x32] Epoch  27  Batch    28/   32  loss: 0.437679  acc: 0.967960
+  [32x32] Epoch  27  Batch    29/   32  loss: 0.437536  acc: 0.968081
+  [32x32] Epoch  27  Batch    30/   32  loss: 0.437309  acc: 0.968127
+  [32x32] Epoch  27  Batch    31/   32  loss: 0.437446  acc: 0.968088
+  [32x32] Epoch  27  Batch    32/   32  loss: 0.437373  acc: 0.968123
+[32x32] Epoch  27  loss: 0.437373  acc: 0.968123  |  val_loss: 0.463963  val_acc: 0.956364  |  lr: 0.01945829  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 66/100%(avg/max)  59/63°C  176W  |  CPU 27%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.1s/compute 6.2s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 8/15
+  [32x32] Epoch  28  Batch     1/   32  loss: 0.432888  acc: 0.968750
+  [32x32] Epoch  28  Batch     2/   32  loss: 0.441113  acc: 0.966583
+  [32x32] Epoch  28  Batch     3/   32  loss: 0.440197  acc: 0.967077
+  [32x32] Epoch  28  Batch     4/   32  loss: 0.442208  acc: 0.966070
+  [32x32] Epoch  28  Batch     5/   32  loss: 0.440716  acc: 0.967153
+  [32x32] Epoch  28  Batch     6/   32  loss: 0.440029  acc: 0.967343
+  [32x32] Epoch  28  Batch     7/   32  loss: 0.439978  acc: 0.967447
+  [32x32] Epoch  28  Batch     8/   32  loss: 0.440679  acc: 0.967039
+  [32x32] Epoch  28  Batch     9/   32  loss: 0.440551  acc: 0.967381
+  [32x32] Epoch  28  Batch    10/   32  loss: 0.440652  acc: 0.967199
+  [32x32] Epoch  28  Batch    11/   32  loss: 0.439909  acc: 0.967278
+  [32x32] Epoch  28  Batch    12/   32  loss: 0.440002  acc: 0.966944
+  [32x32] Epoch  28  Batch    13/   32  loss: 0.439371  acc: 0.967223
+  [32x32] Epoch  28  Batch    14/   32  loss: 0.439494  acc: 0.967349
+  [32x32] Epoch  28  Batch    15/   32  loss: 0.439620  acc: 0.967336
+  [32x32] Epoch  28  Batch    16/   32  loss: 0.439256  acc: 0.967524
+  [32x32] Epoch  28  Batch    17/   32  loss: 0.439081  acc: 0.967556
+  [32x32] Epoch  28  Batch    18/   32  loss: 0.438805  acc: 0.967609
+  [32x32] Epoch  28  Batch    19/   32  loss: 0.438628  acc: 0.967658
+  [32x32] Epoch  28  Batch    20/   32  loss: 0.438640  acc: 0.967587
+  [32x32] Epoch  28  Batch    21/   32  loss: 0.438626  acc: 0.967544
+  [32x32] Epoch  28  Batch    22/   32  loss: 0.438653  acc: 0.967558
+  [32x32] Epoch  28  Batch    23/   32  loss: 0.438676  acc: 0.967580
+  [32x32] Epoch  28  Batch    24/   32  loss: 0.438739  acc: 0.967667
+  [32x32] Epoch  28  Batch    25/   32  loss: 0.438486  acc: 0.967746
+  [32x32] Epoch  28  Batch    26/   32  loss: 0.437991  acc: 0.967987
+  [32x32] Epoch  28  Batch    27/   32  loss: 0.438314  acc: 0.967922
+  [32x32] Epoch  28  Batch    28/   32  loss: 0.438135  acc: 0.967854
+  [32x32] Epoch  28  Batch    29/   32  loss: 0.437777  acc: 0.968058
+  [32x32] Epoch  28  Batch    30/   32  loss: 0.437572  acc: 0.968134
+  [32x32] Epoch  28  Batch    31/   32  loss: 0.437600  acc: 0.968205
+  [32x32] Epoch  28  Batch    32/   32  loss: 0.437422  acc: 0.968267
+[32x32] Epoch  28  loss: 0.437422  acc: 0.968267  |  val_loss: 0.463295  val_acc: 0.955226  |  lr: 0.01938164  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 98/100%(avg/max)  59/64°C  180W  |  CPU 28%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.2s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 9/15
+  [32x32] Epoch  29  Batch     1/   32  loss: 0.437374  acc: 0.968750
+  [32x32] Epoch  29  Batch     2/   32  loss: 0.436984  acc: 0.970005
+  [32x32] Epoch  29  Batch     3/   32  loss: 0.435663  acc: 0.969282
+  [32x32] Epoch  29  Batch     4/   32  loss: 0.436695  acc: 0.968864
+  [32x32] Epoch  29  Batch     5/   32  loss: 0.437270  acc: 0.968248
+  [32x32] Epoch  29  Batch     6/   32  loss: 0.437678  acc: 0.967990
+  [32x32] Epoch  29  Batch     7/   32  loss: 0.437010  acc: 0.968261
+  [32x32] Epoch  29  Batch     8/   32  loss: 0.436890  acc: 0.968265
+  [32x32] Epoch  29  Batch     9/   32  loss: 0.437088  acc: 0.968167
+  [32x32] Epoch  29  Batch    10/   32  loss: 0.436939  acc: 0.967974
+  [32x32] Epoch  29  Batch    11/   32  loss: 0.436917  acc: 0.968169
+  [32x32] Epoch  29  Batch    12/   32  loss: 0.436575  acc: 0.968161
+  [32x32] Epoch  29  Batch    13/   32  loss: 0.435740  acc: 0.968469
+  [32x32] Epoch  29  Batch    14/   32  loss: 0.435671  acc: 0.968620
+  [32x32] Epoch  29  Batch    15/   32  loss: 0.435708  acc: 0.968583
+  [32x32] Epoch  29  Batch    16/   32  loss: 0.435690  acc: 0.968721
+  [32x32] Epoch  29  Batch    17/   32  loss: 0.435689  acc: 0.968576
+  [32x32] Epoch  29  Batch    18/   32  loss: 0.435747  acc: 0.968509
+  [32x32] Epoch  29  Batch    19/   32  loss: 0.435757  acc: 0.968414
+  [32x32] Epoch  29  Batch    20/   32  loss: 0.435640  acc: 0.968339
+  [32x32] Epoch  29  Batch    21/   32  loss: 0.435740  acc: 0.968337
+  [32x32] Epoch  29  Batch    22/   32  loss: 0.435684  acc: 0.968325
+  [32x32] Epoch  29  Batch    23/   32  loss: 0.436094  acc: 0.968234
+  [32x32] Epoch  29  Batch    24/   32  loss: 0.435973  acc: 0.968322
+  [32x32] Epoch  29  Batch    25/   32  loss: 0.435906  acc: 0.968339
+  [32x32] Epoch  29  Batch    26/   32  loss: 0.435906  acc: 0.968285
+  [32x32] Epoch  29  Batch    27/   32  loss: 0.436267  acc: 0.968116
+  [32x32] Epoch  29  Batch    28/   32  loss: 0.436387  acc: 0.968025
+  [32x32] Epoch  29  Batch    29/   32  loss: 0.436355  acc: 0.968042
+  [32x32] Epoch  29  Batch    30/   32  loss: 0.436339  acc: 0.968005
+  [32x32] Epoch  29  Batch    31/   32  loss: 0.436184  acc: 0.968022
+  [32x32] Epoch  29  Batch    32/   32  loss: 0.436098  acc: 0.968123
+[32x32] Epoch  29  loss: 0.436098  acc: 0.968123  |  val_loss: 0.471401  val_acc: 0.948028  |  lr: 0.01930008  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 98/100%(avg/max)  61/64°C  184W  |  CPU 27%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.2s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 10/15
+  [32x32] Epoch  30  Batch     1/   32  loss: 0.436665  acc: 0.965557
+  [32x32] Epoch  30  Batch     2/   32  loss: 0.433829  acc: 0.967039
+  [32x32] Epoch  30  Batch     3/   32  loss: 0.430397  acc: 0.969054
+  [32x32] Epoch  30  Batch     4/   32  loss: 0.432036  acc: 0.968921
+  [32x32] Epoch  30  Batch     5/   32  loss: 0.432459  acc: 0.968887
+  [32x32] Epoch  30  Batch     6/   32  loss: 0.431802  acc: 0.969548
+  [32x32] Epoch  30  Batch     7/   32  loss: 0.431074  acc: 0.969695
+  [32x32] Epoch  30  Batch     8/   32  loss: 0.432229  acc: 0.969292
+  [32x32] Epoch  30  Batch     9/   32  loss: 0.431598  acc: 0.969814
+  [32x32] Epoch  30  Batch    10/   32  loss: 0.431966  acc: 0.969594
+  [32x32] Epoch  30  Batch    11/   32  loss: 0.432403  acc: 0.969579
+  [32x32] Epoch  30  Batch    12/   32  loss: 0.432376  acc: 0.969700
+  [32x32] Epoch  30  Batch    13/   32  loss: 0.432310  acc: 0.969891
+  [32x32] Epoch  30  Batch    14/   32  loss: 0.431938  acc: 0.970135
+  [32x32] Epoch  30  Batch    15/   32  loss: 0.431994  acc: 0.970043
+  [32x32] Epoch  30  Batch    16/   32  loss: 0.432312  acc: 0.969933
+  [32x32] Epoch  30  Batch    17/   32  loss: 0.432346  acc: 0.969998
+  [32x32] Epoch  30  Batch    18/   32  loss: 0.432692  acc: 0.969929
+  [32x32] Epoch  30  Batch    19/   32  loss: 0.432547  acc: 0.969903
+  [32x32] Epoch  30  Batch    20/   32  loss: 0.432368  acc: 0.970016
+  [32x32] Epoch  30  Batch    21/   32  loss: 0.431926  acc: 0.970162
+  [32x32] Epoch  30  Batch    22/   32  loss: 0.432334  acc: 0.970088
+  [32x32] Epoch  30  Batch    23/   32  loss: 0.432237  acc: 0.970178
+  [32x32] Epoch  30  Batch    24/   32  loss: 0.432563  acc: 0.970052
+  [32x32] Epoch  30  Batch    25/   32  loss: 0.432471  acc: 0.970128
+  [32x32] Epoch  30  Batch    26/   32  loss: 0.432451  acc: 0.970057
+  [32x32] Epoch  30  Batch    27/   32  loss: 0.432294  acc: 0.970237
+  [32x32] Epoch  30  Batch    28/   32  loss: 0.431993  acc: 0.970412
+  [32x32] Epoch  30  Batch    29/   32  loss: 0.432134  acc: 0.970394
+  [32x32] Epoch  30  Batch    30/   32  loss: 0.432112  acc: 0.970438
+  [32x32] Epoch  30  Batch    31/   32  loss: 0.432216  acc: 0.970428
+  [32x32] Epoch  30  Batch    32/   32  loss: 0.432390  acc: 0.970420
+[32x32] Epoch  30  loss: 0.432390  acc: 0.970420  |  val_loss: 0.470396  val_acc: 0.951972  |  lr: 0.01921366  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 65/98%(avg/max)  59/64°C  176W  |  CPU 28%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.2s/compute 6.3s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 11/15
+  [32x32] Epoch  31  Batch     1/   32  loss: 0.428718  acc: 0.967381
+  [32x32] Epoch  31  Batch     2/   32  loss: 0.430155  acc: 0.968066
+  [32x32] Epoch  31  Batch     3/   32  loss: 0.429690  acc: 0.969814
+  [32x32] Epoch  31  Batch     4/   32  loss: 0.429300  acc: 0.969891
+  [32x32] Epoch  31  Batch     5/   32  loss: 0.428929  acc: 0.970027
+  [32x32] Epoch  31  Batch     6/   32  loss: 0.429025  acc: 0.970309
+  [32x32] Epoch  31  Batch     7/   32  loss: 0.428605  acc: 0.970770
+  [32x32] Epoch  31  Batch     8/   32  loss: 0.429076  acc: 0.970945
+  [32x32] Epoch  31  Batch     9/   32  loss: 0.428559  acc: 0.971335
+  [32x32] Epoch  31  Batch    10/   32  loss: 0.429608  acc: 0.970917
+  [32x32] Epoch  31  Batch    11/   32  loss: 0.429474  acc: 0.971155
+  [32x32] Epoch  31  Batch    12/   32  loss: 0.429067  acc: 0.971202
+  [32x32] Epoch  31  Batch    13/   32  loss: 0.429234  acc: 0.971031
+  [32x32] Epoch  31  Batch    14/   32  loss: 0.429235  acc: 0.970966
+  [32x32] Epoch  31  Batch    15/   32  loss: 0.429447  acc: 0.970742
+  [32x32] Epoch  31  Batch    16/   32  loss: 0.429074  acc: 0.970789
+  [32x32] Epoch  31  Batch    17/   32  loss: 0.429254  acc: 0.970682
+  [32x32] Epoch  31  Batch    18/   32  loss: 0.429067  acc: 0.970841
+  [32x32] Epoch  31  Batch    19/   32  loss: 0.429303  acc: 0.970743
+  [32x32] Epoch  31  Batch    20/   32  loss: 0.429422  acc: 0.970712
+  [32x32] Epoch  31  Batch    21/   32  loss: 0.429605  acc: 0.970683
+  [32x32] Epoch  31  Batch    22/   32  loss: 0.429508  acc: 0.970813
+  [32x32] Epoch  31  Batch    23/   32  loss: 0.429657  acc: 0.970813
+  [32x32] Epoch  31  Batch    24/   32  loss: 0.429835  acc: 0.970784
+  [32x32] Epoch  31  Batch    25/   32  loss: 0.430120  acc: 0.970757
+  [32x32] Epoch  31  Batch    26/   32  loss: 0.430002  acc: 0.970803
+  [32x32] Epoch  31  Batch    27/   32  loss: 0.430100  acc: 0.970794
+  [32x32] Epoch  31  Batch    28/   32  loss: 0.430258  acc: 0.970746
+  [32x32] Epoch  31  Batch    29/   32  loss: 0.430138  acc: 0.970858
+  [32x32] Epoch  31  Batch    30/   32  loss: 0.430182  acc: 0.970742
+  [32x32] Epoch  31  Batch    31/   32  loss: 0.430189  acc: 0.970707
+  [32x32] Epoch  31  Batch    32/   32  loss: 0.430079  acc: 0.970707
+[32x32] Epoch  31  loss: 0.430079  acc: 0.970707  |  val_loss: 0.458635  val_acc: 0.959252  |  lr: 0.01912243  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 97/100%(avg/max)  60/64°C  178W  |  CPU 26%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.2s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 12/15
+  [32x32] Epoch  32  Batch     1/   32  loss: 0.432786  acc: 0.970803
+  [32x32] Epoch  32  Batch     2/   32  loss: 0.434479  acc: 0.970347
+  [32x32] Epoch  32  Batch     3/   32  loss: 0.432513  acc: 0.970499
+  [32x32] Epoch  32  Batch     4/   32  loss: 0.431431  acc: 0.970632
+  [32x32] Epoch  32  Batch     5/   32  loss: 0.430044  acc: 0.970803
+  [32x32] Epoch  32  Batch     6/   32  loss: 0.430823  acc: 0.970917
+  [32x32] Epoch  32  Batch     7/   32  loss: 0.430192  acc: 0.971455
+  [32x32] Epoch  32  Batch     8/   32  loss: 0.428881  acc: 0.971943
+  [32x32] Epoch  32  Batch     9/   32  loss: 0.430223  acc: 0.971335
+  [32x32] Epoch  32  Batch    10/   32  loss: 0.429503  acc: 0.971419
+  [32x32] Epoch  32  Batch    11/   32  loss: 0.429715  acc: 0.971280
+  [32x32] Epoch  32  Batch    12/   32  loss: 0.429795  acc: 0.970993
+  [32x32] Epoch  32  Batch    13/   32  loss: 0.429368  acc: 0.971224
+  [32x32] Epoch  32  Batch    14/   32  loss: 0.429219  acc: 0.971504
+  [32x32] Epoch  32  Batch    15/   32  loss: 0.429649  acc: 0.971183
+  [32x32] Epoch  32  Batch    16/   32  loss: 0.429745  acc: 0.971117
+  [32x32] Epoch  32  Batch    17/   32  loss: 0.429744  acc: 0.971179
+  [32x32] Epoch  32  Batch    18/   32  loss: 0.430090  acc: 0.971170
+  [32x32] Epoch  32  Batch    19/   32  loss: 0.429836  acc: 0.971175
+  [32x32] Epoch  32  Batch    20/   32  loss: 0.429952  acc: 0.971065
+  [32x32] Epoch  32  Batch    21/   32  loss: 0.430060  acc: 0.971074
+  [32x32] Epoch  32  Batch    22/   32  loss: 0.430004  acc: 0.971041
+  [32x32] Epoch  32  Batch    23/   32  loss: 0.430184  acc: 0.970942
+  [32x32] Epoch  32  Batch    24/   32  loss: 0.429947  acc: 0.971107
+  [32x32] Epoch  32  Batch    25/   32  loss: 0.429754  acc: 0.971314
+  [32x32] Epoch  32  Batch    26/   32  loss: 0.429741  acc: 0.971382
+  [32x32] Epoch  32  Batch    27/   32  loss: 0.429603  acc: 0.971403
+  [32x32] Epoch  32  Batch    28/   32  loss: 0.429526  acc: 0.971389
+  [32x32] Epoch  32  Batch    29/   32  loss: 0.429457  acc: 0.971401
+  [32x32] Epoch  32  Batch    30/   32  loss: 0.429560  acc: 0.971343
+  [32x32] Epoch  32  Batch    31/   32  loss: 0.429360  acc: 0.971303
+  [32x32] Epoch  32  Batch    32/   32  loss: 0.429556  acc: 0.971195
+[32x32] Epoch  32  loss: 0.429556  acc: 0.971195  |  val_loss: 0.463396  val_acc: 0.959211  |  lr: 0.01902644  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 65/97%(avg/max)  60/65°C  174W  |  CPU 27%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.1s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 13/15
+  [32x32] Epoch  33  Batch     1/   32  loss: 0.428620  acc: 0.971259
+  [32x32] Epoch  33  Batch     2/   32  loss: 0.429369  acc: 0.971259
+  [32x32] Epoch  33  Batch     3/   32  loss: 0.428374  acc: 0.971943
+  [32x32] Epoch  33  Batch     4/   32  loss: 0.428898  acc: 0.970974
+  [32x32] Epoch  33  Batch     5/   32  loss: 0.428839  acc: 0.971396
+  [32x32] Epoch  33  Batch     6/   32  loss: 0.427554  acc: 0.972019
+  [32x32] Epoch  33  Batch     7/   32  loss: 0.428225  acc: 0.971781
+  [32x32] Epoch  33  Batch     8/   32  loss: 0.427447  acc: 0.972143
+  [32x32] Epoch  33  Batch     9/   32  loss: 0.426902  acc: 0.972501
+  [32x32] Epoch  33  Batch    10/   32  loss: 0.426993  acc: 0.972240
+  [32x32] Epoch  33  Batch    11/   32  loss: 0.426413  acc: 0.972420
+  [32x32] Epoch  33  Batch    12/   32  loss: 0.427006  acc: 0.972115
+  [32x32] Epoch  33  Batch    13/   32  loss: 0.426742  acc: 0.972154
+  [32x32] Epoch  33  Batch    14/   32  loss: 0.426678  acc: 0.971992
+  [32x32] Epoch  33  Batch    15/   32  loss: 0.426721  acc: 0.972080
+  [32x32] Epoch  33  Batch    16/   32  loss: 0.426847  acc: 0.972129
+  [32x32] Epoch  33  Batch    17/   32  loss: 0.427089  acc: 0.971890
+  [32x32] Epoch  33  Batch    18/   32  loss: 0.427110  acc: 0.971791
+  [32x32] Epoch  33  Batch    19/   32  loss: 0.426992  acc: 0.971931
+  [32x32] Epoch  33  Batch    20/   32  loss: 0.426712  acc: 0.971989
+  [32x32] Epoch  33  Batch    21/   32  loss: 0.426908  acc: 0.971965
+  [32x32] Epoch  33  Batch    22/   32  loss: 0.426568  acc: 0.972026
+  [32x32] Epoch  33  Batch    23/   32  loss: 0.426844  acc: 0.971943
+  [32x32] Epoch  33  Batch    24/   32  loss: 0.426473  acc: 0.972153
+  [32x32] Epoch  33  Batch    25/   32  loss: 0.426513  acc: 0.972007
+  [32x32] Epoch  33  Batch    26/   32  loss: 0.426447  acc: 0.971970
+  [32x32] Epoch  33  Batch    27/   32  loss: 0.426342  acc: 0.972011
+  [32x32] Epoch  33  Batch    28/   32  loss: 0.426473  acc: 0.971968
+  [32x32] Epoch  33  Batch    29/   32  loss: 0.426387  acc: 0.972014
+  [32x32] Epoch  33  Batch    30/   32  loss: 0.426562  acc: 0.971928
+  [32x32] Epoch  33  Batch    31/   32  loss: 0.426653  acc: 0.971914
+  [32x32] Epoch  33  Batch    32/   32  loss: 0.426606  acc: 0.971970
+[32x32] Epoch  33  loss: 0.426606  acc: 0.971970  |  val_loss: 0.457186  val_acc: 0.962708  |  lr: 0.01892574  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 98/100%(avg/max)  60/64°C  175W  |  CPU 26%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.2s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 14/15
+  [32x32] Epoch  34  Batch     1/   32  loss: 0.434404  acc: 0.967609
+  [32x32] Epoch  34  Batch     2/   32  loss: 0.426693  acc: 0.971031
+  [32x32] Epoch  34  Batch     3/   32  loss: 0.424861  acc: 0.971791
+  [32x32] Epoch  34  Batch     4/   32  loss: 0.424444  acc: 0.972115
+  [32x32] Epoch  34  Batch     5/   32  loss: 0.426789  acc: 0.970940
+  [32x32] Epoch  34  Batch     6/   32  loss: 0.427456  acc: 0.971449
+  [32x32] Epoch  34  Batch     7/   32  loss: 0.427572  acc: 0.971227
+  [32x32] Epoch  34  Batch     8/   32  loss: 0.426855  acc: 0.971744
+  [32x32] Epoch  34  Batch     9/   32  loss: 0.427766  acc: 0.971665
+  [32x32] Epoch  34  Batch    10/   32  loss: 0.428534  acc: 0.971533
+  [32x32] Epoch  34  Batch    11/   32  loss: 0.429002  acc: 0.971259
+  [32x32] Epoch  34  Batch    12/   32  loss: 0.428828  acc: 0.970993
+  [32x32] Epoch  34  Batch    13/   32  loss: 0.428763  acc: 0.970908
+  [32x32] Epoch  34  Batch    14/   32  loss: 0.428948  acc: 0.970836
+  [32x32] Epoch  34  Batch    15/   32  loss: 0.428560  acc: 0.971153
+  [32x32] Epoch  34  Batch    16/   32  loss: 0.429077  acc: 0.971003
+  [32x32] Epoch  34  Batch    17/   32  loss: 0.428551  acc: 0.971138
+  [32x32] Epoch  34  Batch    18/   32  loss: 0.428703  acc: 0.971082
+  [32x32] Epoch  34  Batch    19/   32  loss: 0.428976  acc: 0.970935
+  [32x32] Epoch  34  Batch    20/   32  loss: 0.429166  acc: 0.970826
+  [32x32] Epoch  34  Batch    21/   32  loss: 0.428743  acc: 0.971151
+  [32x32] Epoch  34  Batch    22/   32  loss: 0.428376  acc: 0.971269
+  [32x32] Epoch  34  Batch    23/   32  loss: 0.428380  acc: 0.971229
+  [32x32] Epoch  34  Batch    24/   32  loss: 0.428328  acc: 0.971240
+  [32x32] Epoch  34  Batch    25/   32  loss: 0.428235  acc: 0.971277
+  [32x32] Epoch  34  Batch    26/   32  loss: 0.427903  acc: 0.971382
+  [32x32] Epoch  34  Batch    27/   32  loss: 0.427537  acc: 0.971487
+  [32x32] Epoch  34  Batch    28/   32  loss: 0.427701  acc: 0.971398
+  [32x32] Epoch  34  Batch    29/   32  loss: 0.427631  acc: 0.971314
+  [32x32] Epoch  34  Batch    30/   32  loss: 0.427608  acc: 0.971252
+  [32x32] Epoch  34  Batch    31/   32  loss: 0.427507  acc: 0.971377
+  [32x32] Epoch  34  Batch    32/   32  loss: 0.427574  acc: 0.971381
+[32x32] Epoch  34  loss: 0.427574  acc: 0.971381  |  val_loss: 0.466206  val_acc: 0.954738  |  lr: 0.01882037  [10s]  |  VRAM 13.5/16.0GB (other 0.7GB)  CUDA 66/100%(avg/max)  60/65°C  176W  |  CPU 27%  RAM 36.1/63.2GB  SWAP 0.1/17.0GB  |  wait 2.1s/compute 6.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_log.csv
+  [EarlyStopping] 15/15
+  [EarlyStopping] Halting.
+
+[Train] [32x32] Loading best checkpoint...
+
+[Eval] [32x32] Running per-class accuracy analysis on test set...
+
+  [Per-Class] 10 worst-performing classes:
+    'i' (class  8): 63.4660%  (427 samples)
+    'g' (class  6): 79.1171%  (589 samples)
+    'q' (class 16): 88.9109%  (505 samples)
+    'j' (class  9): 91.4827%  (317 samples)
+    'v' (class 21): 92.0940%  (468 samples)
+    'u' (class 20): 93.1535%  (482 samples)
+    'l' (class 11): 93.2150%  (2535 samples)
+    'y' (class 24): 95.2756%  (381 samples)
+    'a' (class  0): 95.4988%  (1644 samples)
+    'f' (class  5): 97.0000%  (400 samples)
+
+========================================
+  [32x32] Muon Test accuracy : 0.963302  (96.3302%)
+  [32x32] Muon Test loss     : 0.449907
+========================================
+[Plot] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_curves.png
+[Save] E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32_final.pt
+[ONNX] Exported to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32\v4_mnist_letter_lc_muon_32.onnx  (36.9 MB)
+  [Resume] State cleared — training complete.
+
+[Done] [32x32] All files saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_muon_32
+
+############################################################
+  TRAINING COMPLETE — MUON (LOWERCASE)
+  32x32: 96.3302% test accuracy
+############################################################

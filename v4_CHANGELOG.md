@@ -401,3 +401,32 @@ himself and it surfaced `.gitignore` as tracked-but-unlisted — same
 CLAUDE.md README maintenance rule as the two prior entries. No external
 source — verified directly against this repo's own `git ls-files`
 output.
+
+## 2026-08-16 — README file tree updated for 28 newly-completed training outputs
+
+**Change:** Rewrote the `## Current structure` section of `README.md`
+to reflect the current training state. Added full file listings for
+every output folder produced since the last README update: in
+`digit_models/`, `_adamw_32`, `_adamw_64`, `_muon_32`, `_muon_64`,
+`_soap_32`, `_soap_64`; in `lowercase_models/`, `_adamw_32`, `_adamw_64`
+(in progress — no `.onnx`/`curves.png` yet), `_muon_32`, `_soap_32`,
+`_soap_64`; in `uppercase_models/`, `_adamw_32`, `_adamw_64`, `_muon_32`,
+`_muon_64`, `_soap_32`, `_soap_64`; in `router_models/`, `_ranger_64`.
+`v4_mnist_digit_soap_32/` flipped from "run in progress" to complete
+(its `.onnx`, `curves.png`, and a second CLI transcript are now there).
+Also reworded the intro line from "ahead of planned letter-reading
+models" to "ahead of separate uppercase and lowercase letter-reading
+models" — those models are now largely trained (16 of 24 configs
+across both families), not future work, so "planned" was stale. Every
+listed file was cross-checked against `git ls-files` (already-tracked
+files) and `git status --porcelain --untracked-files=all` (new files,
+filtered against `.gitignore`'s `*.pt` rule) rather than assumed from a
+plain directory listing.
+
+**Why:** Per William's direct instruction — the file tree still only
+showed the 16/28-resolution outputs that existed as of the 2026-08-14
+entries above, while 28 more output folders (resolutions 32/64) had
+since been produced by training runs, and the intro line's "planned"
+wording no longer matched what the repo contains. No external source —
+verified directly against this repo's own `git ls-files`, `git status
+--porcelain --untracked-files=all`, and `.gitignore` output.
