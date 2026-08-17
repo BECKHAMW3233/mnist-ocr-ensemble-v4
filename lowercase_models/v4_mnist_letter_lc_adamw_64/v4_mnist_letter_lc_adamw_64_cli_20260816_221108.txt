@@ -1,0 +1,246 @@
+
+======================================================================
+[Session start] 2026-08-16T22:11:08
+======================================================================
+
+############################################################
+  LETTER IDENTITY ENSEMBLE — LOWERCASE — SCHEDULEFREE-ADAMW 64x64
+  Seed: GLOBAL_SEED=42 (override with MNIST_SEED env var)
+############################################################
+
+[CPU] 24 logical cores detected — reserving 6 (25%) for the OS, 18 usable (this machine's NUM_WORKERS = 18 DataLoader workers; also the thread count torch.set_num_threads() uses on CPU-only runs)
+[Device] GPU 0/0: NVIDIA GeForce RTX 4080  |  16.0 GB VRAM  |  CUDA 13.0  |  AMP: True
+[Startup VRAM] GPU 0: 1178 MB / 16376 MB in use before this script has allocated anything
+[Startup VRAM] Something is using GPU memory, but Windows' WDDM driver mode doesn't expose which process to nvidia-smi (check Task Manager's Performance > GPU tab instead).
+[Batch] Auto-detecting batch size for 64x64 (5 real training steps per candidate, bottom-up with binary-search refinement)...
+[Batch] Batch size 64 — OK (5 real steps completed)
+[Batch] Batch size 128 — OK (5 real steps completed)
+[Batch] Batch size 256 — OK (5 real steps completed)
+[Batch] Batch size 512 — OK (5 real steps completed)
+[Batch] Batch size 1024 — OK (5 real steps completed)
+[Batch] Batch size 2048 — OK (5 real steps completed)
+[Batch] Batch size 3584 — failed (RuntimeError), trying next
+[Batch] Bracket found: 2048 works, 3584 fails — refining...
+[Batch] Batch size 2816 — OK (5 real steps completed)
+[Batch] Batch size 3200 — failed (RuntimeError), trying next
+[Batch] Batch size 3008 — failed (RuntimeError), trying next
+[Batch] Batch size 2912 — failed (RuntimeError), trying next
+[Batch] Batch size 2864 — failed (RuntimeError), trying next
+[Batch] Batch size 2840 — OK (5 real steps completed)
+[Batch] Batch size 2848 — OK (5 real steps completed)
+[Batch] Batch size 2856 — OK (5 real steps completed)
+[Batch] Refined to batch size 2856 (largest confirmed-working, within 8 of the true VRAM ceiling)
+============================================================
+  Letter Identity Ensemble — Lowercase — ScheduleFree-AdamW  [64x64]
+  PyTorch 2.13.0+cu130  |  AMP: True
+  Output: E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_adamw_64
+  Resolution: 64x64  |  Batch: 2856 (auto-detected)
+  Optimizer: Schedule-Free AdamW
+  Letter source: EMNIST ByClass, case=lower (26 classes, no digits)
+  Normalization: [0,1]
+============================================================
+[Dataset] Loading EMNIST ByClass (lower) (via supplementary_data.load_base_emnist_letters)...
+[Dataset] Train: 139,349  |  Val: 24,590  |  Test: 27,059
+
+[Model] OCRConvNetWide — 64x64
+  Parameters : 9,716,602
+  Est. size  : 37.1 MB (float32)
+[Optimizer] Schedule-Free AdamW  lr=0.001  wd=0.0001
+            warmup_steps=49 (1 epoch)
+
+[Train] Starting 64x64 — no epoch cap | batch: 2856 | patience: 15
+[Resume] Batch size changed since this checkpoint was saved (2184 -> 2856) — the saved optimizer/scheduler state was computed for a different batch size and will NOT be restored, to avoid silently resuming a wrong-for-this-run LR schedule. Continuing with the fresh optimizer/scheduler already built above for THIS run's batch size — model weights, epoch, and patience state are still resumed normally below.
+[Resume] Loaded from epoch 53 (val_loss=0.448895, patience=12/15)
+[Resume] Continuing from epoch 54
+  [64x64] Epoch  54  Batch     1/   49  loss: 0.451316  acc: 0.964986
+  [64x64] Epoch  54  Batch     2/   49  loss: 0.456293  acc: 0.962885
+  [64x64] Epoch  54  Batch     3/   49  loss: 0.459013  acc: 0.963585
+  [64x64] Epoch  54  Batch     4/   49  loss: 0.461177  acc: 0.963060
+  [64x64] Epoch  54  Batch     5/   49  loss: 0.459261  acc: 0.964146
+  [64x64] Epoch  54  Batch     6/   49  loss: 0.459160  acc: 0.964169
+  [64x64] Epoch  54  Batch     7/   49  loss: 0.459735  acc: 0.963936
+  [64x64] Epoch  54  Batch     8/   49  loss: 0.459964  acc: 0.963673
+  [64x64] Epoch  54  Batch     9/   49  loss: 0.459810  acc: 0.963352
+  [64x64] Epoch  54  Batch    10/   49  loss: 0.460577  acc: 0.963165
+  [64x64] Epoch  54  Batch    11/   49  loss: 0.461196  acc: 0.962917
+  [64x64] Epoch  54  Batch    12/   49  loss: 0.461708  acc: 0.962944
+  [64x64] Epoch  54  Batch    13/   49  loss: 0.462243  acc: 0.962993
+  [64x64] Epoch  54  Batch    14/   49  loss: 0.461973  acc: 0.963235
+  [64x64] Epoch  54  Batch    15/   49  loss: 0.462006  acc: 0.963119
+  [64x64] Epoch  54  Batch    16/   49  loss: 0.463033  acc: 0.962732
+  [64x64] Epoch  54  Batch    17/   49  loss: 0.463756  acc: 0.962144
+  [64x64] Epoch  54  Batch    18/   49  loss: 0.464252  acc: 0.961757
+  [64x64] Epoch  54  Batch    19/   49  loss: 0.464520  acc: 0.961632
+  [64x64] Epoch  54  Batch    20/   49  loss: 0.465480  acc: 0.961415
+  [64x64] Epoch  54  Batch    21/   49  loss: 0.465927  acc: 0.961168
+  [64x64] Epoch  54  Batch    22/   49  loss: 0.466430  acc: 0.960943
+  [64x64] Epoch  54  Batch    23/   49  loss: 0.466460  acc: 0.961013
+  [64x64] Epoch  54  Batch    24/   49  loss: 0.467236  acc: 0.960609
+  [64x64] Epoch  54  Batch    25/   49  loss: 0.467542  acc: 0.960504
+  [64x64] Epoch  54  Batch    26/   49  loss: 0.467757  acc: 0.960528
+  [64x64] Epoch  54  Batch    27/   49  loss: 0.467957  acc: 0.960408
+  [64x64] Epoch  54  Batch    28/   49  loss: 0.468745  acc: 0.960322
+  [64x64] Epoch  54  Batch    29/   49  loss: 0.469060  acc: 0.960253
+  [64x64] Epoch  54  Batch    30/   49  loss: 0.469455  acc: 0.960061
+  [64x64] Epoch  54  Batch    31/   49  loss: 0.469885  acc: 0.959982
+  [64x64] Epoch  54  Batch    32/   49  loss: 0.470122  acc: 0.959898
+  [64x64] Epoch  54  Batch    33/   49  loss: 0.470450  acc: 0.959713
+  [64x64] Epoch  54  Batch    34/   49  loss: 0.471201  acc: 0.959322
+  [64x64] Epoch  54  Batch    35/   49  loss: 0.471579  acc: 0.959214
+  [64x64] Epoch  54  Batch    36/   49  loss: 0.471719  acc: 0.959131
+  [64x64] Epoch  54  Batch    37/   49  loss: 0.471815  acc: 0.959109
+  [64x64] Epoch  54  Batch    38/   49  loss: 0.472350  acc: 0.958960
+  [64x64] Epoch  54  Batch    39/   49  loss: 0.472554  acc: 0.958881
+  [64x64] Epoch  54  Batch    40/   49  loss: 0.472634  acc: 0.958762
+  [64x64] Epoch  54  Batch    41/   49  loss: 0.473067  acc: 0.958538
+  [64x64] Epoch  54  Batch    42/   49  loss: 0.473040  acc: 0.958467
+  [64x64] Epoch  54  Batch    43/   49  loss: 0.473314  acc: 0.958464
+  [64x64] Epoch  54  Batch    44/   49  loss: 0.473371  acc: 0.958453
+  [64x64] Epoch  54  Batch    45/   49  loss: 0.473868  acc: 0.958271
+  [64x64] Epoch  54  Batch    46/   49  loss: 0.473735  acc: 0.958341
+  [64x64] Epoch  54  Batch    47/   49  loss: 0.474099  acc: 0.958318
+  [64x64] Epoch  54  Batch    48/   49  loss: 0.474309  acc: 0.958231
+  [64x64] Epoch  54  Batch    49/   49  loss: 0.474538  acc: 0.958191
+[64x64] Epoch  54  loss: 0.474538  acc: 0.958191  |  val_loss: 0.458622  val_acc: 0.958967  |  lr: 0.00100000  [86s]  |  VRAM 15.0/16.0GB (other 1.3GB)  CUDA 98/100%(avg/max)  55/59°C  190W  |  CPU 10%  RAM 36.6/63.2GB  SWAP 0.0/16.0GB  |  wait 44.0s/compute 23.7s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_adamw_64\v4_mnist_letter_lc_adamw_64_log.csv
+  [EarlyStopping] 13/15
+  [64x64] Epoch  55  Batch     1/   49  loss: 0.480362  acc: 0.956583
+  [64x64] Epoch  55  Batch     2/   49  loss: 0.484913  acc: 0.953782
+  [64x64] Epoch  55  Batch     3/   49  loss: 0.482510  acc: 0.955882
+  [64x64] Epoch  55  Batch     4/   49  loss: 0.485499  acc: 0.954044
+  [64x64] Epoch  55  Batch     5/   49  loss: 0.487047  acc: 0.953501
+  [64x64] Epoch  55  Batch     6/   49  loss: 0.487822  acc: 0.953256
+  [64x64] Epoch  55  Batch     7/   49  loss: 0.487187  acc: 0.953932
+  [64x64] Epoch  55  Batch     8/   49  loss: 0.485021  acc: 0.954832
+  [64x64] Epoch  55  Batch     9/   49  loss: 0.485936  acc: 0.954093
+  [64x64] Epoch  55  Batch    10/   49  loss: 0.486123  acc: 0.954202
+  [64x64] Epoch  55  Batch    11/   49  loss: 0.485731  acc: 0.954736
+  [64x64] Epoch  55  Batch    12/   49  loss: 0.486416  acc: 0.954599
+  [64x64] Epoch  55  Batch    13/   49  loss: 0.485376  acc: 0.955101
+  [64x64] Epoch  55  Batch    14/   49  loss: 0.485293  acc: 0.955107
+  [64x64] Epoch  55  Batch    15/   49  loss: 0.485072  acc: 0.955462
+  [64x64] Epoch  55  Batch    16/   49  loss: 0.485658  acc: 0.955357
+  [64x64] Epoch  55  Batch    17/   49  loss: 0.485468  acc: 0.955264
+  [64x64] Epoch  55  Batch    18/   49  loss: 0.485491  acc: 0.955104
+  [64x64] Epoch  55  Batch    19/   49  loss: 0.484786  acc: 0.955458
+  [64x64] Epoch  55  Batch    20/   49  loss: 0.484318  acc: 0.955567
+  [64x64] Epoch  55  Batch    21/   49  loss: 0.484275  acc: 0.955532
+  [64x64] Epoch  55  Batch    22/   49  loss: 0.483987  acc: 0.955500
+  [64x64] Epoch  55  Batch    23/   49  loss: 0.483855  acc: 0.955502
+  [64x64] Epoch  55  Batch    24/   49  loss: 0.483632  acc: 0.955591
+  [64x64] Epoch  55  Batch    25/   49  loss: 0.483476  acc: 0.955630
+  [64x64] Epoch  55  Batch    26/   49  loss: 0.483720  acc: 0.955519
+  [64x64] Epoch  55  Batch    27/   49  loss: 0.483383  acc: 0.955545
+  [64x64] Epoch  55  Batch    28/   49  loss: 0.483542  acc: 0.955457
+  [64x64] Epoch  55  Batch    29/   49  loss: 0.483355  acc: 0.955593
+  [64x64] Epoch  55  Batch    30/   49  loss: 0.483710  acc: 0.955439
+  [64x64] Epoch  55  Batch    31/   49  loss: 0.483852  acc: 0.955476
+  [64x64] Epoch  55  Batch    32/   49  loss: 0.483706  acc: 0.955620
+  [64x64] Epoch  55  Batch    33/   49  loss: 0.483530  acc: 0.955776
+  [64x64] Epoch  55  Batch    34/   49  loss: 0.483271  acc: 0.955893
+  [64x64] Epoch  55  Batch    35/   49  loss: 0.483086  acc: 0.955992
+  [64x64] Epoch  55  Batch    36/   49  loss: 0.483052  acc: 0.956009
+  [64x64] Epoch  55  Batch    37/   49  loss: 0.482822  acc: 0.956138
+  [64x64] Epoch  55  Batch    38/   49  loss: 0.482874  acc: 0.956168
+  [64x64] Epoch  55  Batch    39/   49  loss: 0.482778  acc: 0.956143
+  [64x64] Epoch  55  Batch    40/   49  loss: 0.482691  acc: 0.956241
+  [64x64] Epoch  55  Batch    41/   49  loss: 0.482331  acc: 0.956480
+  [64x64] Epoch  55  Batch    42/   49  loss: 0.482627  acc: 0.956333
+  [64x64] Epoch  55  Batch    43/   49  loss: 0.482608  acc: 0.956346
+  [64x64] Epoch  55  Batch    44/   49  loss: 0.482555  acc: 0.956328
+  [64x64] Epoch  55  Batch    45/   49  loss: 0.482798  acc: 0.956178
+  [64x64] Epoch  55  Batch    46/   49  loss: 0.483021  acc: 0.956027
+  [64x64] Epoch  55  Batch    47/   49  loss: 0.483054  acc: 0.955994
+  [64x64] Epoch  55  Batch    48/   49  loss: 0.482817  acc: 0.956174
+  [64x64] Epoch  55  Batch    49/   49  loss: 0.482802  acc: 0.956182
+[64x64] Epoch  55  loss: 0.482802  acc: 0.956182  |  val_loss: 0.453911  val_acc: 0.961773  |  lr: 0.00100000  [44s]  |  VRAM 15.2/16.0GB (other 1.2GB)  CUDA 100/100%(avg/max)  61/62°C  199W  |  CPU 16%  RAM 35.8/63.2GB  SWAP 0.0/17.0GB  |  wait 1.8s/compute 23.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_adamw_64\v4_mnist_letter_lc_adamw_64_log.csv
+  [EarlyStopping] 14/15
+  [64x64] Epoch  56  Batch     1/   49  loss: 0.462697  acc: 0.961485
+  [64x64] Epoch  56  Batch     2/   49  loss: 0.472896  acc: 0.960084
+  [64x64] Epoch  56  Batch     3/   49  loss: 0.471344  acc: 0.960784
+  [64x64] Epoch  56  Batch     4/   49  loss: 0.471905  acc: 0.960172
+  [64x64] Epoch  56  Batch     5/   49  loss: 0.471586  acc: 0.960784
+  [64x64] Epoch  56  Batch     6/   49  loss: 0.473534  acc: 0.959792
+  [64x64] Epoch  56  Batch     7/   49  loss: 0.473852  acc: 0.959234
+  [64x64] Epoch  56  Batch     8/   49  loss: 0.475973  acc: 0.958202
+  [64x64] Epoch  56  Batch     9/   49  loss: 0.475950  acc: 0.958178
+  [64x64] Epoch  56  Batch    10/   49  loss: 0.477256  acc: 0.957633
+  [64x64] Epoch  56  Batch    11/   49  loss: 0.477424  acc: 0.957665
+  [64x64] Epoch  56  Batch    12/   49  loss: 0.477114  acc: 0.958158
+  [64x64] Epoch  56  Batch    13/   49  loss: 0.479202  acc: 0.957094
+  [64x64] Epoch  56  Batch    14/   49  loss: 0.478805  acc: 0.957408
+  [64x64] Epoch  56  Batch    15/   49  loss: 0.477879  acc: 0.957703
+  [64x64] Epoch  56  Batch    16/   49  loss: 0.477836  acc: 0.957567
+  [64x64] Epoch  56  Batch    17/   49  loss: 0.477591  acc: 0.957715
+  [64x64] Epoch  56  Batch    18/   49  loss: 0.477299  acc: 0.957905
+  [64x64] Epoch  56  Batch    19/   49  loss: 0.477239  acc: 0.958057
+  [64x64] Epoch  56  Batch    20/   49  loss: 0.477058  acc: 0.958403
+  [64x64] Epoch  56  Batch    21/   49  loss: 0.476728  acc: 0.958567
+  [64x64] Epoch  56  Batch    22/   49  loss: 0.476693  acc: 0.958524
+  [64x64] Epoch  56  Batch    23/   49  loss: 0.476453  acc: 0.958638
+  [64x64] Epoch  56  Batch    24/   49  loss: 0.476156  acc: 0.958742
+  [64x64] Epoch  56  Batch    25/   49  loss: 0.477060  acc: 0.958487
+  [64x64] Epoch  56  Batch    26/   49  loss: 0.476985  acc: 0.958481
+  [64x64] Epoch  56  Batch    27/   49  loss: 0.476557  acc: 0.958619
+  [64x64] Epoch  56  Batch    28/   49  loss: 0.476474  acc: 0.958646
+  [64x64] Epoch  56  Batch    29/   49  loss: 0.476627  acc: 0.958720
+  [64x64] Epoch  56  Batch    30/   49  loss: 0.476234  acc: 0.958859
+  [64x64] Epoch  56  Batch    31/   49  loss: 0.475890  acc: 0.958909
+  [64x64] Epoch  56  Batch    32/   49  loss: 0.476151  acc: 0.958837
+  [64x64] Epoch  56  Batch    33/   49  loss: 0.476230  acc: 0.958779
+  [64x64] Epoch  56  Batch    34/   49  loss: 0.476363  acc: 0.958632
+  [64x64] Epoch  56  Batch    35/   49  loss: 0.476839  acc: 0.958473
+  [64x64] Epoch  56  Batch    36/   49  loss: 0.476770  acc: 0.958431
+  [64x64] Epoch  56  Batch    37/   49  loss: 0.476830  acc: 0.958286
+  [64x64] Epoch  56  Batch    38/   49  loss: 0.476521  acc: 0.958462
+  [64x64] Epoch  56  Batch    39/   49  loss: 0.476449  acc: 0.958387
+  [64x64] Epoch  56  Batch    40/   49  loss: 0.476875  acc: 0.958202
+  [64x64] Epoch  56  Batch    41/   49  loss: 0.476902  acc: 0.958171
+  [64x64] Epoch  56  Batch    42/   49  loss: 0.477051  acc: 0.958092
+  [64x64] Epoch  56  Batch    43/   49  loss: 0.476528  acc: 0.958350
+  [64x64] Epoch  56  Batch    44/   49  loss: 0.476508  acc: 0.958357
+  [64x64] Epoch  56  Batch    45/   49  loss: 0.476339  acc: 0.958380
+  [64x64] Epoch  56  Batch    46/   49  loss: 0.476430  acc: 0.958250
+  [64x64] Epoch  56  Batch    47/   49  loss: 0.476569  acc: 0.958281
+  [64x64] Epoch  56  Batch    48/   49  loss: 0.476564  acc: 0.958268
+  [64x64] Epoch  56  Batch    49/   49  loss: 0.476646  acc: 0.958227
+[64x64] Epoch  56  loss: 0.476646  acc: 0.958227  |  val_loss: 0.451610  val_acc: 0.961692  |  lr: 0.00100000  [44s]  |  VRAM 15.2/16.0GB (other 1.2GB)  CUDA 100/100%(avg/max)  65/67°C  191W  |  CPU 16%  RAM 35.8/63.2GB  SWAP 0.0/17.0GB  |  wait 1.8s/compute 23.4s
+[Log] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_adamw_64\v4_mnist_letter_lc_adamw_64_log.csv
+  [EarlyStopping] 15/15
+  [EarlyStopping] Halting.
+  [VRAM] 15.19 GB peak this epoch — within 1.0 GB of this GPU's 15.99 GB physical capacity for 3 straight epochs — reducing batch size and continuing
+  [VRAM] Recent trend (epochs 52-56): 14.87 -> 14.87 -> 15.05 -> 15.19 -> 15.19 GB (avg +0.11GB/epoch over epochs 52-55, this epoch +0.00GB)
+[Batch] Reduced to 2568 for subsequent epochs
+
+[Train] [64x64] Loading best checkpoint...
+
+[Eval] [64x64] Running per-class accuracy analysis on test set...
+
+  [Per-Class] 10 worst-performing classes:
+    'g' (class  6): 77.4193%  (589 samples)
+    'i' (class  8): 80.7963%  (427 samples)
+    'l' (class 11): 85.3649%  (2535 samples)
+    'q' (class 16): 89.3069%  (505 samples)
+    'j' (class  9): 90.5363%  (317 samples)
+    'u' (class 20): 93.3610%  (482 samples)
+    'v' (class 21): 94.8718%  (468 samples)
+    'y' (class 24): 96.0630%  (381 samples)
+    'a' (class  0): 97.3236%  (1644 samples)
+    'f' (class  5): 97.5000%  (400 samples)
+
+========================================
+  [64x64] AdamW Test accuracy : 0.961787  (96.1787%)
+  [64x64] AdamW Test loss     : 0.447985
+========================================
+[Plot] Saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_adamw_64\v4_mnist_letter_lc_adamw_64_curves.png
+[Save] E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_adamw_64\v4_mnist_letter_lc_adamw_64_final.pt
+[ONNX] Exported to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_adamw_64\v4_mnist_letter_lc_adamw_64.onnx  (37.1 MB)
+  [Resume] State cleared — training complete.
+
+[Done] [64x64] All files saved to E:\emnist_ensemble_v4\lowercase_models\v4_mnist_letter_lc_adamw_64
+
+############################################################
+  TRAINING COMPLETE — SCHEDULEFREE-ADAMW (LOWERCASE)
+  64x64: 96.1787% test accuracy
+############################################################

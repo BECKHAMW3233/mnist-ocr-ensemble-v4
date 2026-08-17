@@ -73,20 +73,20 @@ $scripts = @(
     "uppercase_models\v4_mnist_letter_uc_muon_64.py",
     "lowercase_models\v4_mnist_letter_lc_soap_64.py",
     "lowercase_models\v4_mnist_letter_lc_adamw_64.py",
-    "lowercase_models\v4_mnist_letter_lc_muon_64.py"
+    "lowercase_models\v4_mnist_letter_lc_muon_64.py",
 
     # 128x128 tier -- trained LAST, all of it, router included (router
     # still leads within this tier, matching every other tier's order)
-    #"router_models\v4_mnist_router_ranger_128.py",
-    #"digit_models\v4_mnist_digit_soap_128.py",
-    #"digit_models\v4_mnist_digit_adamw_128.py",
-    #"digit_models\v4_mnist_digit_muon_128.py",
-    #"uppercase_models\v4_mnist_letter_uc_soap_128.py",
-    #"uppercase_models\v4_mnist_letter_uc_adamw_128.py",
-    #"uppercase_models\v4_mnist_letter_uc_muon_128.py",
-    #"lowercase_models\v4_mnist_letter_lc_soap_128.py",
-    #"lowercase_models\v4_mnist_letter_lc_adamw_128.py",
-    #"lowercase_models\v4_mnist_letter_lc_muon_128.py"
+    "router_models\v4_mnist_router_ranger_128.py",
+    "digit_models\v4_mnist_digit_soap_128.py",
+    "digit_models\v4_mnist_digit_adamw_128.py",
+    "digit_models\v4_mnist_digit_muon_128.py",
+    "uppercase_models\v4_mnist_letter_uc_soap_128.py",
+    "uppercase_models\v4_mnist_letter_uc_adamw_128.py",
+    "uppercase_models\v4_mnist_letter_uc_muon_128.py",
+    "lowercase_models\v4_mnist_letter_lc_soap_128.py",
+    "lowercase_models\v4_mnist_letter_lc_adamw_128.py",
+    "lowercase_models\v4_mnist_letter_lc_muon_128.py"
 )
 
 foreach ($script in $scripts) {

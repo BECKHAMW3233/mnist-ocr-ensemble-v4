@@ -453,3 +453,43 @@ followed through on, once caught directly by William — and neither
 time was the rule ever actually written down, which is why it recurred
 a third time today. No external source — a project-governance rule
 addition, not a technical/library correctness question.
+
+## 2026-08-16 — Re-enabled the 128x128 tier in run_all_training.ps1
+
+**Change:** `run_all_training.ps1`: uncommented all 10 previously-commented
+128x128-tier entries in the `$scripts` array (router, digit x3, uppercase
+x3, lowercase x3), and added a trailing comma after the 64x64 tier's last
+entry (`v4_mnist_letter_lc_muon_64.py`) to match the array's existing
+per-line comma style. The automated runner now executes all 44 scripts,
+including the 128x128 tier, instead of stopping after the 64x64 tier.
+
+**Why:** Per William's direct instruction. The tier was originally
+commented out in v3 (commit `81907b5`, 2026-08-07) because training-time
+data from earlier versions showed 128x128 taking roughly a full day and
+other resolutions 10+ hours each on the pre-fix architecture — consistent
+with v2's own 10-hour wall-clock training limit (`E:\CSC-114\mnist_v2\
+CHANGELOG.md`, 2026-07-19 entry, later removed). Since then, the
+2026-08-07 downsampling architecture fix (measured ~25x compute-cost
+reduction for AdamW, per this repo's own `v3_CHANGELOG.md`) and other
+efficiency work have cut real training time to a fraction of those
+original figures, which is why William judged the tier worth re-enabling
+now.
+
+## 2026-08-16 — README updated for lc_adamw_64 completion and lc_muon_64 in progress
+
+**Change:** `README.md`'s `## Current structure` file tree and the
+training-status paragraph below it updated to match actual on-disk state:
+`v4_mnist_letter_lc_adamw_64/` moved from "run in progress" to complete
+(added its `.onnx`, second CLI transcript, and `curves.png`, matching
+what's actually on disk); `v4_mnist_letter_lc_muon_64/` added as a new
+in-progress folder (its two CLI transcripts and log CSV listed, no
+`.onnx`/`curves.png` yet). Status paragraph updated from "32 of 44
+trained, lc_adamw_64 mid-run, 11 not started" to "33 of 44 trained,
+lc_muon_64 mid-run, 10 not started (the `_128` tier only)".
+
+**Why:** Per William's direct instruction. Both folders' actual contents
+were checked directly on disk (`ls`) rather than assumed, confirming
+`lc_adamw_64` now has a `_final.pt`/`.onnx` (training finished) and
+`lc_muon_64` has only a `_resume.pt` (training still in progress, two CLI
+transcripts indicating one interrupt/restart). No external source —
+verified directly against this repo's own current file state.

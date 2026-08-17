@@ -128,8 +128,11 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_letter_lc_adamw_32_curves.png
     |   |   `-- v4_mnist_letter_lc_adamw_32_log.csv
     |   |-- v4_mnist_letter_lc_adamw_64.py
-    |   |-- v4_mnist_letter_lc_adamw_64/   # run in progress -- no onnx/curves.png yet
+    |   |-- v4_mnist_letter_lc_adamw_64/
+    |   |   |-- v4_mnist_letter_lc_adamw_64.onnx
     |   |   |-- v4_mnist_letter_lc_adamw_64_cli_20260816_103926.txt
+    |   |   |-- v4_mnist_letter_lc_adamw_64_cli_20260816_221108.txt
+    |   |   |-- v4_mnist_letter_lc_adamw_64_curves.png
     |   |   `-- v4_mnist_letter_lc_adamw_64_log.csv
     |   |-- v4_mnist_letter_lc_adamw_128.py
     |   |-- v4_mnist_letter_lc_muon_28.py
@@ -145,6 +148,10 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_letter_lc_muon_32_curves.png
     |   |   `-- v4_mnist_letter_lc_muon_32_log.csv
     |   |-- v4_mnist_letter_lc_muon_64.py
+    |   |-- v4_mnist_letter_lc_muon_64/   # run in progress -- no onnx/curves.png yet
+    |   |   |-- v4_mnist_letter_lc_muon_64_cli_20260816_221544.txt
+    |   |   |-- v4_mnist_letter_lc_muon_64_cli_20260816_223237.txt
+    |   |   `-- v4_mnist_letter_lc_muon_64_log.csv
     |   |-- v4_mnist_letter_lc_muon_128.py
     |   |-- v4_mnist_letter_lc_soap_28.py
     |   |-- v4_mnist_letter_lc_soap_28/
@@ -260,15 +267,14 @@ than one transcript because they were run more than once).
     |-- README.md
     `-- .gitignore
 
-32 of the 44 configs are fully trained (`.onnx` present).
-`v4_mnist_letter_lc_adamw_64.py` is currently mid-run (no `.onnx`/
+33 of the 44 configs are fully trained (`.onnx` present).
+`v4_mnist_letter_lc_muon_64.py` is currently mid-run (no `.onnx`/
 `curves.png` yet — those only get written once training finishes).
-The remaining 11 haven't been started and have no output folder at
-all: the `_128` tier across all four model families, plus lowercase
-`_muon_64`. `.pt` checkpoint weight files (including the in-progress
-run's `_resume.pt`) and `_precomputed_cache/`'s `.npz` files exist
-locally but are gitignored and never reach GitHub, so none of those
-appear above.
+The remaining 10 haven't been started and have no output folder at
+all: the `_128` tier across all four model families. `.pt` checkpoint
+weight files (including the in-progress run's `_resume.pt`) and
+`_precomputed_cache/`'s `.npz` files exist locally but are gitignored
+and never reach GitHub, so none of those appear above.
 
 ## Usage
 
