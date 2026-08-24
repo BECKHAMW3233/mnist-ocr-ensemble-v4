@@ -493,3 +493,21 @@ were checked directly on disk (`ls`) rather than assumed, confirming
 `lc_muon_64` has only a `_resume.pt` (training still in progress, two CLI
 transcripts indicating one interrupt/restart). No external source —
 verified directly against this repo's own current file state.
+
+## 2026-08-24 — README updated: all 44 configs now fully trained
+
+**Change:** `README.md`'s `## Current structure` file tree and the
+training-status paragraph below it updated to match actual on-disk state.
+Added the 10 previously-missing `_128`-tier output subfolders (`.onnx`,
+CLI transcript(s), `_curves.png`, `_log.csv`) across `digit_models/`,
+`lowercase_models/`, `uppercase_models/`, and `router_models/`, and
+updated `v4_mnist_letter_lc_muon_64/` from "run in progress" to complete
+(added its `.onnx` and `_curves.png`). Status paragraph changed from "33
+of 44 trained, lc_muon_64 mid-run, 10 not started (the `_128` tier)" to
+"all 44 configs fully trained."
+
+**Why:** Per William's direct instruction. Every one of the 44 model
+output directories (not a sample) was checked directly on disk via `ls`
+to confirm a `.onnx` file is present in each before writing this update.
+No external source — verified directly against this repo's own current
+file state.

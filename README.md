@@ -60,6 +60,11 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_digit_adamw_64_curves.png
     |   |   `-- v4_mnist_digit_adamw_64_log.csv
     |   |-- v4_mnist_digit_adamw_128.py
+    |   |-- v4_mnist_digit_adamw_128/
+    |   |   |-- v4_mnist_digit_adamw_128.onnx
+    |   |   |-- v4_mnist_digit_adamw_128_cli_20260818_013209.txt
+    |   |   |-- v4_mnist_digit_adamw_128_curves.png
+    |   |   `-- v4_mnist_digit_adamw_128_log.csv
     |   |-- v4_mnist_digit_muon_16.py
     |   |-- v4_mnist_digit_muon_16/
     |   |   |-- v4_mnist_digit_muon_16.onnx
@@ -85,6 +90,13 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_digit_muon_64_curves.png
     |   |   `-- v4_mnist_digit_muon_64_log.csv
     |   |-- v4_mnist_digit_muon_128.py
+    |   |-- v4_mnist_digit_muon_128/
+    |   |   |-- v4_mnist_digit_muon_128.onnx
+    |   |   |-- v4_mnist_digit_muon_128_cli_20260818_073504.txt
+    |   |   |-- v4_mnist_digit_muon_128_cli_20260818_164454.txt
+    |   |   |-- v4_mnist_digit_muon_128_cli_20260822_160017.txt
+    |   |   |-- v4_mnist_digit_muon_128_curves.png
+    |   |   `-- v4_mnist_digit_muon_128_log.csv
     |   |-- v4_mnist_digit_soap_16.py
     |   |-- v4_mnist_digit_soap_16/
     |   |   |-- v4_mnist_digit_soap_16.onnx
@@ -113,7 +125,13 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_digit_soap_64_cli_20260815_231040.txt
     |   |   |-- v4_mnist_digit_soap_64_curves.png
     |   |   `-- v4_mnist_digit_soap_64_log.csv
-    |   `-- v4_mnist_digit_soap_128.py
+    |   |-- v4_mnist_digit_soap_128.py
+    |   `-- v4_mnist_digit_soap_128/
+    |       |-- v4_mnist_digit_soap_128.onnx
+    |       |-- v4_mnist_digit_soap_128_cli_20260817_004444.txt
+    |       |-- v4_mnist_digit_soap_128_cli_20260817_224045.txt
+    |       |-- v4_mnist_digit_soap_128_curves.png
+    |       `-- v4_mnist_digit_soap_128_log.csv
     |-- lowercase_models/        # 12 lowercase letter training scripts (SOAP/AdamW/Muon x 4 resolutions)
     |   |-- v4_mnist_letter_lc_adamw_28.py
     |   |-- v4_mnist_letter_lc_adamw_28/
@@ -135,6 +153,12 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_letter_lc_adamw_64_curves.png
     |   |   `-- v4_mnist_letter_lc_adamw_64_log.csv
     |   |-- v4_mnist_letter_lc_adamw_128.py
+    |   |-- v4_mnist_letter_lc_adamw_128/
+    |   |   |-- v4_mnist_letter_lc_adamw_128.onnx
+    |   |   |-- v4_mnist_letter_lc_adamw_128_cli_20260823_123522.txt
+    |   |   |-- v4_mnist_letter_lc_adamw_128_cli_20260823_235549.txt
+    |   |   |-- v4_mnist_letter_lc_adamw_128_curves.png
+    |   |   `-- v4_mnist_letter_lc_adamw_128_log.csv
     |   |-- v4_mnist_letter_lc_muon_28.py
     |   |-- v4_mnist_letter_lc_muon_28/
     |   |   |-- v4_mnist_letter_lc_muon_28.onnx
@@ -148,11 +172,18 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_letter_lc_muon_32_curves.png
     |   |   `-- v4_mnist_letter_lc_muon_32_log.csv
     |   |-- v4_mnist_letter_lc_muon_64.py
-    |   |-- v4_mnist_letter_lc_muon_64/   # run in progress -- no onnx/curves.png yet
+    |   |-- v4_mnist_letter_lc_muon_64/
+    |   |   |-- v4_mnist_letter_lc_muon_64.onnx
     |   |   |-- v4_mnist_letter_lc_muon_64_cli_20260816_221544.txt
     |   |   |-- v4_mnist_letter_lc_muon_64_cli_20260816_223237.txt
+    |   |   |-- v4_mnist_letter_lc_muon_64_curves.png
     |   |   `-- v4_mnist_letter_lc_muon_64_log.csv
     |   |-- v4_mnist_letter_lc_muon_128.py
+    |   |-- v4_mnist_letter_lc_muon_128/
+    |   |   |-- v4_mnist_letter_lc_muon_128.onnx
+    |   |   |-- v4_mnist_letter_lc_muon_128_cli_20260824_011450.txt
+    |   |   |-- v4_mnist_letter_lc_muon_128_curves.png
+    |   |   `-- v4_mnist_letter_lc_muon_128_log.csv
     |   |-- v4_mnist_letter_lc_soap_28.py
     |   |-- v4_mnist_letter_lc_soap_28/
     |   |   |-- v4_mnist_letter_lc_soap_28.onnx
@@ -171,7 +202,12 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_letter_lc_soap_64_cli_20260816_095535.txt
     |   |   |-- v4_mnist_letter_lc_soap_64_curves.png
     |   |   `-- v4_mnist_letter_lc_soap_64_log.csv
-    |   `-- v4_mnist_letter_lc_soap_128.py
+    |   |-- v4_mnist_letter_lc_soap_128.py
+    |   `-- v4_mnist_letter_lc_soap_128/
+    |       |-- v4_mnist_letter_lc_soap_128.onnx
+    |       |-- v4_mnist_letter_lc_soap_128_cli_20260823_105123.txt
+    |       |-- v4_mnist_letter_lc_soap_128_curves.png
+    |       `-- v4_mnist_letter_lc_soap_128_log.csv
     |-- uppercase_models/        # 12 uppercase letter training scripts (SOAP/AdamW/Muon x 4 resolutions)
     |   |-- v4_mnist_letter_uc_adamw_28.py
     |   |-- v4_mnist_letter_uc_adamw_28/
@@ -192,6 +228,11 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_letter_uc_adamw_64_curves.png
     |   |   `-- v4_mnist_letter_uc_adamw_64_log.csv
     |   |-- v4_mnist_letter_uc_adamw_128.py
+    |   |-- v4_mnist_letter_uc_adamw_128/
+    |   |   |-- v4_mnist_letter_uc_adamw_128.onnx
+    |   |   |-- v4_mnist_letter_uc_adamw_128_cli_20260823_044628.txt
+    |   |   |-- v4_mnist_letter_uc_adamw_128_curves.png
+    |   |   `-- v4_mnist_letter_uc_adamw_128_log.csv
     |   |-- v4_mnist_letter_uc_muon_28.py
     |   |-- v4_mnist_letter_uc_muon_28/
     |   |   |-- v4_mnist_letter_uc_muon_28.onnx
@@ -211,6 +252,11 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_letter_uc_muon_64_curves.png
     |   |   `-- v4_mnist_letter_uc_muon_64_log.csv
     |   |-- v4_mnist_letter_uc_muon_128.py
+    |   |-- v4_mnist_letter_uc_muon_128/
+    |   |   |-- v4_mnist_letter_uc_muon_128.onnx
+    |   |   |-- v4_mnist_letter_uc_muon_128_cli_20260823_065749.txt
+    |   |   |-- v4_mnist_letter_uc_muon_128_curves.png
+    |   |   `-- v4_mnist_letter_uc_muon_128_log.csv
     |   |-- v4_mnist_letter_uc_soap_28.py
     |   |-- v4_mnist_letter_uc_soap_28/
     |   |   |-- v4_mnist_letter_uc_soap_28.onnx
@@ -229,7 +275,13 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_letter_uc_soap_64_cli_20260816_070651.txt
     |   |   |-- v4_mnist_letter_uc_soap_64_curves.png
     |   |   `-- v4_mnist_letter_uc_soap_64_log.csv
-    |   `-- v4_mnist_letter_uc_soap_128.py
+    |   |-- v4_mnist_letter_uc_soap_128.py
+    |   `-- v4_mnist_letter_uc_soap_128/
+    |       |-- v4_mnist_letter_uc_soap_128.onnx
+    |       |-- v4_mnist_letter_uc_soap_128_cli_20260822_184350.txt
+    |       |-- v4_mnist_letter_uc_soap_128_cli_20260823_041500.txt
+    |       |-- v4_mnist_letter_uc_soap_128_curves.png
+    |       `-- v4_mnist_letter_uc_soap_128_log.csv
     |-- router_models/           # 5 router training scripts (Ranger x 5 resolutions)
     |   |-- v4_mnist_router_ranger_16.py
     |   |-- v4_mnist_router_ranger_16/
@@ -255,7 +307,12 @@ than one transcript because they were run more than once).
     |   |   |-- v4_mnist_router_ranger_64_cli_20260815_030439.txt
     |   |   |-- v4_mnist_router_ranger_64_curves.png
     |   |   `-- v4_mnist_router_ranger_64_log.csv
-    |   `-- v4_mnist_router_ranger_128.py
+    |   |-- v4_mnist_router_ranger_128.py
+    |   `-- v4_mnist_router_ranger_128/
+    |       |-- v4_mnist_router_ranger_128.onnx
+    |       |-- v4_mnist_router_ranger_128_cli_20260816_230653.txt
+    |       |-- v4_mnist_router_ranger_128_curves.png
+    |       `-- v4_mnist_router_ranger_128_log.csv
     |-- ocr_pipeline_mnist.py    # Inference pipeline
     |-- supplementary_data.py    # Shared dataset loading
     |-- build_dataset_cache.py   # One-time dataset cache builder
@@ -267,14 +324,10 @@ than one transcript because they were run more than once).
     |-- README.md
     `-- .gitignore
 
-33 of the 44 configs are fully trained (`.onnx` present).
-`v4_mnist_letter_lc_muon_64.py` is currently mid-run (no `.onnx`/
-`curves.png` yet — those only get written once training finishes).
-The remaining 10 haven't been started and have no output folder at
-all: the `_128` tier across all four model families. `.pt` checkpoint
-weight files (including the in-progress run's `_resume.pt`) and
-`_precomputed_cache/`'s `.npz` files exist locally but are gitignored
-and never reach GitHub, so none of those appear above.
+All 44 configs are now fully trained (`.onnx` present for every one).
+`.pt` checkpoint weight files and `_precomputed_cache/`'s `.npz` files
+exist locally but are gitignored and never reach GitHub, so none of
+those appear above.
 
 ## Usage
 
